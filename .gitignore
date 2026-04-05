@@ -1,0 +1,27 @@
+# Archivos creados automáticamente
+.git
+*.log
+.DS_Store
+
+# Reportes de QA 
+allure-results/
+coverage/
+reports/*
+selenium-standalone-chromedriver/
+screenshots/
+temp/
+
+# Variables de entorno y configuraciones sensibles
+.env
+.env.local
+*.pem
+*.key
+
+# NPM o Python cache 
+node_modules/
+__pycache__/
+venv/
+.pytest_cache/
+
+# Caches del navegador 
+.cache/
