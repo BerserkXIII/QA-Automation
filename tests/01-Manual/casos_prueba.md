@@ -22,7 +22,7 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 
 ### CT-001: Problema de flujo de comabates en "Eventos"
 - **ID**: CT-001
-- **Descripción**: El juego da por terminado un "Evento" a pesar de huir de un combate generado por ese "Evento".
+- **Descripción**: El juego da los beneficios de terminar un "Evento" a pesar de huir de un combate generado por ese "Evento".
 - **Precondiciones**: Una ramificacion de un "Evento" que termine en combate y conseguir "huir" del combate.
 - **Pasos**:
 1. Iniciar juego
