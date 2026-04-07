@@ -3,7 +3,7 @@
 
 En este diario documentare mi aprendizaje de ISTQB con mas frecuencia, añadiendo apuntes, temario estudiado y estado del aprendizaje. 
 
-## Conceptos aprendidos
+## Conceptos aprendidos y apuntes interesantes
 
 SDLC (Software Development Life Cycle)
     ├─ Quality Assurance (QA)
