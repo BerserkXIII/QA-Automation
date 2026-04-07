@@ -1,17 +1,44 @@
-# Cuaderno de QA Automation
+# [Cuadernillo de aprendizaje] QA Journey to ISTQB-CTFL 
 
-## Este es el inicio de mi aprendizaje y practica en el campo QA, mientras estudio ISTQB-CTFL
+![Estado](https://img.shields.io/badge/estado-Aprendiendo-green) 
+![Examen](https://img.shields.io/badge/certificado-ISTQB_CTFL-blue)
 
-##  Tecnologías
+## 🚀 Sobre este repositorio
+Bienvenido a mi portafolio de aprendizaje en Calidad de Software. 
+Este espacio documenta mi camino hacia la certificación **ISTQB-CTFL**, desde las bases manuales hasta el primer paso en automatización.
+No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evidencia de estudio y práctica real, y tiene el proposito de documentar mi aprendizaje y estructurar debidamente un repositorio.
 
+## 📚 Qué encontrarás aquí
+- **[Ver Apuntes ISTQB](./NOTAS-ISTQB.md)**: Teoría actual sobre testing manual y conceptos. Actualizado con aprendizaje diario.
+- **[Casos de Prueba Manuales](./tests/01-Manual/casos_prueba.md)**: Ejercicios prácticos de validación y verificación.
+- **[Reportes de Defectos](./tests/03-Reportes/template_defecto.md)**: Template y ejemplos de cómo documentar bugs correctamente.
+- **[Lecciones Aprendidas](./docs/LECCIONES_APRENDIDAS.md)**: Mi journey y los errores que he superado.
 
-##  Estructura del Repositorio
-```tree
-QA_Project/
-├── 01-Fundamentos/           
-├── 02-Tecnicas-diseño/       
-├── 03-Casos-de-prueba/
-├── 04-Gestion-defectos/
-├── docs/
-├── .gitignore     
-└── README.md      
+## 🛠️ Herramientas en mi camino
+|          Categoría               |        Estado Actual                    |
+|----------------------------------|-----------------------------------------|
+| Testing Manual                   | ✅ Activo (Actualización constante)     |
+| Git & GitHub                     | ✅ Activo (Práctico)                    |
+| Automatización (Selenium/Python) | 🔒 Planeado para el próximo nivel       |
+
+## 🎯 Meta a Corto Plazo
+- [ ] Completar exámenes de preparación para ISTQB.
+- [ ] Subir mi primer reporte de prueba automatizado.
+- [ ] Documentar todo el ciclo de vida de una app real.
+
+## 🎯 Meta a Largo Plazo
+- [ ] Implementación de testing automatizado con Python/Selenium.
+- [ ] Integración de CI/CD pipelines (GitHub Actions o similares).
+- [ ] Explorar testing con IA: prompts para generar casos de prueba.
+- [ ] Crear un portafolio con proyecto real testeado (end-to-end).
+- [ ] Transición de manual a automatización (documentar la curva de aprendizaje).
+
+## 💡 Cómo leer este portafolio
+1.  Comienza en [README.md](./README.md) para ver el panorama general.
+2.  Revisa [NOTAS-ISTQB.md](./NOTAS-ISTQB.md) para los detalles técnicos y teóricos.
+3.  Mira [casos_prueba.md](./tests/01-Manual/casos_prueba.md) para ver cómo estructuro mis pruebas.
+4.  Consulta el [ROADMAP](./docs/ROADMAP.md) para entender mi plan de aprendizaje.
+
+---
+*Última actualización: [07/04/2026]* 
+*Mantenido por: Salva_BsK*

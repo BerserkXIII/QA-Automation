@@ -1,0 +1,21 @@
+# Roadmap de Progreso
+
+## Mes 1-2: CTFL + Git
+- [x] Estudiar todas las secciones del CTFL
+- [x] Hacer exámenes de práctica
+- [ ] Aprender ramas de Git
+- [ ] Hacer pull requests
+
+## Mes 3-4: Automatización Básica
+- [ ] Instalar Selenium + Python
+- [ ] Primer test automatizado
+- [ ] Documentar el proceso
+
+## Mes 5+: IA en Testing
+- [ ] Investigar prompts para casos de prueba
+- [ ] Proyecto piloto con IA
+- [ ] Documentar resultados
+
+---
+
+*Última actualización: [07/04/2026]*
