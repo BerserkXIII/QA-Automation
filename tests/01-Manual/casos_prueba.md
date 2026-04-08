@@ -12,17 +12,24 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 - **Descripción**: Qué se prueba
 - **Precondiciones**: Estado inicial requerido
 - **Pasos**: Acciones a ejecutar
-- **Resultado esperado**: Qué debería pasar
 - **Resultado actual**: Qué pasó realmente
+- **Resultado esperado**: Qué debería pasar
 - **Causa raíz**: Que pasa realmente
 - **Solución implementada**: Que solución se implementó
 - **Estado**: Pasado/Fallido/Bloqueado
+- **Notas**: Notas adicionales
+- **Complejidad**: Lo dificil que me resulto llegar a una solución.
+- **Lección aprendida**: Que aprendí a traves de la solución o del propio caso.
 
 ## Casos de Prueba 
 
 ### CT-001: Problema de flujo de comabates en "Eventos"
 - **ID**: CT-001
 - **Descripción**: El juego da los beneficios de terminar un "Evento" a pesar de huir de un combate generado por ese "Evento".
+- **Severidad**: MEDIA / BAJA
+  - Razón: Beneficios sin combate
+  - Impacto: es un exploit del sistema de combate.
+  - Reproducibilidad: 60%, se necesita activar un evento donde pueda haber combate.
 - **Precondiciones**: Una ramificacion de un "Evento" que termine en combate y conseguir "huir" del combate.
 - **Pasos**:
 1. Iniciar juego
@@ -40,5 +47,40 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 - **Lección aprendida**: Reconocer patrones similares aceleró significativamente la resolución, y al no tener mucha complejidad sintatica, me resulto sencillo identificarlos. 
 
 ---
+
+### CT-002: Problema de control de comportamiento de botones
+- **ID**: CT-002
+- **Severidad**: ALTA / CRÍTICA
+  - Razón: Afecta la jugabilidad en combate (núcleo del juego)
+  - Impacto: Hace que el juego sea "antiintuitivo"
+  - Reproducibilidad: 100% (siempre ocurre cada combate)
+- **Descripción**: El comportamiento de los botones de combate antiintuitivo: se activaba la Stance pero el toggle no se mostraba activo, las armas no se mostraban debidamente, etc.
+- **Precondiciones**: Ninguna, el bug se mostraba en combate siempre, con mas problemas contra mas armas tenias.
+- **Pasos**:
+1. Iniciar juego
+2. Llegar a una pantalla de combate
+   (Puede ser: evento aleatorio, o combate forzoso en escena específica)
+3. Observar el estado INICIAL del toggle (debería estar en OFF)
+4. Click en botón "Esquivar" (o la stance que sea)
+5. Observar:
+   - ¿El toggle visualmente cambió a ON?
+   - ¿El juego aplicó "esquivar" como acción?
+   - ¿Después del turno del enemigo, el toggle sigue en ON?
+6. Click en botón de arma para atacar
+7. Observar:
+   - ¿El sprite del arma sigue visible?
+   - ¿El juego aplicó "atacar" con el arma correcta?
+- **Resultado actual**: 
+- Al clickar en "Esquivar": La acción se ejecuta correctamente (mensaje de esquivar en consola)
+- PERO el botón visualmente muestra estado OFF (no presionado)
+- Al cambiar a "Bloquear": Ambos botones aparecen OFF
+- Al cambiar de arma: Los sprites desaparecen y aparece [ARMA_NOMBRE]
+- **Resultado esperado**: El toggle de Stance refleja el estado real, actuando como un switch: si activas "esquivar", desactivas "bloquear", y viceversa. Las armas deben aparecer con sus sprites, sin nombre/placeholder. 
+- **Causa raíz**: Muy mala estructura en los paneles y botones de Tkinter. Trabajo hecho por la IA por falta de conocimiento sintactico, lo cual provocaba muy mal flujo de trabajo, y dado que en combate hay muchas funciones cruzadas, es imposible de mantener los botones "funcionales" sin una estructura correcta.
+- **Solución implementada**: Limpieza total del sistema de botones. Hice trabajo de iteracion con IA, para encontrar puntos criticos en el codigo y limpiar los placeholders, para lo cual cree iamgenes para todas las armas, implementadolas en lugar de los placeholders que solo mostraban nombres de armas. Pidiendole a la IA especificaciones y documentacion del sistema de botones consegui crear uno mas sencillo y funcional, el cual pude modulizar para mejorar el funcionamiento, lo cual fue muy util, pues pude usar la logica para implementar un sistema donde los sprites se vinculaban al diccionario de "jugador", haciendo el sistema de sprites "instantaneo". El toggle de los botones fue mas costoso, tuve que buscar documentación oficial de Tkinter para entederlo bien, y junto a la documentación especifica del caso de prueba, pude encontrar una solución consistente y funcional, a traves de pedirle a la IA que encontrara los puntos criticos del comportamiento de los botones, creando flags pre-combate, post-turno jugador para un comportamiento correcto del toggle, y reestructurando el sistema interno de esquiva/bloqueo, evitando así que cualquier cambio de stats o armas pudiera resultar en bug.
+- **Estado**: Fixed.
+- **Notas**: Fue de los bugs mas dificiles de resolver, sobretodo por mi falta de conocimiento sintactico y el fallo garrafal de delegar demasiado en la IA sin entender lo que estaba haciendo. De hecho, tengo una version "muerta" en ese punto, la cual se rompio sin remedio por mala praxis con la IA.
+- **Complejidad**: Alta. Mi falta de experiencia y la "animosidad" por implementar el sistema hicieron que confiara demasiado en la IA, a pesar de los promps, los retest y las iteraciones, no se debe confiar a nivel estructural algo tan delicado a la IA. Al menos no sin conocimientos sintacticos del lenguaje/biblioteca.
+- **Lección aprendida**: Conocer y entender el comportamiento de una biblioteca es fundamental. Nunca delegar puntos criticos a la IA. Lo que creia que avanzaba en una noche, luego tarde dias en arreglarlo. E incluso llegando a hacer un backup, por acumulación de bugs. Aprendí a las malas los "limites", o usos indevido de la IA.
 
 *Última actualización: [07/04/2026]*
