@@ -10,6 +10,7 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 ## Ejemplo de Estructura de un Caso de Prueba
 - **ID**: Identificador único
 - **Descripción**: Qué se prueba
+- **Severidad**: ALTA / MEDIA / BAJA
 - **Precondiciones**: Estado inicial requerido
 - **Pasos**: Acciones a ejecutar
 - **Resultado actual**: Qué pasó realmente
@@ -80,7 +81,39 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 - **Solución implementada**: Limpieza total del sistema de botones. Hice trabajo de iteracion con IA, para encontrar puntos criticos en el codigo y limpiar los placeholders, para lo cual cree iamgenes para todas las armas, implementadolas en lugar de los placeholders que solo mostraban nombres de armas. Pidiendole a la IA especificaciones y documentacion del sistema de botones consegui crear uno mas sencillo y funcional, el cual pude modulizar para mejorar el funcionamiento, lo cual fue muy util, pues pude usar la logica para implementar un sistema donde los sprites se vinculaban al diccionario de "jugador", haciendo el sistema de sprites "instantaneo". El toggle de los botones fue mas costoso, tuve que buscar documentación oficial de Tkinter para entederlo bien, y junto a la documentación especifica del caso de prueba, pude encontrar una solución consistente y funcional, a traves de pedirle a la IA que encontrara los puntos criticos del comportamiento de los botones, creando flags pre-combate, post-turno jugador para un comportamiento correcto del toggle, y reestructurando el sistema interno de esquiva/bloqueo, evitando así que cualquier cambio de stats o armas pudiera resultar en bug.
 - **Estado**: Fixed.
 - **Notas**: Fue de los bugs mas dificiles de resolver, sobretodo por mi falta de conocimiento sintactico y el fallo garrafal de delegar demasiado en la IA sin entender lo que estaba haciendo. De hecho, tengo una version "muerta" en ese punto, la cual se rompio sin remedio por mala praxis con la IA.
-- **Complejidad**: Alta. Mi falta de experiencia y la "animosidad" por implementar el sistema hicieron que confiara demasiado en la IA, a pesar de los promps, los retest y las iteraciones, no se debe confiar a nivel estructural algo tan delicado a la IA. Al menos no sin conocimientos sintacticos del lenguaje/biblioteca.
+- **Complejidad**: Alta. Mi falta de experiencia y la "animosidad" por implementar el sistema hicieron que confiara demasiado en la IA. A pesar de los promps precisos, los retest, las comprobaciones y las iteraciones, no se debe confiar a nivel estructural algo tan delicado a la IA. Al menos no sin conocimientos sintacticos del lenguaje/biblioteca.
 - **Lección aprendida**: Conocer y entender el comportamiento de una biblioteca es fundamental. Nunca delegar puntos criticos a la IA. Lo que creia que avanzaba en una noche, luego tarde dias en arreglarlo. E incluso llegando a hacer un backup, por acumulación de bugs. Aprendí a las malas los "limites", o usos indevido de la IA.
 
-*Última actualización: [07/04/2026]*
+
+## CT-003: Error de referencia en las armas
+- **ID**: CT-003
+- **Descripción**: Al conseguir ciertas armas, el juego da un error de "Arma desconocida!", haciendo que no se agrege al inventario y "deshabilitando" esa arma durante toda la partida.
+- **Severidad**: Media/Alta
+  - Razón: Afecta la jugabilidad en combate, lo limita mucho.
+  - Impacto: Hace que ciertas armas sean inaccesibles, a pesar de estar implementadas.
+  - Reproducibilidad: 50%, se necesita conseguir ciertas armas para ver el error.
+- **Precondiciones**: 
+  - Juego iniciado
+  - Activar evento que ofrezca la opción de conseguir armas
+  - Armas afectadas: Hoz de Sangre, Hoja de la Noche, Hacha Maldita, Mano de Dios, estoque, cimitarra. El resto no se ven afectadas.
+- **Pasos**: 
+1. Iniciar juego
+2. Terminar un evento con posibilidad de conseguir una arma.
+3. Llegar a la decisión de conseguir armas
+   -Sí hay espacio en el inventario, se agregara el arma automaticamente.
+   -Sí no, se debe elegir arma para sustituir.
+- **Resultado actual**: 
+   -Sí hay hueco en el inventario, se agrega el arma automaticamente.
+   -Sí no, el juego pregunta que arma sustituir por la nueva.
+      (Aqui el bug no se muestra si el jugador elige "no" sustituir una de sus armas por la nueva.)
+   -Sí el arma nueva es una de las afectadas, el juego muestra un error de "Arma desconocida!". 
+   -El juego continua de manera normal, pero limitado a ciertas armas, haciendolo bastante dificil y bloqueando cierto eventos activables por ciertas armas.
+- **Resultado esperado**: Poder conseguir todas las armas del juego sin problematicas, añadiendose o sustituyendose correctamente segun el caso.
+- **Causa raíz**: Mala nomenclatura y referenciado de los nombres clave de las armas. 
+- **Solución implementada**: Revision de todos los nombres de armas, y todos los eventos donde se consiguen. Gracias al soporte de la IA, se pudo encontrar todas las referencias mal escritas y corregirlas. Esto soluciona el problema cuando hay hueco en el inventario. Pero para poder sustituir correctamente las armas al encontrar una nueva, hubo que crear un diccionario de abreviaturas, para poder sustituir y activar las armas correctamente. Asi, da igual que el jugador escriba "espada", "esp" o incluso que se equivoque, se sustituye correctamente o repregunta.
+- **Estado**: Fixed.
+- **Notas**: Fue un ejemplo de necesidad de uniformidad en variables y terminos. Gracias a Copilot, fue relativamente sencillo encontrar todos los puntos donde se referenciaban erroneamente las armas y estandarizarlos para que sean consistentes.
+- **Complejidad**: Media. La IA hizo el trabajo pesado de navegar por el codigo en busca de los terminos mal escritos, y retestear que esten todos corregidos. El fix en sí no era dificil, eran simples cambios ortograficos, y sobretodo, mayusculas.
+- **Lección aprendida**: Las mayusculas importan, y mucho! Buscar siempre la consistencia y uniformidad en las variables. La implementacion del diccionario ayudo a mejorar el sistema de combate tambien, y permite añadir nuevas armas sin problemas. De un bug se puede sacar un feat!
+
+*Última actualización: [09/04/2026]*
