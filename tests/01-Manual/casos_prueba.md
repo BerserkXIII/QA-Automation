@@ -50,7 +50,7 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 
 -------------------------------------------------------------------------------------------
 
-### CT-002: Problema de control de comportamiento de botones
+### CT-002: Problema de control de comportamiento de botones de Stance en combate
 - **ID**: CT-002
 - **Severidad**: ALTA / CRÍTICA
   - Razón: Afecta la jugabilidad en combate (núcleo del juego)
@@ -220,3 +220,46 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 **La función encapsula la generación de susurros aleatorios, permitiendo una variedad en el contenido narrativo sin afectar el flujo principal del juego. Simple, pero efectivo.**
 
 -------------------------------------------------------------------------
+
+## CT-007: Implementación de Inputs Secretos y Narrativa Oculta
+- **ID**: CT-007
+- **Descripción**: Ampliación de la función central leer_input() para soportar "inputs secretos" (easter eggs) que desbloquean rutas narrativas alternativas sin interferir con el flujo principal del juego.
+- **Severidad**: MEDIA
+   Razón: Complejidad lógica interna oculta vs impacto alto en la profundidad narrativa.
+   Impacto: Aumenta el factor sorpresa y rejugabilidad (inspirado en mecánicas de Dark Souls y Fear & Hunger).
+   Reproducibilidad: Alta una vez definido el input secreto, pero accesible solo bajo condiciones específicas.
+- **Precondiciones**: Motor leer_input() centralizado implementado (CT-005), narrativa principal establecida y sistema de "emitir" activo.
+- **Pasos**:
+   1.Navegar a un nodo crítico donde el input está disponible (ejemplo: final de combate o diálogo).
+   2.Introducir la secuencia/valor secreto específico en el campo de entrada.
+   3.Verificar que el sistema no bloquee ni caiga al detectar el valor atípico.
+   4.Confirmar la activación del evento oculto/narrativo asociado a ese input sin forzar reinicios.
+   5.Probar nuevamente un input estándar para asegurar que la lógica central no colapsó (regresión).
+- **Resultado actual**: El sistema reconoce comandos opacos y ejecuta sus rutas alternativas, manteniendo la integridad del flujo normal. No hay filtrado de errores ni bloqueos en el hilo principal.
+- **Resultado esperado**: Poder interactuar con caminos ocultos para obtener información extra o beneficios (ej. revivir personaje) sin arruinar la experiencia estándar para jugadores que no lo sepan.
+- **Fundamentación técnica**: La función leer_input() pasó de ser un simple input() a un parser robusto capaz de validaciones implícitas. Permitió añadir lógica condicional interna (if secret_input) sin contaminar la interfaz gráfica ni los menús.
+- **Solución implementada**: Se mantuvo el encapsulamiento en leer_input(). La detección de "comandos secretos" se realizó mediante una capa de validación interna (sanitization y check de strings ocultos), aislándolos del flujo normal para evitar que se detecten por errores de codificación.
+- **Estado**: Implemented / Validated.
+- **Notas**: Caso especial de diseño. Se utilizó la misma arquitectura centralizada para añadir profundidad sin reescribir el kernel de entrada. Inspirado en juegos como Dark Souls, donde una línea específica puede cambiar el destino. La función leer_input actúa ahora como puerta de acceso a estas rutas ocultas, evitando duplicar lógica de input por cada ruta secreta.
+- **Complejidad**: Media-Alta (Requiere mantenimiento de secretos seguros sin exponerlos en logs o errores).
+- **Lección aprendida**: La centralización del input (leer_input) hace posible añadir complejidad (como inputs secretos) sin que la estructura base se rompa. Es una lección clave sobre escalabilidad: una función bien diseñada puede crecer para soportar mecánicas profundas (easter eggs, secretos) manteniendo el código limpio.
+- **Codigo implementado**:
+    # [SECRETO 6] Posibilidad de revivir (una sola vez)
+    preguntar("(Presiona enter para terminar)")
+    respuesta_final = pedir_input().strip().lower()
+    if respuesta_final == "Lorem ipsum dolor sit amet, consectetur adipiscing elit" and not personaje.get("_x9f"):
+        narrar("\n========================================\n")
+        narrar("Pero la muerte aquí no es el final.")
+        narrar("La mazmorra es un lugar donde los muertos siguen sirviendo.")
+        narrar("Y algo en ti aún tiene hambre. Aún tiene propósito.")
+        narrar("Los ojos se abren. El cuerpo se recompone.")
+        narrar("========================================\n")
+        narrar("Horas después... o quizás minutos. No lo sabes. Despiertas en un cruce desconocido.")
+        narrar("Tu cuerpo duele. Tu mente está confusa. Pero estás vivo.")
+        # Restaurar vida
+        personaje["_x9f"] = True
+        personaje["vida"] = max(1, personaje.get("vida_max", 10) // 2)
+        personaje["_flg1"] = True
+        return False
+    else:
+        sys.exit()
