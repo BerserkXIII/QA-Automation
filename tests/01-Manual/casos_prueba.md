@@ -48,7 +48,7 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 - **Complejidad**: Baja (patrón análogo ya implementado, solo tuve que vincularlos)
 - **Lección aprendida**: Reconocer patrones similares aceleró significativamente la resolución, y al no tener mucha complejidad sintatica, me resulto sencillo identificarlos. 
 
--------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
 
 ### CT-002: Problema de control de comportamiento de botones
 - **ID**: CT-002
@@ -85,7 +85,7 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 - **Complejidad**: Alta. Mi falta de experiencia y la "animosidad" por implementar el sistema hicieron que confiara demasiado en la IA. A pesar de los promps precisos, los retest, las comprobaciones y las iteraciones, no se debe confiar a nivel estructural algo tan delicado a la IA. Al menos no sin conocimientos sintacticos del lenguaje/biblioteca.
 - **Lección aprendida**: Conocer y entender el comportamiento de una biblioteca es fundamental. Nunca delegar puntos criticos a la IA. Lo que creia que avanzaba en una noche, luego tarde dias en arreglarlo. E incluso llegando a hacer un backup, por acumulación de bugs. Aprendí a las malas los "limites", o usos indevido de la IA.
 
-------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------
 
 ## CT-003: Error de referencia en las armas
 - **ID**: CT-003
@@ -119,7 +119,7 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 - **Lección aprendida**: Las mayusculas importan, y mucho! Buscar siempre la consistencia y uniformidad en las variables. La implementacion del diccionario ayudo a mejorar el sistema de combate tambien, y permite añadir nuevas armas sin problemas. De un bug se puede sacar un feat!
 
 
------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
 
 ## CT-004: Rediseño de Botones con forma libre
 - **ID**: CT-004
@@ -144,3 +144,38 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 - **Notas**: Este caso es una mejora de arquitectura/funcionalidad, no un "bug", por lo que la Severidad fue clasificada como MEDIA para reflejar la dificultad técnica alta y el tiempo invertido en iterar hasta cubrir las necesidades (diseño vs funcionalidad). Se detectó brechas menores en esquinas irregulares, aceptadas bajo el principio de entrega incremental. La colaboración con IA fue clave para calcular aproximaciones de píxeles en imágenes pequeñas y entender la librería PIL para escalado multi-monitor sin redimensionar assets manuales.
 - **Complejidad**: Media (requirió integración externa: Canvas + PIL, lógica de escalado dinámico).
 - **Lección aprendida**: Iterar sobre el diseño arquitectónico (Tkinter → Canvas) permite mayor flexibilidad estética en juegos y apps. Usar IA para validar medidas técnicas (píxeles exactos) es eficiente para optimizar espacios UI cuando los recursos son limitados o pequeños. El equilibrio entre perfección visual absoluta (esquinas con toggle) vs funcionalidad aceptable debe decidirse según el MVP del proyecto.
+
+-----------------------------------------------------------------------------------------
+
+## CT-005: Implementación del Sistema de Lectura de Input (leer_input)
+- **ID**: CT-005
+- **Descripción**: Refactorización centralizada de la lógica de entrada de usuario para permitir la coexistencia entre comandos críticos (como "stats") y el flujo principal del juego sin interferencias.
+- **Severidad**: MEDIA
+- **Razón**: Complejidad de integración arquitectónica vs impacto funcional positivo.
+- **Impacto**: Habilita comando "stats" sin bloqueos en inputs originales (derecha/izquierda, sí/no) tras implementación de nuevas funciones.
+- **Precondiciones**: Sistema base con lógica de "stats" definida, pero acoplada a entradas input() directas, y panel UI funcional con decisiones de nodo predefinidas.
+- **Pasos**:
+   1.Identificar colisión entre comandos del juego (stats) y flujos de navegación (inputs originales).
+   2.Detectar limitación sintáctica al intentar leer input sin afectar el flujo de decisión principal.
+   3.Consultar IA (Copilot) para refactorizar la lectura hacia una función centralizada leer_input().
+   4.Reemplazar todas las llamadas a input() simples por la nueva función encapsulada.
+   5.Validar ejecución del comando "stats" en cada posible nodo de decisión.
+   6.Verificar que los paths se redireccionen correctamente y retornen a la decisión inicial sin bloqueos.
+- **Resultado actual**: La lógica original ha sido centralizada; el comando stats ahora puede ejecutarse en cualquier punto del flujo sin detener las decisiones originales (izquierda/derecha, elecciones de combate). El sistema responde en todos los nodos probados.
+- **Resultado esperado**: Un flujo de input unificado donde la lectura sea neutral respecto al contexto (no interfiere con navegación) y permita extensibilidad para futuras funcionalidades sin riesgo de romper paths existentes.
+- **Fundamentación técnica**: El input() nativo en Python tenía una restricción de alcance (scope) que limitaba su uso concurrente con las funciones del juego, forzando un redimensionamiento o bloqueos no deseados. La solución requirió encapsular la lectura para aislar el estado de entrada globalmente.
+- **Solución implementada**: Se definió la función leer_input() como punto único de entrada (Singleton-like), sustituyendo las llamadas dispersas. Se implementó control estricto para no capturar entradas del jugador en momentos donde el juego requiere navegación fluida.
+- **Estado**: Completed / Validated.
+- **Notas**: Caso crítico de refactorización impulsado por IA. La limitación original fue sintáctica (acoplamiento de input y lógica), lo cual Copilot ayudó a resolver al proponer la centralización cuando las pruebas manuales no encontraban el patrón óptimo. Se realizaron pruebas de regresión exhaustivas: se probó el comando "stats" en cada nodo del árbol de decisiones para asegurar que ningún path quedaba bloqueado por la nueva función.
+- **Complejidad**: Media (Refactorización sin ruptura funcional).
+- **Lección aprendida**: Cuando una función simple (input) empieza a colisionar con nuevas necesidades (como stats), refactorizar hacia una API centralizada es más escalable que parchear. La IA fue vital para proponer la abstracción técnica en el momento exacto de la limitación sintáctica, permitiendo avanzar sin bloqueos previos.
+- **Función creada**: 
+
+   def leer_input(prompt, personaje):
+      while True:
+         valor = pedir_input().strip().lower()
+         if valor in ["stats", "st", "stat"]:
+            mostrar_stats(personaje)
+            continue
+         separador()
+         return valor
