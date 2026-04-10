@@ -151,6 +151,9 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 - **ID**: CT-005
 - **Descripción**: Refactorización centralizada de la lógica de entrada de usuario para permitir la coexistencia entre comandos críticos (como "stats") y el flujo principal del juego sin interferencias.
 - **Severidad**: MEDIA
+   Razón: Complejidad de integración arquitectónica vs impacto funcional positivo.
+   Impacto: Elimina bloqueos en inputs originales (derecha/izquierda, sí/no) tras implementación de nuevas funciones.
+   Reproducibilidad: Alta al detectar la limitación sintáctica del input() nativo en nodos críticos.
 - **Razón**: Complejidad de integración arquitectónica vs impacto funcional positivo.
 - **Impacto**: Habilita comando "stats" sin bloqueos en inputs originales (derecha/izquierda, sí/no) tras implementación de nuevas funciones.
 - **Precondiciones**: Sistema base con lógica de "stats" definida, pero acoplada a entradas input() directas, y panel UI funcional con decisiones de nodo predefinidas.
@@ -169,8 +172,7 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 - **Notas**: Caso crítico de refactorización impulsado por IA. La limitación original fue sintáctica (acoplamiento de input y lógica), lo cual Copilot ayudó a resolver al proponer la centralización cuando las pruebas manuales no encontraban el patrón óptimo. Se realizaron pruebas de regresión exhaustivas: se probó el comando "stats" en cada nodo del árbol de decisiones para asegurar que ningún path quedaba bloqueado por la nueva función.
 - **Complejidad**: Media (Refactorización sin ruptura funcional).
 - **Lección aprendida**: Cuando una función simple (input) empieza a colisionar con nuevas necesidades (como stats), refactorizar hacia una API centralizada es más escalable que parchear. La IA fue vital para proponer la abstracción técnica en el momento exacto de la limitación sintáctica, permitiendo avanzar sin bloqueos previos.
-- **Función creada**: 
-
+- **Codigo implementado**: 
    def leer_input(prompt, personaje):
       while True:
          valor = pedir_input().strip().lower()
@@ -179,3 +181,42 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
             continue
          separador()
          return valor
+**La función encapsula la lectura de input, permitiendo validaciones adicionales sin afectar el flujo principal del juego. Mas adelante, se aprovechara mas esta función para implementar otros comandos críticos.**
+
+-------------------------------------------------------------------------
+
+## CT-006: Implementación de Sistema de Flavor Text Aleatorio
+- **ID**: CT-006
+- **Descripción**: Integración de la función susurros_aleatorios en nodos críticos para generar contenido narrativo dinámico y evitar repetición constante, añadiendo profundidad al lore sin sobrecargar el código.
+- **Severidad**: MEDIA
+   Razón: Impacto directo en la experiencia inmersiva (Flavor) y uso de módulos matemáticos (random).
+   Impacto: Diversificación del texto narrativo según el contexto del juego.
+   Reproducibilidad: Alta (función aislada, lógica clara).
+- **Precondiciones**: Nodos de narrativa definidos, función emitir() disponible y motor de juego cargado sin errores de importación.
+- **Pasos**:
+   Iniciar escena con activación de evento que contiene la llamada a susurros_aleatorios().
+   Verificar que se emitan entre 1 y 3 líneas (según random.randint(1, 3)).
+   Cambiar entre 5-10 veces el nodo para validar variedad en las cadenas de texto devueltas.
+   Confirmar que no interfiere con el flujo principal del combate/exploración tras la emisión.
+- **Resultado actual**: La función se ejecuta correctamente, seleccionando aleatoriamente frases de la lista predefinida y emitiendo entre 1 a 3 instancias. No hay bloqueos en el hilo principal.
+- **Resultado esperado**: El sistema debe variar el contenido mostrado según el contexto (aleatoriedad efectiva) y respetar la lógica de integración con emitir(), asegurando que cada susurro tenga su impacto narrativo deseado.
+- **Fundamentación técnica**: Uso del módulo estándar random para simular variabilidad natural en la experiencia de juego, permitiendo reutilizar una pequeña base de datos de frases sin escribir texto único por cada nodo escénico.
+- **Solución implementada**: Se encapsuló la lógica dentro de una función dedicada que controla el volumen (1-3 mensajes) y la selección (random.choice), separando el contenido del texto de la lógica de ejecución del juego.
+- **Estado**: Completed / Validated.
+- **Notas**: Este caso valida una funcionalidad nueva, no un error. Se comprobó exhaustivamente que la aleatoriedad no era falsa (no se repetían los mismos susurros en cada llamada inmediata sin cambio). El uso de emitir("susurros", ...) centraliza el manejo de audio/texto visual, facilitando futuras modificaciones sin tocar el bucle principal.
+- **Complejidad**: Baja (Lógica estándar de Python), pero alto impacto narrativo.
+- **Lección aprendida**: Las funciones pequeñas encargadas de "flavor" mejoran significativamente la calidad percibida del juego con muy poco coste técnico. Es vital probar no solo si funciona, sino si la aleatoriedad real aporta variedad y no es predecible a corto plazo.
+- **Codigo implementado**:
+   def susurros_aleatorios():
+      susurros = [
+         "'dolor... poder... sangre... herida... abierta...'",
+         "'nido... manos... sostienen... abajo... abajo...'",
+         "'rey... oculto... pronunciado... no pronuncia...'",
+         "'costura... carne... torre... invertida...'",
+         ............
+      ]
+      for _ in range(random.randint(1, 3)):
+         emitir("susurros", random.choice(susurros))
+**La función encapsula la generación de susurros aleatorios, permitiendo una variedad en el contenido narrativo sin afectar el flujo principal del juego. Simple, pero efectivo.**
+
+-------------------------------------------------------------------------
