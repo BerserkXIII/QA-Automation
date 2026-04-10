@@ -12,8 +12,7 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 ## Ejemplo de Estructura de un Caso de Prueba
 - **ID**: Identificador único
 - **Descripción**: Qué se prueba
-- **Severidad**: ALTA / MEDIA / BAJA
-- **Precondiciones**: Estado inicial requerido
+- **Severidad**: ALTA / MEDIA / BAJAciones**: Estado inicial requerido
 - **Pasos**: Acciones a ejecutar
 - **Resultado actual**: Qué pasó realmente
 - **Resultado esperado**: Qué debería pasar
@@ -122,16 +121,26 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 
 -----------------------------------------------------------------------------------------------------------------------------------
 
-- **ID**: Identificador único
-- **Descripción**: Qué se prueba
-- **Severidad**: ALTA / MEDIA / BAJA
-- **Precondiciones**: Estado inicial requerido
-- **Pasos**: Acciones a ejecutar
-- **Resultado actual**: Qué pasó realmente
-- **Resultado esperado**: Qué debería pasar
-- **Causa raíz**: Que pasa realmente
-- **Solución implementada**: Que solución se implementó
-- **Estado**: Pasado/Fallido/Bloqueado
-- **Notas**: Notas adicionales
-- **Complejidad**: Lo dificil que me resulto llegar a una solución.
-- **Lección aprendida**: Que aprendí a traves de la solución o del propio caso.
+## CT-004: Rediseño de Botones con forma libre
+- **ID**: CT-004
+- **Descripción**: Migración del sistema de botones estándar a un sistema modular basado en Canvas para permitir formas libres, integración de PIL para escalado multi-monitor y activación dinámica mediante Toggle.
+- **Severidad**: MEDIA
+   -Razón: Complejidad técnica implementada vs impacto en UX (fue una iteración intencional).
+   -Impacto: Arquitectura UI más flexible e independiente del contenido (sprites intercambiables).
+   -Reproducibilidad: 100%, tras iterar y validar el ajuste de escalado.
+- **Precondiciones**: Entorno Python instalado con librería Tkinter base definida y panel UI inicial configurado en modo estándar.
+- **Pasos**: 
+   1.Iniciar entorno Tkinter y configurar paneles base.
+   2.Implementar botones estándar como prototipo inicial.
+   3.Iterar hacia el reemplazo por elementos Canvas con formas libres (free-form).
+   4.Integrar lógica de Toggle debajo del Canvas para activar desactivar acciones.
+   5.Validar ajuste automático de contenido (sprites) escalando según tamaño del canvas.
+   6.Escalar toggle dinámicamente para ajustarse al área máxima, dejando margen a tolerancia de esquinas irregulares.
+- **Resultado actual**: El sistema permite botones con formas irregulares sin romper el layout original, permitiendo contenido independiente. Se logra la activación correcta en la mayoría de áreas; algunas esquinas no tenían toggle inicialmente, pero fue considerado un bug menor aceptable para avanzar rápido con recursos visuales pendientes.
+- **Resultado esperado**: Un sistema donde las formas de los botones no estén limitadas a rectángulos rígidos, contenido (sprites) sea intercambiable y autoajustado, y el toggle respete la geometría del diseño sin deformar visualmente la interfaz crítica.
+- **Fundamentación técnica**: Tkinter nativo carecía de soporte para formas libres complejas, limitando la estética y uso de espacios irregulares. La solución implementada consistió en encapsular la lógica en Canvas (superposición) y utilizar PIL para escalar imágenes dinámicamente, evitando distorsiones en diversos monitores.
+- **Solución implementada**: Se migró el flujo usando "placeholders" temporales hasta obtener los PNG finales, se documentó a la IA para obtener medidas exactas en pixeles de los sprites pequeños (costoso pero preciso) y se vinculó el toggle con la geometría del canvas.
+- **Estado**: Implemented / Verificado.
+- **Notas**: Este caso es una mejora de arquitectura/funcionalidad, no un "bug", por lo que la Severidad fue clasificada como MEDIA para reflejar la dificultad técnica alta y el tiempo invertido en iterar hasta cubrir las necesidades (diseño vs funcionalidad). Se detectó brechas menores en esquinas irregulares, aceptadas bajo el principio de entrega incremental. La colaboración con IA fue clave para calcular aproximaciones de píxeles en imágenes pequeñas y entender la librería PIL para escalado multi-monitor sin redimensionar assets manuales.
+- **Complejidad**: Media (requirió integración externa: Canvas + PIL, lógica de escalado dinámico).
+- **Lección aprendida**: Iterar sobre el diseño arquitectónico (Tkinter → Canvas) permite mayor flexibilidad estética en juegos y apps. Usar IA para validar medidas técnicas (píxeles exactos) es eficiente para optimizar espacios UI cuando los recursos son limitados o pequeños. El equilibrio entre perfección visual absoluta (esquinas con toggle) vs funcionalidad aceptable debe decidirse según el MVP del proyecto.
