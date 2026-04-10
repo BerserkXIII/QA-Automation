@@ -7,6 +7,8 @@ Analizare los casos de prueba que he realizado para "TLDRDC", aplicando el metod
 El objetivo es analizar de manera profesional y con fundamento los casos de prueba que he realizado a lo largo del tiempo para mejorar, encontrar bugs y corregir "TLDRDC". A pesar de que he trabajado mucho con IA en "TLDRDC"", he utilizado ciertas tecnicas de QA sin saberlo, y analizar mis propias buenas/malas practicas y profesionalizarlas.
 Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto que el proceso de "TLDRDC" fue bastante caotico. Voy recuperando las estructuras y codigos que he utilizado y analizandolos sobre la marcha, con el fin de realizar este ejercicio teorico.
 
+*Fecha de ultima actualizacion:* 10/04/2026
+
 ## Ejemplo de Estructura de un Caso de Prueba
 - **ID**: Identificador único
 - **Descripción**: Qué se prueba
@@ -47,7 +49,7 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 - **Complejidad**: Baja (patrón análogo ya implementado, solo tuve que vincularlos)
 - **Lección aprendida**: Reconocer patrones similares aceleró significativamente la resolución, y al no tener mucha complejidad sintatica, me resulto sencillo identificarlos. 
 
----
+-------------------------------------------------------------------------------------------------------------------------------
 
 ### CT-002: Problema de control de comportamiento de botones
 - **ID**: CT-002
@@ -84,6 +86,7 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 - **Complejidad**: Alta. Mi falta de experiencia y la "animosidad" por implementar el sistema hicieron que confiara demasiado en la IA. A pesar de los promps precisos, los retest, las comprobaciones y las iteraciones, no se debe confiar a nivel estructural algo tan delicado a la IA. Al menos no sin conocimientos sintacticos del lenguaje/biblioteca.
 - **Lección aprendida**: Conocer y entender el comportamiento de una biblioteca es fundamental. Nunca delegar puntos criticos a la IA. Lo que creia que avanzaba en una noche, luego tarde dias en arreglarlo. E incluso llegando a hacer un backup, por acumulación de bugs. Aprendí a las malas los "limites", o usos indevido de la IA.
 
+------------------------------------------------------------------------------------------------------------------------------------
 
 ## CT-003: Error de referencia en las armas
 - **ID**: CT-003
@@ -116,4 +119,19 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 - **Complejidad**: Media. La IA hizo el trabajo pesado de navegar por el codigo en busca de los terminos mal escritos, y retestear que esten todos corregidos. El fix en sí no era dificil, eran simples cambios ortograficos, y sobretodo, mayusculas.
 - **Lección aprendida**: Las mayusculas importan, y mucho! Buscar siempre la consistencia y uniformidad en las variables. La implementacion del diccionario ayudo a mejorar el sistema de combate tambien, y permite añadir nuevas armas sin problemas. De un bug se puede sacar un feat!
 
-*Última actualización: [09/04/2026]*
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+- **ID**: Identificador único
+- **Descripción**: Qué se prueba
+- **Severidad**: ALTA / MEDIA / BAJA
+- **Precondiciones**: Estado inicial requerido
+- **Pasos**: Acciones a ejecutar
+- **Resultado actual**: Qué pasó realmente
+- **Resultado esperado**: Qué debería pasar
+- **Causa raíz**: Que pasa realmente
+- **Solución implementada**: Que solución se implementó
+- **Estado**: Pasado/Fallido/Bloqueado
+- **Notas**: Notas adicionales
+- **Complejidad**: Lo dificil que me resulto llegar a una solución.
+- **Lección aprendida**: Que aprendí a traves de la solución o del propio caso.
