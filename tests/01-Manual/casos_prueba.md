@@ -221,7 +221,7 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 
 -------------------------------------------------------------------------
 
-## CT-007: Implementación de Inputs Secretos y Narrativa Oculta
+## CT-007: Expansion de leer_input() para soportar "inputs secretos"
 - **ID**: CT-007
 - **Descripción**: Ampliación de la función central leer_input() para soportar "inputs secretos" (easter eggs) que desbloquean rutas narrativas alternativas sin interferir con el flujo principal del juego.
 - **Severidad**: MEDIA
