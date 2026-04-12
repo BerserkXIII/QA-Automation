@@ -9,21 +9,26 @@ No es estrictamente "lo mas importante", sino
 
 ## Conceptos aprendidos y apuntes interesantes
 
+```text
 SDLC (Software Development Life Cycle)
     ├─ Quality Assurance (QA)
         ├─ Quality Control (QC)
             ├─ Testing
                 ├─ Depuración
+```
 
 ## -----------------------------------------
 
-*ERROR ---> DEFECTO ---> FALLA (BUG)*
+*ERROR ---> DEFECTO ---> FALLA (BUG)* *ANOMALIA*
 - Un "error" (humano) produce "defectos" en las funciones, lo cual resulta en "fallos" visible en el software, lo cual es un "bug".
+- Un "defecto" es un error en el código que puede o no causar una falla. Un "fallo" es la manifestación visible de un defecto cuando se ejecuta el software.
+- Un "bug" es un término coloquial para referirse a cualquier defecto o falla en el software.
+- Una "anomalía" es cualquier comportamiento inesperado que no necesariamente es un error, pero que puede indicar un problema potencial.
 
 ## -----------------------------------------
-- Ley de Pareto: el 80% de los fallos son en el 20% de los casos de prueba."Una pequeña minoria de acciones genera la mayoria de los efectos."
-- Paradoja del Pesticida: Los test pieden efectividad con las repeticiones. Es necesario adaptarlos a cada caso, aun si la modificación es minima.
-- Es mas facil y barato testear en etapas tempranas de desarrollo. Los test muestran bugs, no su ausencia. No hay pruebas "perfectas" ni sistemas 100% limpios.
+- *Ley de Pareto*: el 80% de los fallos son en el 20% de los casos de prueba."Una pequeña minoria de acciones genera la mayoria de los efectos."
+- *Paradoja del Pesticida*: Los test pieden efectividad con las repeticiones. Es necesario adaptarlos a cada caso, aun si la modificación es minima.
+- **Principio de Pruebas Tempranas**: Es mas facil y barato testear en etapas tempranas de desarrollo. Los test muestran bugs, no su ausencia. No hay pruebas "perfectas" ni sistemas 100% limpios.
 
 ## -----------------------------------------
 
@@ -38,15 +43,63 @@ SDLC (Software Development Life Cycle)
 
 # 🧠 Concepto Clarificado: Regla de Bloqueo vs. Prioridad
 
-*Fecha: [09/04/2026]*
-**Situación:** Test con dependencias/prioridades.  
-**Regla:** Primero se respeta la dependencia (orden de ejecución), luego aplica prioridad entre opciones paralelas.
-**Explicación:** Una dependencia existe cuando Test B necesita que Test A se complete primero (ej: no puedes probar "combate" sin antes probar "crear personaje"). Eso es obligatorio. Pero si tienes Tests C, D, E que son independientes entre sí, entonces sí aplicas prioridad para decidir cuál ejecutar primero.
+*Fecha: [12/04/2026]*
+- **Situación:** Test con dependencias/prioridades.  
+- **Regla:** Primero se respeta la dependencia (orden de ejecución), luego aplica prioridad entre opciones paralelas.
+- **Explicación:** Una dependencia existe cuando Test B necesita que Test A se complete primero (ej: no puedes probar "combate" sin antes probar "crear personaje"). Eso es obligatorio. Pero si tienes Tests C, D, E que son independientes entre sí, entonces sí aplicas prioridad para decidir cuál ejecutar primero.
+- **Nota Personal:** No todos los tests tienen el mismo peso —los unitarios independientes son más flexibles en priorización que los de integración con dependencias forzadas. Primero, comprueba dependencias entre pruebas. Si hubiera pruebas en paralelo, aplicar prioridad.
 
-**Nota Personal:** No todos los tests tienen el mismo peso —los unitarios independientes son más flexibles en priorización que los de integración con dependencias forzadas. Primero, comprueba dependencias entre pruebas. Si hubiera pruebas en paralelo, aplicar prioridad.
+## 1. Definición y Propósito
 
+- La **Ejecución de Pruebas** bajo estrategias de dependencia prioriza la integridad del flujo lógico sobre el tiempo de ejecución. Este patrón establece una jerarquía en la planificación de pruebas:
+- Primero se garantiza la **completitud lógica** (dependencias forzadas).
+- Posteriormente se aplica **optimización de recursos** (prioridad entre casos independientes).
+- Este enfoque es crítico para evitar fallos en cascada (*failures*) que ocurran al ejecutar tests que dependen de estados previos no validados.
 
+## 2. Fundamento Técnico (Arquitectura)
 
+### Bloqueo por Dependencia (Blocking Rules)
+- Existe una dependencia estricta cuando un caso de prueba requiere la preparación o el resultado de otro previamente.
+    **Ejemplo:** Validar `Combate` (Test B) requiere que `Crear Personaje` (Test A) haya completado correctamente antes de ejecutarse.
+    **Implicación:** El Test B está bloqueado hasta que el estado del sistema se establezca tras el Test A.
+
+### Prioridad entre Opciones Paralelas (Prioritization Rules)
+- Cuando existen casos independientes (sin dependencias mutuas), la estrategia de ejecución optimiza el orden basándose en:
+    **Riesgo:** ¿Cuál falla con mayor impacto?
+    **Valor de Negocio:** ¿Cuál valida requisitos críticos primero?
+    **Tiempo:** ¿Cuál es más rápido para obtener feedback temprano?
+
+### Flexibilidad por Tipo de Prueba
+- **Unitarios:** Alta flexibilidad en priorización y ejecución independiente.
+- **Integración/Aceptación:** Baja flexibilidad; el orden suele ser obligatorio para validar flujos de integración.
+
+## 3. Relación con CTFL y Pensamiento Crítico
+
+| Dimensión | Explicación Didáctica para QA |
+| :--- | :--- |
+| **Planificación** | Definir el *Test Schedule* considerando dependencias técnicas del sistema (ej: base de datos, estado inicial). |
+| **Diseño de Pruebas** | Identificar precondiciones necesarias en los casos antes de escribirlos. |
+| **Gestión de Riesgos** | Asignar prioridad a pruebas que cubran funcionalidades críticas si los tiempos son limitados. |
+| **Trazabilidad** | Mapear qué tests requieren el estado específico resultante de otros tests para auditoría. |
+
+## 4. Ejemplo Conceptual (Flujo Lógico)
+```text
+[ESTRUCTURA DE EJECUCIÓN]
+-------------------------
+// Bloqueo Obligatorio (Fase 1)
+Test A: [Crear Personaje]    -> Estado Inicial
+      ↓ (Depende de éxito anterior)
+Test B: [Realizar Combate]    -> Requiere personaje activo
+// Paralelo Independiente (Fase 2)
+Test C: [Probar UI Botón X]   -> Sin dependencias con A/B
+Test D: [Validar Login]       -> Independiente entre sí
+Test E: [Chequear Logs]       -> Independiente entre sí
+
+[REGLA DE ÓRDEN]
+----------------
+1. Ejecutar Bloque Obligatorio (A → B) en orden secuencial estricto.
+2. Dentro del bloque independiente {C, D, E}, aplicar prioridad según riesgo/tiempo.
+```
 ----
 
 # 🧠 Lección: Complejidad Ciclomática
@@ -56,8 +109,8 @@ SDLC (Software Development Life Cycle)
 **Relación con Examen:** ISTQB (Fundamentos & Análisis)  
 
 ## 1. El Mapa: Grafo de Flujo de Control (CFG)
-Para probar bien, necesitamos saber **cómo viaja el control** por dentro del código. Esto es lo que llamamos "Caja Blanca".
-Un CFG es una representación gráfica de un programa. En el CFG, se representan los **nodos**, las **aristas** y el **camino** de ejecución.
+- Para probar bien, necesitamos saber **cómo viaja el control** por dentro del código. Esto es lo que llamamos "Caja Blanca".
+- Un CFG es una representación gráfica de un programa. En el CFG, se representan los **nodos**, las **aristas** y el **camino** de ejecución.
 
 ---
 | **Concepto** | **Descripción** | **Ejemplo** |
