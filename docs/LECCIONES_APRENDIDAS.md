@@ -127,6 +127,57 @@ Imagina que te dan una caja con dos botones (A y B) y un panel LED que enciende 
 
 ---
 
+# 🧠 Lección: Code Coverage para Pruebas Automatizadas
+
+## 1. Definición y Propósito
+
+- La **Code Coverage** es una métrica de calidad que mide qué proporción del código fuente está siendo ejecutada durante las pruebas automatizadas. Es parte fundamental de los estándares **ISTQB CTFL** para garantizar la integridad y robustez del software.
+
+- Este enfoque mejora el **rendimiento** y la **trazabilidad** del sistema, permitiendo identificar áreas no cubiertas por casos de prueba activos.
+
+## 2. Fundamento Técnico (Arquitectura)
+
+### Cobertura de Sentencia (Statement Coverage)
+- Mide qué porcentaje de las líneas de código han sido ejecutadas al menos una vez. Es la métrica más básica pero no garantiza que se prueben todas las condiciones lógicas.
+
+### Cobertura de Decisión (Decision Coverage)
+T- ambién conocida como *Branch Coverage*, mide si cada rama condicional (`if`, `else`, `case`) ha sido evaluada por Verdadero y Falso. Garantiza que la lógica de decisión sea completamente validada.
+
+### Cobertura de Condición (Condition Coverage)
+- Evalúa las condiciones dentro de los expresiones booleanas complejas (ej: `if age > 18 and status == "active"`). Asegura que cada componente lógico de una condición haya sido probado individualmente.
+
+### Cobertura de Camino (Path Coverage)
+- Analiza todas las combinaciones posibles de rutas a través del código condicional. Es la más exhaustiva pero también la más costosa en términos de esfuerzo y tiempo.
+
+### Cobertura de Negocio (Business Coverage)
+- Mide qué porcentaje de los requisitos de negocio o reglas de negocio están siendo validados por las pruebas. Es la métrica estratégica que alinea pruebas con objetivos de valor del producto.
+
+---
+
+## 3. Relación con CTFL y Pensamiento Crítico
+
+| Dimensión | Explicación Didáctica para QA |
+| :--- | :--- |
+| **Diseño de Pruebas** | Las coberturas definen los criterios de aceptación automática (Entry Criteria). |
+| **Calidad del Código** | Identifica código no probado que representa deuda técnica o riesgo oculto. |
+| **Trazabilidad** | Vincula Requisitos -> Casos -> Cobertura de Sentencia/Decisión para auditoría. |
+| **Robustez** | Reduce el riesgo de fallos críticos en áreas con 0% de cobertura activa. |
+
+---
+
+## 4. Ejemplo Conceptual (Esqueleto Lógico)
+
+```text
+[Código Fuente]
+--------------
+if user.age > 18:           # Cobertura Condición (TRUE)
+    if has_license:         # Cobertura Decisión (TRUE/FALSE necesaria)
+        process_user()      # Sentencia ejecutada
+else:                        # Cobertura Decisión (FALSE)
+    reject_registration()   # Sentencia ejecutada
+
+----------------------------------------------
+
 ## 🧠 Lección: Page Object Model (POM) para Pruebas Automatizadas
 
 # 1. Definición y Propósito
