@@ -3,9 +3,38 @@
 Esta seccion acumula parte del conocimiento clave de QA en el desarrollo de software.
 No es estrictamente "lo mas importante", sino 
 
-## Lecciónes aprendidas
+### Diaro de Aprendizaje QA - ISTQB
 
-------------------------------------------------------------------------------------------------------------------
+- En este diario documentare mi aprendizaje de ISTQB con mas frecuencia, añadiendo apuntes, temario estudiado y estado del aprendizaje. 
+
+## Conceptos aprendidos y apuntes interesantes
+
+SDLC (Software Development Life Cycle)
+    ├─ Quality Assurance (QA)
+        ├─ Quality Control (QC)
+            ├─ Testing
+                ├─ Depuración
+
+## -----------------------------------------
+
+*ERROR ---> DEFECTO ---> FALLA (BUG)*
+- Un "error" (humano) produce "defectos" en las funciones, lo cual resulta en "fallos" visible en el software, lo cual es un "bug".
+
+## -----------------------------------------
+- Ley de Pareto: el 80% de los fallos son en el 20% de los casos de prueba."Una pequeña minoria de acciones genera la mayoria de los efectos."
+- Paradoja del Pesticida: Los test pieden efectividad con las repeticiones. Es necesario adaptarlos a cada caso, aun si la modificación es minima.
+- Es mas facil y barato testear en etapas tempranas de desarrollo. Los test muestran bugs, no su ausencia. No hay pruebas "perfectas" ni sistemas 100% limpios.
+
+## -----------------------------------------
+
+**Buenas practicas y requisitos deseables**:
+- Conocimientos tecnicos, de testing y de dominio. KRS
+- Pensamiento critico, curiosidad y atención al detalle.
+- Comunicación clara y concisa.
+- Tener siempre en cuenta el negocio y el cliente final.
+- Tener muy en cuenta la ciberseguridad. 
+
+## -----------------------------------------
 
 # 🧠 Concepto Clarificado: Regla de Bloqueo vs. Prioridad
 
@@ -16,11 +45,13 @@ No es estrictamente "lo mas importante", sino
 
 **Nota Personal:** No todos los tests tienen el mismo peso —los unitarios independientes son más flexibles en priorización que los de integración con dependencias forzadas. Primero, comprueba dependencias entre pruebas. Si hubiera pruebas en paralelo, aplicar prioridad.
 
-------------------------------------------------------------------------------------------------------------------
+
+
+----
 
 # 🧠 Lección: Complejidad Ciclomática
 
-**Fecha:** 10/04/2026  
+*Fecha: [10/04/2026]*  
 **Categoría:** QA Avanzado / White Box Testing  
 **Relación con Examen:** ISTQB (Fundamentos & Análisis)  
 
@@ -51,7 +82,7 @@ Aunque existen fórmulas complejas con aristas y nodos ($V_G = E - N + 2$), la r
 
 # 🧠 Lección: Caja Blanca vs Gris vs Negra - Diferencias Clave
 
-**Fecha:** 11/04/2026  
+*Fecha: [11/04/2026]*  
 **Categoría:** Fundamentos de Testing 
 
 ## 🎭 Definición Visual (Acceso al Código)
@@ -108,7 +139,7 @@ Imagina que te dan una caja con dos botones (A y B) y un panel LED que enciende 
 - **Ejemplo ISTQB:** "Diseñar casos para lograr 100% cobertura de ramas en una función con IF/ELSE".
 - **Clave:** Conoces el código, necesitas cubrir todas las rutas.
 
-## 🧠 Mi Reflexión Personal
+## Mi Reflexión Personal
 
 **Lo que entendí hoy:**  
 - No hay "mejor" técnica, depende de *qué quiero probar* y *quién lo hace*.  
@@ -129,10 +160,12 @@ Imagina que te dan una caja con dos botones (A y B) y un panel LED que enciende 
 
 # 🧠 Lección: Code Coverage para Pruebas Automatizadas
 
+*Fecha: [12/04/2026]*  
+**Categoría:** Fundamentos de Testing 
+
 ## 1. Definición y Propósito
 
 - La **Code Coverage** es una métrica de calidad que mide qué proporción del código fuente está siendo ejecutada durante las pruebas automatizadas. Es parte fundamental de los estándares **ISTQB CTFL** para garantizar la integridad y robustez del software.
-
 - Este enfoque mejora el **rendimiento** y la **trazabilidad** del sistema, permitiendo identificar áreas no cubiertas por casos de prueba activos.
 
 ## 2. Fundamento Técnico (Arquitectura)
@@ -141,7 +174,7 @@ Imagina que te dan una caja con dos botones (A y B) y un panel LED que enciende 
 - Mide qué porcentaje de las líneas de código han sido ejecutadas al menos una vez. Es la métrica más básica pero no garantiza que se prueben todas las condiciones lógicas.
 
 ### Cobertura de Decisión (Decision Coverage)
-T- ambién conocida como *Branch Coverage*, mide si cada rama condicional (`if`, `else`, `case`) ha sido evaluada por Verdadero y Falso. Garantiza que la lógica de decisión sea completamente validada.
+- También conocida como *Branch Coverage*, mide si cada rama condicional (`if`, `else`, `case`) ha sido evaluada por Verdadero y Falso. Garantiza que la lógica de decisión sea completamente validada.
 
 ### Cobertura de Condición (Condition Coverage)
 - Evalúa las condiciones dentro de los expresiones booleanas complejas (ej: `if age > 18 and status == "active"`). Asegura que cada componente lógico de una condición haya sido probado individualmente.
@@ -155,7 +188,6 @@ T- ambién conocida como *Branch Coverage*, mide si cada rama condicional (`if`,
 ---
 
 ## 3. Relación con CTFL y Pensamiento Crítico
-
 | Dimensión | Explicación Didáctica para QA |
 | :--- | :--- |
 | **Diseño de Pruebas** | Las coberturas definen los criterios de aceptación automática (Entry Criteria). |
@@ -163,10 +195,7 @@ T- ambién conocida como *Branch Coverage*, mide si cada rama condicional (`if`,
 | **Trazabilidad** | Vincula Requisitos -> Casos -> Cobertura de Sentencia/Decisión para auditoría. |
 | **Robustez** | Reduce el riesgo de fallos críticos en áreas con 0% de cobertura activa. |
 
----
-
 ## 4. Ejemplo Conceptual (Esqueleto Lógico)
-
 ```text
 [Código Fuente]
 --------------
@@ -175,35 +204,29 @@ if user.age > 18:           # Cobertura Condición (TRUE)
         process_user()      # Sentencia ejecutada
 else:                        # Cobertura Decisión (FALSE)
     reject_registration()   # Sentencia ejecutada
-
-----------------------------------------------
+```
+---
 
 ## 🧠 Lección: Page Object Model (POM) para Pruebas Automatizadas
 
+*Fecha: [12/04/2026]*  
+**Categoría:** Fundamentos Avanzados de Testing (Not yet)
+
 # 1. Definición y Propósito
-
 - El **Page Object Model (POM)** es un patrón de diseño de prueba, reconocido por el estándar **ISTQB**, que promueve la separación entre:
-
 - La **representación** de los elementos de una página/pantalla.
 - El **comportamiento** o acción a ejecutar sobre esos elementos.
-
 - Este enfoque mejora el **rendimiento** y la **trazabilidad** del sistema, permitiendo mantener la estructura de la aplicación encapsulada dentro de clases específicas para cada página.
 
 ## 2. Fundamento Técnico (Arquitectura)
-
 ### Encapsulamiento
 - La ubicación, los IDs y los métodos de interacción se agrupan en una clase única (ej: `LoginPage`). Un cambio en la UI solo requiere modificar esa clase, sin afectar todo el script de prueba.
-
 ### Reutilización
 - Los elementos de la página no se replican repetidamente; son referenciados por su nombre lógico dentro del framework de prueba.
-
 ### Independencia
 - El caso de prueba (lógica) no depende de la estructura interna del código de la aplicación, lo cual reduce el acoplamiento y mejora la robustez ante cambios menores.
 
----
-
 ## 3. Relación con CTFL y Pensamiento Crítico
-
 | Dimensión | Explicación Didáctica para QA |
 | :--- | :--- |
 | **Diseño de Pruebas** | El POM es un modelo de alto nivel que demuestra cómo estructurar pruebas complejas (Sistemas). |
@@ -212,7 +235,6 @@ else:                        # Cobertura Decisión (FALSE)
 | **Robustez** | Mitiga el riesgo de fragilidad (tests que fallan por cambios menores en la app). |
 
 ## 4. Ejemplo Conceptual (Esqueleto Lógico)
-
 ```text
 [CLASE: PaginaLogin]
 ---------------------
@@ -222,5 +244,5 @@ else:                        # Cobertura Decisión (FALSE)
 
 + ingresar_credenciales(email)   # Método de interacción
 + validar_error_generado()       # Método de validación
-
+```
 
