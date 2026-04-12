@@ -125,5 +125,51 @@ Imagina que te dan una caja con dos botones (A y B) y un panel LED que enciende 
 2. Identificar qué tipo sería un examen ISTQB según el prompt.  
 3. No confundir "Caja Gris" con "Blanca total" —eso es una trampa común.
 
+---
+
+## 🧠 Lección: Page Object Model (POM) para Pruebas Automatizadas
+
+# 1. Definición y Propósito
+
+- El **Page Object Model (POM)** es un patrón de diseño de prueba, reconocido por el estándar **ISTQB**, que promueve la separación entre:
+
+- La **representación** de los elementos de una página/pantalla.
+- El **comportamiento** o acción a ejecutar sobre esos elementos.
+
+- Este enfoque mejora el **rendimiento** y la **trazabilidad** del sistema, permitiendo mantener la estructura de la aplicación encapsulada dentro de clases específicas para cada página.
+
+## 2. Fundamento Técnico (Arquitectura)
+
+### Encapsulamiento
+- La ubicación, los IDs y los métodos de interacción se agrupan en una clase única (ej: `LoginPage`). Un cambio en la UI solo requiere modificar esa clase, sin afectar todo el script de prueba.
+
+### Reutilización
+- Los elementos de la página no se replican repetidamente; son referenciados por su nombre lógico dentro del framework de prueba.
+
+### Independencia
+- El caso de prueba (lógica) no depende de la estructura interna del código de la aplicación, lo cual reduce el acoplamiento y mejora la robustez ante cambios menores.
+
+---
+
+## 3. Relación con CTFL y Pensamiento Crítico
+
+| Dimensión | Explicación Didáctica para QA |
+| :--- | :--- |
+| **Diseño de Pruebas** | El POM es un modelo de alto nivel que demuestra cómo estructurar pruebas complejas (Sistemas). |
+| **Calidad del Código** | Reduce la duplicación de código (*DRY*), clave para métricas de calidad. |
+| **Trazabilidad** | Permite rastrear claramente qué elementos de UI están siendo probados en cada caso, vinculando Requisito -> Caso -> Elemento UI. |
+| **Robustez** | Mitiga el riesgo de fragilidad (tests que fallan por cambios menores en la app). |
+
+## 4. Ejemplo Conceptual (Esqueleto Lógico)
+
+```text
+[CLASE: PaginaLogin]
+---------------------
++ loginEmail = 'Input Email'       # Elemento
++ loginPassword = 'Input Pass'    # Elemento
++ botonesCargar = 'Button Login'  # Acción
+
++ ingresar_credenciales(email)   # Método de interacción
++ validar_error_generado()       # Método de validación
 
 
