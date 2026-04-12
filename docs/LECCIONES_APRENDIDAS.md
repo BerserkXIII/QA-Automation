@@ -1,7 +1,7 @@
 # Lecciones Aprendidas
 
 Esta seccion acumula parte del conocimiento clave de QA en el desarrollo de software.
-No es estrictamente "lo mas importante", sino 
+No es estrictamente "lo mas importante", sino lo mas util para mi aprendizaje personal.
 
 ### Diaro de Aprendizaje QA - ISTQB
 
