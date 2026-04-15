@@ -263,3 +263,40 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
         return False
     else:
         sys.exit()
+
+---------------------------------------------------------------------------
+
+## CT-008: Implementación del sistema de doble hilo (PiJ/PoJ)
+
+- **ID**: CT-008
+- **Descripción**: Diseño e implementación de un sistema de doble hilo para separar la lógica del juego (PoJ: Parser-Output-Juego) de la entrada del jugador (PiJ: Parser-Input-Jugador), evitando condiciones de carrera y garantizando que el jugador no pueda interactuar mientras el juego está narrando.
+- **Severidad**: ALTA
+  - Razón: Sin este sistema, el juego con UI de Tkinter sería injugable: el hilo principal se bloquea y la ventana deja de responder.
+  - Impacto: Afecta a la totalidad del flujo del juego, desde el menú inicial hasta cada turno de combate.
+  - Reproducibilidad: 100% reproducible al iniciar una partida nueva, donde el texto de introducción es suficientemente largo para provocar el solapamiento.
+- **Precondiciones**:
+  - UI de Tkinter implementada con panel de texto (PoJ) y Entry de input (PiJ).
+  - Juego con al menos un texto narrativo largo al inicio (intro de partida nueva).
+- **Pasos**:
+  1. Iniciar el juego con una partida nueva.
+  2. Observar el texto de introducción narrándose en el panel de texto.
+  3. Mientras el texto se está escribiendo, introducir texto en el parser (Entry) y pulsar Enter.
+  4. Observar si el input se mezcla visualmente con el texto del juego.
+  5. Observar si el input se procesa de inmediato, se acumula, o queda bloqueado.
+  6. Tras implementar el bloqueo: repetir los pasos 2-3 y verificar que la Entry permanece desactivada mientras el juego narra.
+  7. Verificar que los botones de combate también quedan bloqueados durante la narración.
+- **Resultado actual (fase 1 — cola)**:
+  - Los inputs no se pierden, pero se acumulan en la cola durante la narración.
+  - Al terminar el texto, todos los inputs acumulados se procesan de golpe, generando acciones no intencionadas.
+  - El problema técnico estaba resuelto, pero el comportamiento para el jugador era confuso e incontrolable.
+- **Resultado actual (fase 2 — bloqueo)**:
+  - La Entry del parser queda desactivada mientras `_ocupado = True` (PoJ narrando).
+  - Los botones de combate también quedan bloqueados, ya que son análogos al parser (envían comandos al mismo sistema).
+  - Al terminar la narración, el sistema desbloquea ambos canales de input simultáneamente.
+- **Resultado esperado**: El jugador no puede interactuar (ni por parser ni por botones) mientras el juego está narrando. Al terminar la narración, el input se habilita limpiamente, sin acumulación de entradas previas.
+- **Causa raíz**: Al usar Tkinter con `input()` nativo en el mismo hilo, el event loop de Tkinter se bloquea y la UI deja de responder. Separar en dos hilos resuelve la responsividad, pero sin sincronización adicional ambos hilos compiten por los mismos canales de entrada: condición de carrera entre PiJ y PoJ.
+- **Solución implementada**: Sistema `_Bridge` basado en `threading.Event`: el hilo del juego llama a `_bridge.esperar()` que bloquea ese hilo hasta recibir el input del jugador. El hilo de Tkinter, al detectar Enter en la Entry, llama a `_bridge.recibir(texto)` para desbloquearlo. La `cola_mensajes` (deque thread-safe) transporta los mensajes del juego hacia la UI. El flag `_ocupado` en la Vista bloquea Entry y botones mientras el typewriter está activo, impidiendo inputs cruzados.
+- **Estado**: Implemented / Validated.
+- **Notas**: Fue la feature más grande del proyecto, tardé casi un día completo en planearla e implementarla con Copilot. El problema se detectó en la fase de planning: al preguntar cómo se comportaría el juego mezclando inputs de botones y parser, fue Copilot quien propuso el sistema de hilos. La decisión de centralizar en un único punto de sincronización (`_Bridge`) la saqué de `aplicar_evento()`, una función análoga de gameplay que ya centralizaba efectos. La cola fue la primera solución implementada y funcionó técnicamente, pero al ver que acumulaba y soltaba inputs de golpe, decidí cortar por lo sano con el bloqueo, que era más limpio y no rompía nada.
+- **Complejidad**: Alta. Sin conocimiento sintáctico propio del modelo de hilos de Python ni de Tkinter, la implementación dependió casi totalmente del planning con IA. A pesar de eso, el razonamiento del problema (qué debía pasar, qué no debía pasar, por qué la cola no era suficiente) fue propio.
+- **Lección aprendida**: Una solución puede ser correcta técnicamente y aun así incorrecta para el usuario. La cola no perdía ningún dato, pero rompía el contrato implícito con el jugador: "si el juego habla, yo espero". Cuando una solución técnica choca con la expectativa del usuario, la solución correcta no es la más elegante en código, sino la que respeta ese contrato. Además, entendí los conceptos de condición de carrera, sincronización de hilos e inputs cruzados, no de forma teórica, sino porque los viví y los tuve que resolver.
