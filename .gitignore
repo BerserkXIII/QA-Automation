@@ -25,3 +25,6 @@ venv/
 
 # Caches del navegador 
 .cache/
+
+# Archivos de configuración de IDEs
+ListadoCasosPrueba.md

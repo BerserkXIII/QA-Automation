@@ -300,3 +300,54 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 - **Notas**: Fue la feature más grande del proyecto, tardé casi un día completo en planearla e implementarla con Copilot. El problema se detectó en la fase de planning: al preguntar cómo se comportaría el juego mezclando inputs de botones y parser, fue Copilot quien propuso el sistema de hilos. La decisión de centralizar en un único punto de sincronización (`_Bridge`) la saqué de `aplicar_evento()`, una función análoga de gameplay que ya centralizaba efectos. La cola fue la primera solución implementada y funcionó técnicamente, pero al ver que acumulaba y soltaba inputs de golpe, decidí cortar por lo sano con el bloqueo, que era más limpio y no rompía nada.
 - **Complejidad**: Alta. Sin conocimiento sintáctico propio del modelo de hilos de Python ni de Tkinter, la implementación dependió casi totalmente del planning con IA. A pesar de eso, el razonamiento del problema (qué debía pasar, qué no debía pasar, por qué la cola no era suficiente) fue propio.
 - **Lección aprendida**: Una solución puede ser correcta técnicamente y aun así incorrecta para el usuario. La cola no perdía ningún dato, pero rompía el contrato implícito con el jugador: "si el juego habla, yo espero". Cuando una solución técnica choca con la expectativa del usuario, la solución correcta no es la más elegante en código, sino la que respeta ese contrato. Además, entendí los conceptos de condición de carrera, sincronización de hilos e inputs cruzados, no de forma teórica, sino porque los viví y los tuve que resolver.
+
+---------------------------------------------------------------------------------
+
+## CT-009: Botones de combate activos fuera del contexto de combate
+
+- **ID**: CT-009
+- **Descripción**: Los botones del panel de combate (armas, poción, stances) permanecían activos durante la exploración y cualquier contexto donde el juego esperaba un input . Pulsarlos enviaba el comando igualmente, el juego lo recibía y respondía "no es una opción válida", generando un bucle inútil, sin consecuencias reales pero sin ningún sentido funcional.
+- **Severidad**: BAJA
+  - Razón: El sistema de hilos (CT-008) absorbía los inputs sin acumularlos ni romper el estado. No había corrupción de datos.
+  - Impacto: Loop sin sentido visible en el PoJ. Experiencia confusa para el jugador si spameaba botones fuera de combate.
+  - Reproducibilidad: 100% — cualquier click en botón de combate fuera de combate reproducía el comportamiento.
+- **Precondiciones**:
+  - Sistema de doble hilo implementado (CT-008).
+  - Panel de botones de combate visible/accesible fuera del bucle de combate.
+- **Pasos**:
+  1. Iniciar partida y pasar a fase de exploración (fuera de combate).
+  2. Observar que los botones del panel de combate siguen activos.
+  3. Pulsar cualquier botón de combate (ej. botón "daga").
+  4. Observar que el PoJ muestra "no es una opción válida".
+  5. Repetir — el juego sigue respondiendo igual, indefinidamente.
+- **Resultado actual**: El botón envía su comando vía `_enviar_comando()`, el hilo juego lo recibe, evalúa que no corresponde al contexto actual y devuelve mensaje de opción inválida. El juego no se rompe pero responde a inputs sin sentido.
+- **Resultado esperado**: Los botones del panel de combate deben estar inactivos (bloqueados) fuera del bucle de combate. Ningún click debe generar respuesta del juego en ese contexto.
+- **Causa raíz**: El panel de botones se diseñó con foco en el comportamiento dentro de combate. No se implementó ningún guard de contexto: los botones estaban siempre activos independientemente del estado del juego.
+- **Solución implementada**: Implementación del flag `_en_combate` (inicializado a `False` en el constructor de la Vista) que se activa al inicio del bucle de combate mediante `opciones_combate()` y se desactiva al salir. Los botones consultan este flag antes de procesar el click: si `_en_combate = False`, el evento se ignora sin enviar ningún comando. Se reutilizó el patrón de bloqueo por flag ya establecido en CT-008 (`_ocupado`).
+- **Estado**: Fixed.
+- **Notas**: Detectado durante el playtest posterior a CT-008. El sistema de hilos mantenía el juego estable, lo que hizo que no fuera urgente, pero sí evidente como comportamiento inútil. La solución fue sencilla una vez identificado el patrón: un flag de contexto que desactiva todo el panel de botones fuera de combate. La dificultad no estuvo en la implementación, sino en identificar dónde colocar ese guard sin romper la lógica existente.
+- **Complejidad**: Baja-Media. Sin conocimiento profundo del sistema de botones, pero conociendo la arquitectura de flags del proyecto, fue aplicar un patrón conocido a un problema nuevo. La dificultad estuvo en saber dónde colocar el guard, no en la lógica a seguir.
+- **Lección aprendida**: Cuando no tienes claro si una solución es la óptima, aplicar un patrón que ya conoces y que encaja con la arquitectura existente es una decisión válida. No siempre hay que buscar la solución ideal: conocer el sistema y saber qué quieres que ocurra es suficiente para avanzar con criterio.
+- **Código implementado**:
+  ```python
+  # En el constructor de Vista — inicialización
+  self._en_combate = False  # Flag: True cuando estamos EN combate. Botones solo activos durante combate.
+
+  # Guard en stances (dentro de _select_stance)
+  def _select_stance(cual):
+      if not self._en_combate:
+          return  # Ignorar clicks fuera de combate
+      ...
+
+  # Guard en armas (dentro de opciones_combate, al re-asignar bindings)
+  cmd = (lambda a: lambda: self._enviar_comando(a) if self._en_combate else None)(arma)
+  cvs.bind("<Button-1>", lambda e, c=cmd: c())
+
+  # Guard en poción
+  cvs_pocion.bind("<Button-1>", lambda e: self._enviar_comando("p") if self._en_combate else None)
+
+  # Activación al inicio de combate (en opciones_combate)
+  estaba_inactivo = not self._en_combate
+  self._en_combate = True
+  ```
+
