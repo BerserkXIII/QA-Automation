@@ -351,3 +351,129 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
   self._en_combate = True
   ```
 
+-------------------------------------------------------------------------
+
+## CT-010: Implementación del sistema de sprites en los botones de combate
+
+- **ID**: CT-010
+- **Descripción**: Migración del sistema de botones de combate de texto plano 
+  ("arma1", "bloqueo", "pociones: 0-10") a sprites PNG de pixel art, vinculados 
+  dinámicamente al diccionario del personaje reactivo. El proceso incluyó 
+  una iteración fallida que produjo una "versión muerta" del código, 
+  requirió backup, estudio de la arquitectura y modularización para poder 
+  aislar y resolver los fallos.
+- **Severidad**: ALTA
+  - Razón: Complejidad técnica alta (integración PIL + Canvas + sistema reactivo) 
+    vs impacto en UX directo. No era un bug previo, sino una mejora planificada.
+  - Impacto: Sin sprites, los botones mostraban nombres de texto sin información 
+    visual. La UI resultaba funcional pero sin identidad visual.
+  - Reproducibilidad: N/A (implementación nueva, no bug).
+- **Precondiciones**:
+  - Panel de botones Canvas implementado y funcional (CT-004).
+  - Flag _en_combate operativo (CT-009).
+  - Assets PNG de armas, stances y pociones disponibles en assets/btns/ e 
+    images/Botones/.
+  - ImagenManager disponible en modules/ui_imagen_manager.py.
+- **Pasos**:
+  1. Definir _cargar_imgs_btns() como función modular separada, invocada 
+     una sola vez en el constructor de Vista.
+  2. Cargar sprites de armas dinámicamente desde images/Botones/armas/*.png 
+     via imagen_manager.cargar_imagen().
+  3. Registrar cada sprite bajo dos claves en _IMG_BTN: nombre de fichero 
+     y display name (vía _ARMAS_DISPLAY_A_SPRITE).
+  4. Cargar sprites de pociones (0-10) y stances por separado desde sus 
+     subcarpetas.
+  5. Vincular los sprites a los botones Canvas en opciones_combate(), 
+     que se llama cada turno y refleja el estado actual del personaje.
+  6. Validar que los sprites aparecen al conseguir armas, que el contador 
+     de pociones se actualiza, que las stances muestran su estado activo/inactivo y que los stats de personaje se reflejan correctamente.
+- **Resultado actual (fase iteración fallida)**: Al intentar implementar los 
+  sockets de imagen dentro de los botones Canvas sin modularización, el sistema 
+  acumuló bugs de tamaño de panel, orden de grid y prioridades de layout 
+  que superaron el alcance de conocimiento disponible. Se llegó a una versión 
+  muerta irrecuperable.
+- **Resultado actual (tras fix)**: Los sprites aparecen correctamente en los 
+  botones al entrar en combate. Las armas muestran su imagen al conseguirlas, 
+  el botón de poción refleja el número correcto (0-10 sprites distintos), 
+  y las stances muestran estado activo/inactivo. Todo vinculado al dict 
+  de personaje reactivo.
+- **Resultado esperado**: Sistema de sprites estable, modular, con fallback 
+  silencioso (si un PNG no existe, el botón muestra texto sin romper la UI).
+- **Causa raíz**: Falta de conocimiento técnico de Tkinter Canvas + PIL + 
+  gestión de grid para delegar correctamente a la IA. Sin entender la 
+  estructura, las instrucciones a la IA eran imprecisas y producían soluciones 
+  que introducían bugs acumulativos fuera del alcance de depuración manual.
+- **Solución implementada**: Backup del estado funcional previo. Estudio de 
+  la arquitectura existente y de la documentación de Tkinter/PIL consultando 
+  múltiples IAs (Copilot, Claude, GPT, Qwen). Modularización de _cargar_imgs_btns() 
+  como función aislada para poder acceder y depurar las partes específicas 
+  (tamaños, orden de grid, prioridades de panel). Prueba y error iterativa 
+  hasta encontrar la configuración correcta. Fallback silencioso en ImagenManager 
+  (retorna None sin excepción si el PNG no existe).
+- **Estado**: Implemented / Validated.
+- **Notas**: Primera iteración que produjo una "versión muerta" documentada 
+  del proyecto. Derivó en un aprendizaje estructural sobre los límites de 
+  delegar a la IA sin conocimiento técnico propio, análogo al de CT-002 
+  pero con una resolución más metódica gracias a la experiencia acumulada.
+- **Complejidad**: Alta. Semana completa de prueba y error. Requirió consulta 
+  simultánea de múltiples IAs y documentación oficial de Tkinter y PIL.
+- **Lección aprendida**: Cuando la IA no puede resolver un problema con 
+  prompts genéricos, la solución no es iterar más prompts sino entender 
+  primero el sistema. Pedir documentación explicatoria específica de tu 
+  propio código a la IA, antes de pedir soluciones, cambia completamente 
+  la calidad de las respuestas. Modularizar funciones concretas no solo 
+  mejora el código, sino que hace los problemas depurables.
+- **Código implementado**:
+  ```python
+  # 1. CARGA ÚNICA al construir la Vista
+  #    _IMG_BTN es un dict global que actúa como caché de sprites
+  _IMG_BTN = {}
+
+  def _cargar_imgs_btns(self):
+      base = pathlib.Path(resource_path("assets/btns"))
+
+      # Cargar sprites estáticos (stances, huir, navegación...)
+      for nombre in ["bloquear", "esquivar", "huir", ...]:
+          img = imagen_manager.cargar_imagen(str(base / f"{nombre}.png"))
+          if img:
+              _IMG_BTN[nombre] = img  # Fallback silencioso: si no existe, no se carga
+
+      # Cargar sprites de armas dinámicamente desde carpeta
+      for archivo_png in armas_base.glob("*.png"):
+          img = imagen_manager.cargar_imagen(str(archivo_png))
+          if img:
+              _IMG_BTN[archivo_png.stem] = img
+              # Registrar también bajo el display name del juego
+              for display_name, sprite_name in _ARMAS_DISPLAY_A_SPRITE.items():
+                  if sprite_name == archivo_png.stem:
+                      _IMG_BTN[display_name] = img
+
+      # Cargar sprites de pociones (0pociones.png ... 10pociones.png)
+      for i in range(11):
+          img = imagen_manager.cargar_imagen(str(pociones_base / f"{i}pociones.png"))
+          if img:
+              _IMG_BTN[f"{i}pociones"] = img
+
+  # 2. VINCULACIÓN al dict de personaje reactivo
+  #    opciones_combate() se llama cada turno y refresca los botones
+  #    con el estado actual de personaje["armas"] y personaje["pociones"]
+  def opciones_combate(self, armas, pociones, ...):
+      self._en_combate = True
+      for i, arma in enumerate(slots):
+          img = _IMG_BTN.get(arma)           # Sprite del arma si existe
+          img_fondo = _IMG_BTN.get("fondo_armas")  # Fondo compartido
+          self._redibujar_boton(cvs, arma, tiene, imagen=img, imagen_fondo=img_fondo)
+
+      # Poción: sprite según número actual (0-10)
+      img_pocion = _IMG_BTN.get(f"{pociones}pociones")
+      self._redibujar_boton(cvs_pocion, "", tiene_pocion, imagen=img_pocion)
+
+  # 3. FALLBACK en ImagenManager
+  #    Si el PNG no existe, retorna None sin lanzar excepción
+  def cargar_imagen(self, ruta, tamaño=None):
+      if not os.path.exists(ruta):
+          return None  # El botón mostrará texto en lugar de sprite
+      ...
+  ```
+
+  -------------------------------------------------------------------------
