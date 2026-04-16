@@ -102,7 +102,7 @@ Test E: [Chequear Logs]       -> Independiente entre sí
 ```
 ----
 
-# 🧠 Lección: Complejidad Ciclomática
+## 🧠 Lección: Complejidad Ciclomática
 
 *Fecha: [10/04/2026]*  
 **Categoría:** QA Avanzado / White Box Testing  
@@ -133,7 +133,7 @@ Aunque existen fórmulas complejas con aristas y nodos ($V_G = E - N + 2$), la r
 
 ------------------------------------------------------------------------------------------------------------------
 
-# 🧠 Lección: Caja Blanca vs Gris vs Negra - Diferencias Clave
+## 🧠 Lección: Caja Blanca vs Gris vs Negra - Diferencias Clave
 
 *Fecha: [11/04/2026]*  
 **Categoría:** Fundamentos de Testing 
@@ -211,7 +211,7 @@ Imagina que te dan una caja con dos botones (A y B) y un panel LED que enciende 
 
 ---
 
-# 🧠 Lección: Code Coverage para Pruebas Automatizadas
+## 🧠 Lección: Code Coverage para Pruebas Automatizadas
 
 *Fecha: [12/04/2026]*  
 **Categoría:** Fundamentos de Testing 
@@ -299,3 +299,42 @@ else:                        # Cobertura Decisión (FALSE)
 + validar_error_generado()       # Método de validación
 ```
 
+---
+
+###### 🧠 Lección: Un flag con dos responsabilidades es un bug esperando pasar
+
+*Fecha: [16/04/2026]*  
+**Categoría:** QA Práctico / Diseño de Software  
+**Relacionado con:** CT-009, CT-011 (TLDRDC)
+
+Cuando el flag `_en_combate` controlaba tanto *bloquear botones fuera de combate* como *decidir si actualizar sprites*, parecía correcto.
+Pero en cuanto se corrigió el primer bug (CT-009), el segundo apareció (CT-011): los sprites dejaron de actualizarse fuera de combate porque el mismo flag los bloqueaba.
+**Lección:** Un solo flag que hace dos cosas distintas es una deuda técnica. Cuando se parchea uno de sus efectos, el otro se rompe.  
+**Solución aplicada:** Separar responsabilidades: `_en_combate` solo bloquea interacción, los callbacks reactivos (`root.after(0, cb)`) actualizan la UI independientemente del estado de combate.  
+**Señal de alerta en testing:** Si al corregir un bug aparece otro en un área aparentemente no relacionada, sospecha de un flag o variable con doble responsabilidad.
+
+---
+
+###### 🧠 Lección: Antes de delegar a la IA, necesitas saber qué le estás pidiendo
+
+*Fecha: [16/04/2026]*  
+**Categoría:** QA Práctico / Trabajo con IA  
+**Relacionado con:** CT-010 (TLDRDC)
+Al implementar sprites en botones Canvas (CT-010), se intentó delegar la implementación completa a la IA sin conocer Tkinter/PIL. El resultado fue código que no funcionaba, referencias incorrectas a la arquitectura real del proyecto, y tiempo perdido depurando suposiciones.
+**Lección:** La IA puede ayudarte a implementar, pero no puede sustituir el conocimiento técnico mínimo del dominio.  
+**Lo que funcionó:** Hacer backup, estudiar la API de PIL/ImageTk mínima necesaria, luego sí usar la IA para estructurar el código con ese contexto.  
+**Aplicación a testing:** Lo mismo vale para automatización. Antes de pedir a la IA un test de Selenium, conviene entender qué hace `find_element` y cuándo puede fallar. De lo contrario, el test pasa en local y falla en CI sin saber por qué.
+
+---
+
+###### 🧠 Lección: Thread-safety en UI — nunca toques widgets desde un hilo secundario
+
+*Fecha: [16/04/2026]*  
+**Categoría:** QA Técnico / Arquitectura Tkinter  
+**Relacionado con:** CT-011 (TLDRDC)
+TLDRDC usa dos hilos: el hilo Tkinter (UI) y un hilo worker (lógica del juego). Actualizar un widget directamente desde el hilo worker causa condiciones de carrera silenciosas — la UI no lanza error, simplemente no se actualiza o se corrompe en momentos aleatorios.
+**Solución aplicada:** `root.after(0, callback)` programa la ejecución del callback en el hilo de Tkinter, garantizando que la UI solo se toca desde el hilo correcto.  
+**Patrón general:** En cualquier framework con event loop (Tkinter, Qt, Android, etc.) la regla es la misma — la UI solo se modifica desde el hilo principal.  
+**Implicación para testing:** Un bug de threading puede no reproducirse en cada ejecución. Si un test de UI falla de forma intermitente sin causa aparente, el primer sospechoso es una actualización de widget fuera del hilo principal.
+
+---

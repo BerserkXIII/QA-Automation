@@ -9,10 +9,9 @@ Este espacio documenta mi camino hacia la certificación **ISTQB-CTFL**, desde l
 No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evidencia de estudio y práctica real, y tiene el proposito de documentar mi aprendizaje y estructurar debidamente un repositorio.
 
 ## 📚 Qué encontrarás aquí
-- **[Ver Apuntes ISTQB](./NOTAS-ISTQB.md)**: Teoría actual sobre testing manual y conceptos. Actualizado con aprendizaje diario.
+- **[Lecciones Aprendidas](./docs/LECCIONES_APRENDIDAS.md)**: Teoría, apuntes ISTQB y conceptos. Los apuntes están integrados aquí junto con el diario de aprendizaje.
 - **[Casos de Prueba Manuales](./tests/01-Manual/casos_prueba.md)**: Ejercicios prácticos de validación y verificación.
 - **[Reportes de Defectos](./tests/03-Reportes/template_defecto.md)**: Template y ejemplos de cómo documentar bugs correctamente.
-- **[Lecciones Aprendidas](./docs/LECCIONES_APRENDIDAS.md)**: Mi journey y los errores que he superado.
 
 ## 🛠️ Herramientas en mi camino
 |          Categoría               |        Estado Actual                    |
@@ -35,10 +34,10 @@ No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evide
 
 ## 💡 Cómo leer este portafolio
 1.  Comienza en [README.md](./README.md) para ver el panorama general.
-2.  Revisa [NOTAS-ISTQB.md](./NOTAS-ISTQB.md) para los detalles técnicos y teóricos.
-3.  Mira [casos_prueba.md](./tests/01-Manual/casos_prueba.md) para ver cómo estructuro mis pruebas.
+2.  Revisa [LECCIONES_APRENDIDAS.md](./docs/LECCIONES_APRENDIDAS.md) para los detalles técnicos y teóricos.
+3.  Mira [casos_prueba.md](./tests/01-Manual/casos_prueba.md) para ver cómo estructuro mis pruebas (11 CTs documentados a la fecha).
 4.  Consulta el [ROADMAP](./docs/ROADMAP.md) para entender mi plan de aprendizaje.
 
 ---
-*Última actualización: [07/04/2026]* 
+*Última actualización: [16/04/2026]* 
 *Mantenido por: Salva_BsK*

@@ -12,10 +12,10 @@
 - [ ] Documentar el proceso
 
 ## Mes 5+: IA en Testing
-- [ ] Investigar prompts para casos de prueba
+- [x] Investigar prompts para casos de prueba *(en progreso activo — agente QAi operativo)*
 - [ ] Proyecto piloto con IA
 - [ ] Documentar resultados
 
 ---
 
-*Última actualización: [07/04/2026]*
+*Última actualización: [16/04/2026]*
