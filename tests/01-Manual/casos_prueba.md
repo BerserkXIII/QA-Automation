@@ -477,3 +477,107 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
   ```
 
   -------------------------------------------------------------------------
+
+## CT-011: Sprites de botones no se actualizaban fuera del contexto de combate
+
+- **ID**: CT-011
+- **Descripción**: Tras implementar los sprites en los botones (CT-010), los cambios
+  en armas, pociones y stats del personaje no se reflejaban visualmente de forma
+  inmediata. Los sprites solo se sincronizaban en dos momentos: al usar el comando
+  "stats" en el parser, o al entrar en combate (cuando opciones_combate()
+  reactivaba los botones). Durante la exploración, el panel de botones mostraba
+  información desactualizada.
+- **Severidad**: MEDIA
+  - Razón: No rompía el juego, pero la UI mostraba estado incorrecto (armas
+    conseguidas sin sprite, pociones con número erróneo, stats desactualizados).
+  - Impacto: Desincronización visual constante durante exploración. El jugador
+    no tenía feedback inmediato de los cambios en su personaje.
+  - Reproducibilidad: 100% — cualquier evento que modificara armas, pociones
+    o stats fuera de combate lo reproducía.
+- **Precondiciones**:
+  - CT-009 implementado (`_en_combate` bloqueando clicks fuera de combate).
+  - CT-010 implementado (sprites vinculados a botones Canvas).
+  - Clase `Personaje` reactiva (`modules/reactive.py`) operativa.
+- **Pasos**:
+  1. Iniciar partida y pasar a exploración.
+  2. Activar un evento que otorgue un arma o poción, o modifique stats.
+  3. Observar el panel de botones tras el evento.
+  4. Verificar que el sprite del arma/poción no se actualiza.
+  5. Usar comando "stats" en el parser → sprites se actualizan.
+  6. Repetir pasos 2-3: confirmar que sin "stats" no hay actualización inmediata.
+- **Resultado actual**: Los botones solo refrescaban su estado visual al
+  llamar explícitamente a `opciones_combate()` (inicio de combate) o al
+  ejecutar el comando "stats". Cualquier cambio intermedio en exploración
+  quedaba sin reflejar hasta uno de esos dos eventos.
+- **Resultado esperado**: Cualquier cambio en armas, pociones o stats del
+  personaje debe reflejarse inmediatamente en el panel de botones,
+  independientemente de si se está en combate o no.
+- **Causa raíz**: `_en_combate` mezclaba dos responsabilidades: bloquear
+  clicks Y controlar las actualizaciones visuales. Los callbacks de sprite
+  pasaban por `opciones_combate()`, que estaba ligada al contexto de combate,
+  por lo que fuera de él no se ejecutaban. No existía un mecanismo de
+  actualización visual independiente del estado de combate.
+- **Solución implementada**: Separación de responsabilidades mediante el
+  sistema reactivo de `Personaje`. Se implementó `_registrar_observadores_personaje()`
+  con watchers por campo (vida, armadura, fuerza, destreza, pociones, armas).
+  Cada watcher usa `root.after(0, callback)` para encolar la actualización
+  en el main thread de Tkinter de forma thread-safe. Los callbacks
+  (`_on_pociones_cambio`, `_on_armas_cambio`, `actualizar_hud`) modifican
+  directamente los atributos del Canvas y llaman a `cvs._dibujar()`,
+  sin consultar `_en_combate` en ningún momento. Así los sprites se
+  actualizan siempre que cambia el dato, y los clicks siguen bloqueados
+  por `_en_combate` de forma independiente.
+- **Estado**: Fixed.
+- **Notas**: Detectado durante el playtest posterior a CT-010, al verificar que los
+  sprites recién implementados no se actualizaban en exploración. La solución generaliza
+  el patrón `root.after()` ya usado puntualmente en `aplicar_evento()` a todos los
+  campos del personaje (stats, pociones, armas). Relacionado con CT-009: ambos casos
+  nacen del mismo flag `_en_combate`, pero resuelven responsabilidades distintas —
+  CT-009 bloquea los clicks, CT-011 desacopla las actualizaciones visuales de ese
+  bloqueo. `_registrar_observadores_personaje()` también ejecuta los callbacks
+  iniciales al registrarse, sincronizando los sprites al cargar una partida guardada.
+- **Complejidad**: Media-Alta. La solución conceptual (flags reactivos por campo)
+  era clara, pero la implementación requería entender la separación de hilos
+  (`root.after` para thread-safety) y la arquitectura de `Personaje` reactivo,
+  que no dominaba del todo en ese momento.
+- **Lección aprendida**: Saber qué quieres que ocurra no es suficiente si no
+  entiendes dónde colocarlo en la arquitectura. Un flag que hace dos cosas a la
+  vez (bloquear clicks + controlar updates visuales) es una señal de que hay dos
+  responsabilidades mezcladas. Separarlas es el fix correcto, aunque en el momento
+  cueste identificarlo.
+- **Código implementado**:
+  ```python
+  # Watchers registrados una sola vez al arrancar (main thread)
+  # Cada campo dispara su callback vía root.after() → thread-safe
+  personaje_global.observe("vida",
+      lambda v: self.root.after(0, lambda: self.actualizar_hud(personaje_global)))
+  personaje_global.observe("pociones",
+      lambda v: self.root.after(0, lambda: self._on_pociones_cambio(v)))
+  personaje_global.observe("armas",
+      lambda v: self.root.after(0, lambda: self._on_armas_cambio()))
+
+  # Callback de pociones: actualiza sprite sin consultar _en_combate
+  def _on_pociones_cambio(self, num_pociones):
+      cvs = self._botones_acciones["pocion"]
+      cvs._btn_imagen = f"{min(max(num_pociones, 0), 10)}pociones"
+      cvs._btn_activo = (num_pociones > 0)
+      cvs._dibujar()  # Solo visual — click sigue bloqueado por _en_combate
+
+  # Callback de armas: actualiza sprites del inventario sin consultar _en_combate
+  def _on_armas_cambio(self):
+      armas = personaje_global.get("armas", {})
+      slots = (list(armas.keys()) + ["----"] * 3)[:3]
+      for i, arma_nombre in enumerate(slots):
+          cvs = self._botones_armas[f'arma{i+1}']
+          cvs._btn_imagen = _IMG_BTN.get(arma_nombre)  # None si no existe → fallback texto
+          cvs._btn_activo = (arma_nombre != "----")
+          cvs._dibujar()
+
+  # Sincronización inicial al cargar partida: ejecutar callbacks con estado actual
+  self.actualizar_hud(personaje_global)
+  self._on_pociones_cambio(personaje_global.get("pociones", 0))
+  self._on_armas_cambio()
+  ```
+
+  -------------------------------------------------------------------------
+
