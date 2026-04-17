@@ -3,8 +3,8 @@
 ## Mes 1-2: CTFL + Git
 - [x] Estudiar todas las secciones del CTFL
 - [x] Hacer exámenes de práctica
-- [ ] Aprender ramas de Git
-- [ ] Hacer pull requests
+- [x] Aprender ramas de Git (Repo Prácticas-GitHub)
+- [x] Hacer pull requests (Repo Prácticas-GitHub)
 
 ## Mes 3-4: Automatización Básica
 - [ ] Instalar Selenium + Python

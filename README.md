@@ -10,7 +10,7 @@ No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evide
 
 ## 📚 Qué encontrarás aquí
 - **[Lecciones Aprendidas](./docs/LECCIONES_APRENDIDAS.md)**: Teoría, apuntes ISTQB y conceptos. Los apuntes están integrados aquí junto con el diario de aprendizaje.
-- **[Casos de Prueba Manuales](./tests/01-Manual/casos_prueba.md)**: Ejercicios prácticos de validación y verificación.
+- **[Análisis QA — TLDRDC](./tests/01-Manual/Analisis_QA_TLDRDC.md)**: Ejercicios prácticos de validación y verificación sobre TLDRDC.
 - **[Reportes de Defectos](./tests/03-Reportes/template_defecto.md)**: Template y ejemplos de cómo documentar bugs correctamente.
 
 ## 🛠️ Herramientas en mi camino
@@ -35,7 +35,7 @@ No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evide
 ## 💡 Cómo leer este portafolio
 1.  Comienza en [README.md](./README.md) para ver el panorama general.
 2.  Revisa [LECCIONES_APRENDIDAS.md](./docs/LECCIONES_APRENDIDAS.md) para los detalles técnicos y teóricos.
-3.  Mira [casos_prueba.md](./tests/01-Manual/casos_prueba.md) para ver cómo estructuro mis pruebas (11 CTs documentados a la fecha).
+3.  Mira [Analisis_QA_TLDRDC.md](./tests/01-Manual/Analisis_QA_TLDRDC.md) para ver cómo estructuro mis pruebas (11 CTs documentados a la fecha).
 4.  Consulta el [ROADMAP](./docs/ROADMAP.md) para entender mi plan de aprendizaje.
 
 ---
