@@ -338,3 +338,147 @@ TLDRDC usa dos hilos: el hilo Tkinter (UI) y un hilo worker (lógica del juego).
 **Implicación para testing:** Un bug de threading puede no reproducirse en cada ejecución. Si un test de UI falla de forma intermitente sin causa aparente, el primer sospechoso es una actualización de widget fuera del hilo principal.
 
 ---
+
+## 🧠 Lección: Estándares ISO y su rol en el marco ISTQB
+
+*Fecha: [17/04/2026]*  
+**Categoría:** Fundamentos Teóricos / Estándares Internacionales  
+**Relación con Examen:** ISTQB CTFL — Vocabulario, Técnicas y Procesos
+
+Los estándares no son "burocracia": son el respaldo normativo detrás de cada definición del glosario ISTQB. Saber qué estándar define qué término ayuda a responder preguntas de examen con precisión y a entender *por qué* las cosas se definen así.
+
+---
+
+## 1. Mapa de Estándares — "¿Qué ISO hace qué?"
+
+| Estándar | Función dentro de ISTQB |
+| :--- | :--- |
+| **ISO 25010** | Características de calidad del *producto*: funcionalidad, fiabilidad, usabilidad, mantenibilidad, portabilidad... |
+| **ISO 24765** | Vocabulario general de ingeniería de software. Es el "diccionario maestro" detrás de términos como *defecto*, *anomalía*, *criterios de aceptación*. |
+| **ISO 29119** | Estándares específicos de pruebas: procesos, técnicas y pruebas de IA. Dividido en partes (ver sección 2). |
+| **ISO 20246** | Revisiones de productos de trabajo: inspecciones, revisiones formales, guiadas y basadas en roles. |
+| **ISO 9241** | Ergonomía e interacción humano-sistema. Base para términos de usabilidad y diseño centrado en la persona. |
+| **ISO 26262** | Seguridad funcional en automoción. Define el NISFA (Nivel de Integridad de Seguridad Física del Automóvil). |
+| **NIST.IR.7298** | Seguridad de la información. Fuente para términos de ciberseguridad: ataque, ingeniería social, descifrado. |
+| **IEEE 1028** | Revisiones técnicas formales. Complementa a ISO 20246 en ese ámbito. |
+| **CMMI** | Mejora de procesos. Referencia para modelos de madurez y análisis de causa raíz. |
+
+---
+
+## 2. ISO 29119 — Todas las partes relevantes
+
+```text
+ISO 29119
+    ├─ Parte 1 — Conceptos y definiciones
+    │       (condición de prueba, plan de prueba, prueba basada en riesgo,
+    │        criterios de entrada/salida, nivel de prueba)
+    ├─ Parte 2 — Procesos de prueba
+    │       (gestión del proceso, planificación, monitoreo y control,
+    │        diseño, implementación, ejecución, cierre)
+    ├─ Parte 3 — Documentación de prueba
+    │       (estructura del plan de prueba, especificación de casos,
+    │        informe de progreso, informe de resumen)
+    ├─ Parte 4 — Técnicas de diseño
+    │       (prueba de a pares, flujo de control, partición de equivalencia,
+    │        valores límite, tabla de decisión)
+    └─ Parte 11 — Pruebas de Inteligencia Artificial
+            (ejemplos adversos, pruebas metamórficas, entornos virtuales,
+             sesgo de datos, robustez del modelo)
+```
+
+> **Nota para el examen:** Las partes 1, 4 y 11 son las más citadas en preguntas de vocabulario y técnicas. La parte 2 aparece en preguntas sobre *procesos* y la parte 3 en preguntas sobre *documentación*.
+
+---
+
+## 3. Términos clave agrupados por estándar
+
+### ISO 25010 — Calidad del producto
+- **Adecuación funcional**: grado en que el sistema satisface necesidades explícitas e implícitas.
+- **Fiabilidad**: capacidad de funcionar correctamente bajo condiciones específicas durante un período.
+- **Disponibilidad**: grado en que el sistema está operativo y accesible cuando se requiere.
+- **Adaptabilidad**: grado en que puede adaptarse a distintos entornos, hardware o plataformas.
+- **Instalabilidad**: capacidad de ser instalado o desinstalado correctamente en un entorno específico.
+- **Interoperabilidad**: grado en que dos sistemas pueden intercambiar y usar información.
+- **Mantenibilidad**: facilidad de modificación por quien tiene ese rol previsto.
+- **Portabilidad**: capacidad de transferirse de un entorno a otro.
+- **No repudio**: capacidad de demostrar que una acción o evento ha tenido lugar y no puede ser negado.
+- **Responsabilidad** *(Accountability)*: capacidad de rastrear acciones hasta la entidad que las realizó.
+- **Capacidad de recuperación**: grado en que el sistema reanuda operación normal tras una interrupción.
+
+### ISO 24765 — Vocabulario general (diccionario maestro)
+- **Defecto**: imperfección o deficiencia en un producto de trabajo que puede causar que el producto no cumpla sus requisitos.
+- **Anomalía**: cualquier condición que se desvía de lo esperado; no necesariamente un error confirmado.
+- **Análisis de impacto**: evaluación de los cambios identificados en la documentación, código y pruebas.
+- **Aseguramiento de la calidad (QA)**: proceso orientado a garantizar que los productos cumplan los requisitos de calidad.
+- **Bitácora de prueba**: registro cronológico de los detalles relevantes de la ejecución de pruebas.
+- **Criterios de aceptación**: condiciones que deben cumplirse para que un componente sea aceptado.
+- **Gestión de la calidad**: actividades coordinadas para dirigir y controlar la calidad en una organización.
+- **Ciclo de vida del software (SDLC)**: marco que describe los procesos, actividades y tareas del desarrollo de software.
+
+### ISO 29119 — Procesos y técnicas de prueba
+- **Condición de prueba**: aspecto de un componente susceptible de ser probado.
+- **Criterios de entrada/salida**: condiciones que deben cumplirse para iniciar o finalizar una actividad de prueba.
+- **Resultado esperado**: comportamiento previsto observable basado en la base de prueba.
+- **Prueba metamórfica**: técnica donde entradas y resultados se extrapolan de un caso previo que ha pasado.
+- **Relación metamórfica**: descripción de cómo un cambio en la entrada afecta al cambio en la salida esperada.
+
+### ISO 20246 — Revisiones
+- **Inspección**: revisión formal con roles definidos y métricas para identificar defectos.
+- **Revisión guiada**: el autor guía al equipo a través del producto para identificar problemas.
+- **Revisión técnica**: realizada por expertos para examinar calidad y discrepancias respecto a estándares.
+- **Revisión ad hoc**: revisión informal sin preparación previa ni proceso estructurado.
+- **Revisión basada en roles**: los revisores adoptan perspectivas específicas (usuario, mantenedor, etc.).
+- **Revisión basada en escenarios**: los revisores siguen escenarios de uso definidos para guiar su análisis.
+
+### ISO 9241 — Usabilidad y experiencia de usuario
+- **Usabilidad**: grado en que un sistema puede ser usado por usuarios específicos para lograr objetivos con eficacia, eficiencia y satisfacción.
+- **Efectividad**: precisión y completitud con que los usuarios logran objetivos específicos.
+- **Diseño centrado en la persona**: proceso de desarrollo que coloca al usuario en el centro de las decisiones.
+- **Experiencia de usuario (UX)**: percepciones y respuestas del usuario resultantes del uso de un sistema.
+
+### NIST.IR.7298 — Seguridad
+- **Ingeniería social**: intento de engañar a alguien para que revele información confidencial.
+- **Ataque contra la seguridad**: intento de acceso no autorizado o compromiso de la integridad del sistema.
+- **Descifrado de contraseña**: proceso de recuperar contraseñas desde datos almacenados o transmitidos.
+
+---
+
+## 4. Estándares de nicho — para no confundirlos
+
+| Estándar | Ámbito específico | Trampa de examen |
+| :--- | :--- | :--- |
+| **ISO 26262** | Seguridad funcional *en automoción* (NISFA) | No confundir con **IEC 61508**, que es la versión genérica de seguridad funcional para sistemas eléctricos. ISO 26262 *deriva* de IEC 61508 pero es específica para vehículos. |
+| **CMMI** | Modelos de madurez y mejora de procesos | No es un estándar ISO/IEC. Es un modelo de referencia para medir y mejorar la capacidad de los procesos de una organización. |
+
+---
+
+## 5. Tabla de autoevaluación rápida
+
+| Pregunta | Respuesta |
+| :--- | :--- |
+| ¿Qué estándar define "Mantenibilidad" y "Adecuación Funcional"? | **ISO 25010** |
+| ¿Qué estándar se cita para Revisión Formal e Inspección? | **ISO 20246** |
+| ¿De dónde vienen "Defecto", "Anomalía" y "Análisis de Impacto"? | **ISO 24765** |
+| ¿Qué parte de ISO 29119 cubre pruebas de IA? | **ISO 29119-11** |
+| ¿Qué parte de ISO 29119 cubre documentación de prueba? | **ISO 29119-3** |
+| ¿Qué estándar es base para pruebas de UX/usabilidad? | **ISO 9241-210** |
+| ¿Qué estándar define el NISFA (automoción)? | **ISO 26262** |
+| ¿Qué diferencia hay entre ISO 26262 e IEC 61508? | ISO 26262 es la versión automotriz de IEC 61508 (genérica) |
+| ¿Qué estándar cubre "criterios de aceptación" y "ciclo de vida"? | **ISO 24765** |
+| ¿Qué estándar cubre "revisión ad hoc" y "revisión basada en roles"? | **ISO 20246** |
+
+---
+
+## Mi Reflexión Personal
+
+**Lo que entendí:**
+- Antes veía los estándares como nombres de fondo. Ahora entiendo que cada definición del glosario ISTQB tiene una *fuente normativa* concreta, y conocerla ayuda a no confundir términos en el examen.
+- ISO 24765 es el vocabulario base; ISO 25010 habla de *qué* calidad medir; ISO 29119 habla de *cómo* probar.
+- ISO 9241 es el que respalda todo lo relacionado con UX — si una pregunta menciona "satisfacción del usuario" o "diseño centrado en la persona", el estándar detrás es este.
+
+**Trampas frecuentes en examen:**
+- Confundir **ISO 20246 con IEEE 1028**: ambos hablan de revisiones, pero el glosario ISTQB usa ISO 20246 para inspecciones y revisiones formales. IEEE 1028 es específico de la *revisión técnica* formal.
+- Confundir **ISO 26262 con IEC 61508**: la segunda es la base genérica, la primera es su derivado automotriz. En preguntas de automoción, la respuesta correcta es ISO 26262.
+- Confundir **ISO 24765 con ISO 25010** para términos como "calidad": ISO 24765 define el *vocabulario* general; ISO 25010 define las *características* medibles de calidad del producto.
+
+---
