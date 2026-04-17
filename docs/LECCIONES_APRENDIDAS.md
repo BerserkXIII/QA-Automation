@@ -344,13 +344,9 @@ TLDRDC usa dos hilos: el hilo Tkinter (UI) y un hilo worker (lógica del juego).
 *Fecha: [17/04/2026]*  
 **Categoría:** Fundamentos Teóricos / Estándares Internacionales  
 **Relación con Examen:** ISTQB CTFL — Vocabulario, Técnicas y Procesos
-
 Los estándares no son "burocracia": son el respaldo normativo detrás de cada definición del glosario ISTQB. Saber qué estándar define qué término ayuda a responder preguntas de examen con precisión y a entender *por qué* las cosas se definen así.
 
----
-
 ## 1. Mapa de Estándares — "¿Qué ISO hace qué?"
-
 | Estándar | Función dentro de ISTQB |
 | :--- | :--- |
 | **ISO 25010** | Características de calidad del *producto*: funcionalidad, fiabilidad, usabilidad, mantenibilidad, portabilidad... |
@@ -366,7 +362,6 @@ Los estándares no son "burocracia": son el respaldo normativo detrás de cada d
 ---
 
 ## 2. ISO 29119 — Todas las partes relevantes
-
 ```text
 ISO 29119
     ├─ Parte 1 — Conceptos y definiciones
@@ -414,14 +409,12 @@ ISO 29119
 - **Criterios de aceptación**: condiciones que deben cumplirse para que un componente sea aceptado.
 - **Gestión de la calidad**: actividades coordinadas para dirigir y controlar la calidad en una organización.
 - **Ciclo de vida del software (SDLC)**: marco que describe los procesos, actividades y tareas del desarrollo de software.
-
 ### ISO 29119 — Procesos y técnicas de prueba
 - **Condición de prueba**: aspecto de un componente susceptible de ser probado.
 - **Criterios de entrada/salida**: condiciones que deben cumplirse para iniciar o finalizar una actividad de prueba.
 - **Resultado esperado**: comportamiento previsto observable basado en la base de prueba.
 - **Prueba metamórfica**: técnica donde entradas y resultados se extrapolan de un caso previo que ha pasado.
 - **Relación metamórfica**: descripción de cómo un cambio en la entrada afecta al cambio en la salida esperada.
-
 ### ISO 20246 — Revisiones
 - **Inspección**: revisión formal con roles definidos y métricas para identificar defectos.
 - **Revisión guiada**: el autor guía al equipo a través del producto para identificar problemas.
@@ -429,13 +422,11 @@ ISO 29119
 - **Revisión ad hoc**: revisión informal sin preparación previa ni proceso estructurado.
 - **Revisión basada en roles**: los revisores adoptan perspectivas específicas (usuario, mantenedor, etc.).
 - **Revisión basada en escenarios**: los revisores siguen escenarios de uso definidos para guiar su análisis.
-
 ### ISO 9241 — Usabilidad y experiencia de usuario
 - **Usabilidad**: grado en que un sistema puede ser usado por usuarios específicos para lograr objetivos con eficacia, eficiencia y satisfacción.
 - **Efectividad**: precisión y completitud con que los usuarios logran objetivos específicos.
 - **Diseño centrado en la persona**: proceso de desarrollo que coloca al usuario en el centro de las decisiones.
 - **Experiencia de usuario (UX)**: percepciones y respuestas del usuario resultantes del uso de un sistema.
-
 ### NIST.IR.7298 — Seguridad
 - **Ingeniería social**: intento de engañar a alguien para que revele información confidencial.
 - **Ataque contra la seguridad**: intento de acceso no autorizado o compromiso de la integridad del sistema.
@@ -444,7 +435,6 @@ ISO 29119
 ---
 
 ## 4. Estándares de nicho — para no confundirlos
-
 | Estándar | Ámbito específico | Trampa de examen |
 | :--- | :--- | :--- |
 | **ISO 26262** | Seguridad funcional *en automoción* (NISFA) | No confundir con **IEC 61508**, que es la versión genérica de seguridad funcional para sistemas eléctricos. ISO 26262 *deriva* de IEC 61508 pero es específica para vehículos. |
@@ -470,15 +460,126 @@ ISO 29119
 ---
 
 ## Mi Reflexión Personal
-
 **Lo que entendí:**
 - Antes veía los estándares como nombres de fondo. Ahora entiendo que cada definición del glosario ISTQB tiene una *fuente normativa* concreta, y conocerla ayuda a no confundir términos en el examen.
 - ISO 24765 es el vocabulario base; ISO 25010 habla de *qué* calidad medir; ISO 29119 habla de *cómo* probar.
 - ISO 9241 es el que respalda todo lo relacionado con UX — si una pregunta menciona "satisfacción del usuario" o "diseño centrado en la persona", el estándar detrás es este.
-
 **Trampas frecuentes en examen:**
 - Confundir **ISO 20246 con IEEE 1028**: ambos hablan de revisiones, pero el glosario ISTQB usa ISO 20246 para inspecciones y revisiones formales. IEEE 1028 es específico de la *revisión técnica* formal.
 - Confundir **ISO 26262 con IEC 61508**: la segunda es la base genérica, la primera es su derivado automotriz. En preguntas de automoción, la respuesta correcta es ISO 26262.
 - Confundir **ISO 24765 con ISO 25010** para términos como "calidad": ISO 24765 define el *vocabulario* general; ISO 25010 define las *características* medibles de calidad del producto.
+
+-------------------------------------------------------------------------------
+
+## 🧠 Lección: Primer análisis de Complejidad Ciclomática sobre TLDRDC con Lizard
+
+*Fecha: [17/04/2026]*  
+**Categoría:** QA Práctico / Análisis Estático  
+**Herramienta:** Lizard (analizador estático de complejidad)  
+**Relación con Examen:** ISTQB CTFL — White Box Testing, Gestión de Riesgos
+Este fue el primer análisis real de complejidad ciclomática sobre un proyecto propio. El proceso fue completamente automático — Lizard lee el código sin ejecutarlo y sin modificarlo, y devuelve métricas por función.
+
+---
+## 1. ¿Qué mide Lizard exactamente?
+Lizard analiza el código fuente y calcula por cada función:
+| Columna | Significado |
+| :--- | :--- |
+| **NLOC** *(Non-comment Lines of Code — líneas de código sin contar comentarios)* | Tamaño real de la función |
+| **CCN** *(Cyclomatic Complexity Number — número de complejidad ciclomática)* | Cuántos caminos independientes existen dentro de la función |
+| **token** | Número de unidades sintácticas (palabras clave, operadores...) |
+| **PARAM** | Número de parámetros que recibe la función |
+| **length** | Líneas totales incluyendo comentarios y espacios |
+El número más importante para nosotros es **CCN**: indica cuántos **CT** *(Case Test — Casos de Prueba)* serían necesarios *como mínimo* para recorrer todos los caminos posibles de esa función.
+
+---
+## 2. Escala de riesgo
+| CCN | Nivel | Significado práctico |
+| :--- | :--- | :--- |
+| 1–5 | 🟢 Simple | Fácil de probar, pocas ramas |
+| 6–10 | 🟡 Moderada | Requiere atención |
+| 11–20 | 🟠 Alta | Difícil cubrir completamente |
+| +20 | 🔴 Peligrosa | Muy difícil de probar; candidata a refactorizar |
+| >50 | 🚨 Crítica | Prácticamente imposible de cubrir con pruebas manuales |
+| >100 | 💀 Monolito | Deuda técnica severa; difícil de mantener y probar |
+| >200 | ☠️ Apocalíptica | Código que probablemente necesite ser reescrito desde cero |
+
+---
+## 3. Resultados del análisis sobre TLDRDC
+
+**Resumen general:**
+- **317 funciones** analizadas en total
+- **18 warnings** (funciones con CCN > 15 o longitud > 1000 líneas)
+- **CCN promedio: 6.2** — moderado-alto para el proyecto completo
+
+**Funciones en zona de peligro (warnings reales):**
+| Función | CCN | NLOC | Interpretación |
+| :--- | :--- | :--- | :--- |
+| `_explorar_paso` | **208** | 1290 | Prácticamente todo el juego vive aquí — el monolito |
+| `resolver_eventos_post_combate` | **60** | 463 | Lógica post-combate enorme, difícil de aislar |
+| `turno_jugador` | **31** | 136 | Core del combate, alto riesgo |
+| `aplicar_evento` | **28** | 85 | Ya cubierto parcialmente con CTs existentes |
+| `enemigo_aleatorio` | **27** | 147 | Cada tipo de enemigo es una rama diferente |
+| `ejecutar_habilidad_activa` | **19** | 114 | Cada habilidad del juego es un path distinto |
+| `validar_habilidad` | **17** | 64 | Validaciones encadenadas |
+| `_planificar_efectos` | **16** | 77 | Lógica de efectos de combate |
+| `actualizar_botones_combate` | **16** | 94 | UI reactiva con muchas condiciones |
+
+---
+
+## 4. El hallazgo más importante: `_explorar_paso` con CCN 208
+Un CCN de **208** significa que, teóricamente, harían falta **208 CTs distintos** solo para cubrir todos los caminos de esa función. Eso es prácticamente imposible en testing manual.
+Pero lo que esto revela no es solo "hay muchos paths" — es la confirmación técnica de que el juego es un **monolito**: una sola función gigante que contiene la lógica de exploración, combate, eventos, narrativa, UI y estado del personaje todo junto.
+
+```text
+Monolito = una función que hace demasiadas cosas
+         = CCN artificialmente alto
+         = difícil de probar en aislamiento
+         = cuando falla, difícil saber exactamente por qué
+```
+
+Esto no significa que el código esté mal escrito en términos de lógica — significa que está organizado de una manera que complica el testing. Es una deuda técnica, no un bug.
+
+---
+
+## 5. ¿Qué hacer con esta información?
+No hay que cubrir los 208 paths de `_explorar_paso`. La estrategia práctica es:
+
+**Priorizar por riesgo real**, no por CCN máximo:
+| Prioridad | Función | Por qué |
+| :--- | :--- | :--- |
+| 🔴 Alta | `aplicar_evento` (CCN 28) | Ya hay CTs sobre ella — ampliar cobertura |
+| 🔴 Alta | `turno_jugador` (CCN 31) | Core del combate, cualquier bug aquí es crítico |
+| 🟠 Media | `ejecutar_habilidad_activa` (CCN 19) | Muchas habilidades sin CTs documentados |
+| 🟠 Media | `enemigo_aleatorio` (CCN 27) | Cada enemigo es un path — ¿se generan todos correctamente? |
+| 🟡 Baja | `_explorar_paso` (CCN 208) | Imposible cubrir completamente; enfocar en los sub-flujos conocidos |
+
+---
+
+## 6. Diferencia clave que aprendí aquí
+Antes de hacer este análisis no tenía claro que **complejidad ciclomática** y **code coverage** son dos cosas distintas que se complementan:
+
+| Concepto | Herramienta | Te dice... |
+| :--- | :--- | :--- |
+| **Complejidad ciclomática** | Lizard, Radon | Cuántos paths *existen* en el código |
+| **Code coverage** *(cobertura de código)* | coverage.py | Cuáles paths se *ejecutaron* durante una prueba |
+
+Lizard te da el mapa. Coverage te dice por dónde caminaste en el mapa.
+
+---
+
+## Mi Reflexión Personal
+**Lo más sorprendente:**  
+CCN 208 en `_explorar_paso`. Sabía que era un monolito, pero verlo en número hace que el concepto de "deuda técnica" deje de ser abstracto. "Debo" mucho más de lo que creía ^^u
+**Lo más útil:**  
+La tabla de warnings. En 10 segundos lizard me dijo dónde están las 18 funciones de mayor riesgo del proyecto — información que habría tardado horas en obtener leyendo el código manualmente.
+**Lo que cambió en mi forma de pensar los CTs:**  
+Un CT no es solo "probar que algo funciona" — es diseñar la entrada que fuerza al código a tomar un path específico. CCN me dice cuántos paths hay; mis CTs deben intentar cubrir los más críticos.
+
+**Comando usado:**
+```bash
+lizard "ruta/al/codigo" --sort cyclomatic_complexity -l python
+```
+- `--sort cyclomatic_complexity` → ordena los resultados de menor a mayor CCN
+- `-l python` → analiza solo archivos Python
 
 ---
