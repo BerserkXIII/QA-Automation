@@ -581,3 +581,80 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 
   -------------------------------------------------------------------------
 
+## CT-012: `aplicar_evento()` no procesa el resto del dict cuando `vida` llega a 0
+
+- **ID**: CT-012
+- **Descripción**: Cuando `aplicar_evento()` procesa la clave `"vida"` y el resultado
+  deja al personaje con `vida == 0`, debe llamar a `fin_derrota()` y hacer `return`
+  inmediatamente, sin procesar ninguna clave restante del dict del evento. Este caso
+  verifica que el early return ocurre correctamente y que la pantalla de game over
+  se muestra como resultado.
+- **Severidad**: CRÍTICA
+  - Razón: Si `fin_derrota()` no se llama o el `return` no detiene el procesamiento,
+    el juego continúa en estado inválido con `vida == 0`, o aplica modificadores
+    adicionales sobre un personaje muerto (ej. subir fuerza después de morir).
+  - Impacto: El jugador podría continuar jugando con 0 vida, o el estado del personaje
+    quedaría corrupto al aplicar claves posteriores al evento sobre un personaje que
+    ya debería haber sido eliminado.
+  - Reproducibilidad: BAJA — requiere llegar a un evento con daño directo, con exactamente la vida que quite ese evento.
+     Sin un modo debug o comandos de test, la única forma de llegar a esta situación es
+     acumulando daño a través de múltiples eventos o combates previos, sin control
+     sobre cuánto daño exacto se recibe ni en qué orden aparecen los eventos (bolsa
+     aleatoria). No existe actualmente un comando de debug tipo `set vida x` en el juego. Ver sección *Testabilidad*.
+- **Precondiciones**:
+  1. Partida iniciada, personaje en exploración.
+  2. `personaje["vida"] == 2` al momento de entrar en el Evento 4.
+     *(Precondición crítica — ver Testabilidad)*
+  3. `personaje["fuerza"]` entre 4 y 6 inclusive.
+  4. Sin arma `maza` en el inventario (para que la rama `fuerza 4-6` retorne
+     `{"vida": -2}` y no `{"armadura": 2}`).
+- **Pasos**:
+  1. Acumular daño hasta llegar a `vida == 2` mediante eventos o combates previos.
+  2. Aguardar o forzar la aparición del Evento 4 (figura encorvada entre cajas).
+  3. Responder `s` a "¿Te acercas?".
+  4. Responder `s` a "¿Desconfías de él?".
+  5. Responder `f` a "¿Cómo actúas?".
+  6. Verificar que `personaje["fuerza"]` está entre 4 y 6 (condición del evento).
+  7. Observar el resultado.
+- **Resultado actual**: *A verificar.* La lógica de `aplicar_evento()` tiene el
+  early return implementado (`fin_derrota(personaje); return`), pero no ha sido
+  probado de forma controlada sobre este path exacto.
+- **Resultado esperado**:
+  - `vida` pasa de 2 a 0 tras aplicar `-2`.
+  - Se muestra la pantalla de game over con el mensaje de derrota genérico.
+  - El parser queda esperando input para cerrar el juego.
+  - No se procesa ninguna clave adicional del dict de evento (no hay claves
+    adicionales en `{"vida": -2}`, pero el `return` debe igualmente ejecutarse).
+- **Causa raíz**: N/A — este CT verifica comportamiento esperado, no un defecto
+  conocido. El objetivo es confirmar que el early return de `aplicar_evento()`
+  funciona en la condición de derrota real, no solo en la lectura de código.
+- **Solución implementada**: N/A.
+- **Estado**: Pendiente de ejecución.
+- **Testabilidad**: ⚠️ BAJA.
+  Llegar a `vida == 2` de forma natural requiere acumular daño a través de múltiples
+  eventos o combates, sin control sobre cuánto daño exacto se recibe ni en qué orden
+  aparecen los eventos (bolsa aleatoria). No existe actualmente un comando de debug
+  tipo `set vida 2` en el juego.
+  El `ui_tester` (`code/ui_tester/`) cuenta con el comando `set` implementado en
+  `parser.py` (`cmd_set`), pero está desacoplado del hilo de juego y no permite
+  lanzar eventos reales. Para convertir este CT en reproducible en <1 minuto, sería
+  necesario integrar un comando `set` accesible durante la partida (vía `leer_input`
+  o consola de dev), de forma que el tester pueda establecer `vida = 2` antes de
+  activar el evento.
+  **Workaround documentado**: iniciar partida, rechazar pociones, buscar combates
+  o eventos de daño (Evento 1 cofre-corte: `-1 vida`, Evento 2 fallado → combate,
+  Evento 8 mosca → combate + posible `-2 armadura`) hasta llegar a `vida == 2`.
+  Reproducible pero costoso (~10-15 min por intento).
+- **Complejidad**: Baja (lógica directa en `aplicar_evento()`, CCN=28 pero el path
+  de derrota es lineal). La dificultad es exclusivamente de testabilidad.
+- **Lección aprendida**: Un caso de prueba puede ser conceptualmente simple pero
+  tener testabilidad baja si el sistema no permite establecer precondiciones de forma
+  controlada. La dificultad de reproducción no es un problema del caso — es un
+  indicador de deuda técnica en el sistema bajo prueba. En ISTQB esto se llama
+  *testability*: una característica de calidad del producto (ISO 25010) tan relevante
+  como la funcionalidad misma. La ausencia de un modo debug o API de test en TLDRDC
+  hace que todos los CTs que dependan de un estado inicial específico sean frágiles
+  por defecto.
+
+  -------------------------------------------------------------------------
+
