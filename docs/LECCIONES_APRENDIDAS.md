@@ -7,6 +7,7 @@ No es estrictamente "lo mas importante", sino lo mas util para mi aprendizaje pe
 
 - En este diario documentare mi aprendizaje de ISTQB con mas frecuencia, añadiendo apuntes, temario estudiado y estado del aprendizaje. 
 
+
 ## Conceptos aprendidos y apuntes interesantes
 
 ```text
@@ -359,8 +360,6 @@ Los estándares no son "burocracia": son el respaldo normativo detrás de cada d
 | **IEEE 1028** | Revisiones técnicas formales. Complementa a ISO 20246 en ese ámbito. |
 | **CMMI** | Mejora de procesos. Referencia para modelos de madurez y análisis de causa raíz. |
 
----
-
 ## 2. ISO 29119 — Todas las partes relevantes
 ```text
 ISO 29119
@@ -383,8 +382,6 @@ ISO 29119
 
 > **Nota para el examen:** Las partes 1, 4 y 11 son las más citadas en preguntas de vocabulario y técnicas. La parte 2 aparece en preguntas sobre *procesos* y la parte 3 en preguntas sobre *documentación*.
 
----
-
 ## 3. Términos clave agrupados por estándar
 
 ### ISO 25010 — Calidad del producto
@@ -399,7 +396,6 @@ ISO 29119
 - **No repudio**: capacidad de demostrar que una acción o evento ha tenido lugar y no puede ser negado.
 - **Responsabilidad** *(Accountability)*: capacidad de rastrear acciones hasta la entidad que las realizó.
 - **Capacidad de recuperación**: grado en que el sistema reanuda operación normal tras una interrupción.
-
 ### ISO 24765 — Vocabulario general (diccionario maestro)
 - **Defecto**: imperfección o deficiencia en un producto de trabajo que puede causar que el producto no cumpla sus requisitos.
 - **Anomalía**: cualquier condición que se desvía de lo esperado; no necesariamente un error confirmado.
@@ -432,15 +428,11 @@ ISO 29119
 - **Ataque contra la seguridad**: intento de acceso no autorizado o compromiso de la integridad del sistema.
 - **Descifrado de contraseña**: proceso de recuperar contraseñas desde datos almacenados o transmitidos.
 
----
-
 ## 4. Estándares de nicho — para no confundirlos
 | Estándar | Ámbito específico | Trampa de examen |
 | :--- | :--- | :--- |
 | **ISO 26262** | Seguridad funcional *en automoción* (NISFA) | No confundir con **IEC 61508**, que es la versión genérica de seguridad funcional para sistemas eléctricos. ISO 26262 *deriva* de IEC 61508 pero es específica para vehículos. |
 | **CMMI** | Modelos de madurez y mejora de procesos | No es un estándar ISO/IEC. Es un modelo de referencia para medir y mejorar la capacidad de los procesos de una organización. |
-
----
 
 ## 5. Tabla de autoevaluación rápida
 
@@ -456,8 +448,6 @@ ISO 29119
 | ¿Qué diferencia hay entre ISO 26262 e IEC 61508? | ISO 26262 es la versión automotriz de IEC 61508 (genérica) |
 | ¿Qué estándar cubre "criterios de aceptación" y "ciclo de vida"? | **ISO 24765** |
 | ¿Qué estándar cubre "revisión ad hoc" y "revisión basada en roles"? | **ISO 20246** |
-
----
 
 ## Mi Reflexión Personal
 **Lo que entendí:**
@@ -479,7 +469,6 @@ ISO 29119
 **Relación con Examen:** ISTQB CTFL — White Box Testing, Gestión de Riesgos
 Este fue el primer análisis real de complejidad ciclomática sobre un proyecto propio. El proceso fue completamente automático — Lizard lee el código sin ejecutarlo y sin modificarlo, y devuelve métricas por función.
 
----
 ## 1. ¿Qué mide Lizard exactamente?
 Lizard analiza el código fuente y calcula por cada función:
 | Columna | Significado |
@@ -491,7 +480,6 @@ Lizard analiza el código fuente y calcula por cada función:
 | **length** | Líneas totales incluyendo comentarios y espacios |
 El número más importante para nosotros es **CCN**: indica cuántos **CT** *(Case Test — Casos de Prueba)* serían necesarios *como mínimo* para recorrer todos los caminos posibles de esa función.
 
----
 ## 2. Escala de riesgo
 | CCN | Nivel | Significado práctico |
 | :--- | :--- | :--- |
@@ -503,7 +491,6 @@ El número más importante para nosotros es **CCN**: indica cuántos **CT** *(Ca
 | >100 | 💀 Monolito | Deuda técnica severa; difícil de mantener y probar |
 | >200 | ☠️ Apocalíptica | Código que probablemente necesite ser reescrito desde cero |
 
----
 ## 3. Resultados del análisis sobre TLDRDC
 
 **Resumen general:**
@@ -524,8 +511,6 @@ El número más importante para nosotros es **CCN**: indica cuántos **CT** *(Ca
 | `_planificar_efectos` | **16** | 77 | Lógica de efectos de combate |
 | `actualizar_botones_combate` | **16** | 94 | UI reactiva con muchas condiciones |
 
----
-
 ## 4. El hallazgo más importante: `_explorar_paso` con CCN 208
 Un CCN de **208** significa que, teóricamente, harían falta **208 CTs distintos** solo para cubrir todos los caminos de esa función. Eso es prácticamente imposible en testing manual.
 Pero lo que esto revela no es solo "hay muchos paths" — es la confirmación técnica de que el juego es un **monolito**: una sola función gigante que contiene la lógica de exploración, combate, eventos, narrativa, UI y estado del personaje todo junto.
@@ -539,8 +524,6 @@ Monolito = una función que hace demasiadas cosas
 
 Esto no significa que el código esté mal escrito en términos de lógica — significa que está organizado de una manera que complica el testing. Es una deuda técnica, no un bug.
 
----
-
 ## 5. ¿Qué hacer con esta información?
 No hay que cubrir los 208 paths de `_explorar_paso`. La estrategia práctica es:
 
@@ -553,8 +536,6 @@ No hay que cubrir los 208 paths de `_explorar_paso`. La estrategia práctica es:
 | 🟠 Media | `enemigo_aleatorio` (CCN 27) | Cada enemigo es un path — ¿se generan todos correctamente? |
 | 🟡 Baja | `_explorar_paso` (CCN 208) | Imposible cubrir completamente; enfocar en los sub-flujos conocidos |
 
----
-
 ## 6. Diferencia clave que aprendí aquí
 Antes de hacer este análisis no tenía claro que **complejidad ciclomática** y **code coverage** son dos cosas distintas que se complementan:
 
@@ -564,8 +545,6 @@ Antes de hacer este análisis no tenía claro que **complejidad ciclomática** y
 | **Code coverage** *(cobertura de código)* | coverage.py | Cuáles paths se *ejecutaron* durante una prueba |
 
 Lizard te da el mapa. Coverage te dice por dónde caminaste en el mapa.
-
----
 
 ## Mi Reflexión Personal
 **Lo más sorprendente:**  
@@ -583,3 +562,78 @@ lizard "ruta/al/codigo" --sort cyclomatic_complexity -l python
 - `-l python` → analiza solo archivos Python
 
 ---
+
+## 📝 Apuntes de Estudio CTFL — P.M.A.D.I.E.C. (Procesos y Actividades de Prueba)
+
+*Fecha: [22/04/2026] — Transcritos de cuaderno físico*
+
+### 1️⃣ PLANIFICACIÓN
+
+- **Definir Objetivos:**Basándose en las expectativas del usuario, buscamos objetivos claros para definir qué características se probarán y la mejor manera de hacerlo.
+- **Identificar Riesgos:** Buscamos qué posibles riesgos puedan surgir durante las siguientes fases.
+- **Establecer Estrategia:** Sabiendo objetivos y riesgos, se planifica cómo se actuará.
+- **Determinar Restricciones:** Pueden ser varias: económicas, de tiempo, tamaño de personal, software...
+**Conceptos Clave:**
+- **Criterios de Entrada →** Son las condiciones que se deben cumplir para poder empezar a probar (Ej: que el código está listo). Se define en Planificación.
+- **Criterios de Salida →** Son los matices que indican cuándo podemos probar (Ej: cobertura 100%). Se definen en Planificación pero se evalúan después.
+- **Estimación →** Tiempo, costo y personal necesarios.
+- **Trazabilidad →** Requisitos → Casos → Resultados.
+- **Plan de Prueba →** Producto Final de la fase Planificación.
+
+### 2️⃣ MONITOREO Y CONTROL
+
+- **Seguimiento del Progreso:** Con Afinamos a Objetivos.
+- **Vigilancia de Desviaciones:** Se comunica el seguimiento de la Estrategia y la Gestión de Riesgos.
+- **Control:** Si hay desviaciones, se aplican Acciones Correctivas o Ajuste de Expectativas, según el caso.
+- **Real VS Planificado:** Adhesión a Criterios Sólida.
+**Conceptos Clave:**
+- **Control →** Brazo ejecutor de Monitorizar. Aplica Acciones Correctivas o Ajuste de Expectativas.
+- **Informe de Avance →** Producto Final de esta etapa. Se produce varios veces, visto que M/C es continuo.
+
+### 3️⃣ ANÁLISIS DE PRUEBAS
+
+- **Analizar Base de Índice:** Documentación "Base de Pruebas para diseñar pruebas a través con requisitos".
+- **Identificar Datos de Prueba:** Combinamos las Bases de Prueba con los casos. Importa la Pruebas en sus versiones y test hilados esperados para concretar qué datos son importantes.
+- **Estimar:** Estimación de tiempo, costo y recursos necesarios.
+- **Definiciones de Prueba Clara:** Fijar qué es error/fallo y definiciones de Prueba para establecer criterios sólidos.
+- **Trazabilidad Bidireccional:** Relación Requisitos con Casos y con Resultados, para utr rieles definitivos.
+**Conceptos Clave:**
+- **Trazabilidad →** Durante el análisis de las Bases de Prueba, se debe determinar si los requisitos se pueden testear.
+
+### 4️⃣ DISEÑO DE PRUEBAS
+
+- **Caso Prueba Alto Nivel:** Con toda la documentación generada, podemos comenzar a definir casos, sin especificaciones concretas, pero necesarios para la correcta estructura de Pruebas.
+- **Identificar Datos de Prueba:** Combinamos las Bases de Prueba con los casos de Alto Nivel, y así se concreta qué datos son importantes.
+- **Diseñar Entorno e Infraestructura:** Con los datos de Pruebas identificados, podemos empacarlos en Frameworks y herramientas concretas.
+- **Priorizar Escenarios:** Con definidos, se preparan casos específicos, basados en Prioridades del Negocio.
+**Conceptos Clave:**
+- **Trazabilidad entre Condiciones y Casos →** Garantiza Pruebas efectivas y representativas.
+
+### 5️⃣ IMPLEMENTACIÓN
+
+- **Procedimientos y Scripts:** Se crean guiones/scripts detallados, y se prioriza el orden de ejecución para maximizar la eficiencia.
+- **Crear Suites:** Agrupar los Datos en packs lógicos.
+- **Preparar Datos:** Se transforman las Pruebas Alto Nivel en Pruebas Bajo Nivel, combinando los datos necesarios.
+- **Verificar Entorno:** Comprobación final que revisa que Infraestructura, herramientas y datos son correctos.
+- **Script:** Doc con pasos de Prueba/Calendario Ejecución: cronograma de Prueba: Pruebas Bajo Nivel / que define orden de Suites Concretos.
+
+### 6️⃣ EJECUCIÓN
+
+- **Ejecución Manual o Automática:** Se ejecutan los Suites siguiendo el Calendario y los Scripts.
+- **Computar Resultados:** Se verifica el comportamiento del software en base a lo establecido en Diseño.
+- **Registrar Anomalías e Informar Defectos:** Si hay discrepancias en el comportamiento, se documenta como Incidente, detallando pasos e impacto.
+- **Re-testing y Regresión:** Se repiten las Pruebas que fallaron (Re-testing) y se prueban áreas no modificadas para evitar efectos secundarios (Regresión).
+**Conceptos Clave:**
+- **Incidente/Defecto →** Discrepancia entre Resultado Real y Esperado.
+- **Log de Pruebas →** Reporte aclaratorio que verifica detalles de qué se ejecutó, quién y resultado (paso/fallo).
+
+### 7️⃣ COMPLECIÓN (Finalización y Cierre)
+
+- **Evaluar Criterios de Salida:** Verificar resultados y registrar si se ejecutaron Eventos, Objetivos de forma para saber si hemos probado suficiente.
+- **Test Summary:** Generar reporte final que resuma actividades y resultados, para que los interesados valoren el proyecto.
+- **Finalizar/Archivar Textuario:** Organizar y guardar todo el material de Prueba e Infraestructura para su reutilización.
+- **Lecciones Aprendidas:** Analizar tiempo y esfuerzos del equipo para mejora continua en cada ciclo.
+
+---
+
+

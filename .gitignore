@@ -28,7 +28,4 @@ venv/
 
 # Archivos de configuración de IDEs
 ListadoCasosPrueba.md
-
-
-#Objetos de prueba
-/TLDRDC
+docs/SPEC_DEBUG_MODE.md

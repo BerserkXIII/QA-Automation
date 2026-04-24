@@ -28,7 +28,7 @@ No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evide
 ## 🎯 Meta a Largo Plazo
 - [ ] Implementación de testing automatizado con Python/Selenium.
 - [ ] Integración de CI/CD pipelines (GitHub Actions o similares).
-- [ ] Explorar testing con IA: prompts para generar casos de prueba.
+- [x] Explorar testing con IA: prompts para generar casos de prueba.
 - [ ] Crear un portafolio con proyecto real testeado (end-to-end).
 - [ ] Transición de manual a automatización (documentar la curva de aprendizaje).
 
@@ -39,5 +39,5 @@ No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evide
 4.  Consulta el [ROADMAP](./docs/ROADMAP.md) para entender mi plan de aprendizaje.
 
 ---
-*Última actualización: [16/04/2026]* 
+*Última actualización: [24/04/2026]* 
 *Mantenido por: Salva_BsK*
