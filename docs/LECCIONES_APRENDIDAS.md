@@ -636,4 +636,14 @@ lizard "ruta/al/codigo" --sort cyclomatic_complexity -l python
 
 ---
 
+## 🧠 Lección: Primer intento de examen ISTQB CTFL 
+## Registro de examen ISTQB CTFL 
+*Fecha: [24/04/2026]*
+- **Resultado:** 55% - Failed.
+- **Contexto de preparacion:** 3 semanas de estudio intensivo.
+- **Lectura profesional del resultado:** no es un cierre de proceso, es una medicion de brechas actuales.
 
+### Aprendizaje
+- **Lo que hice bien:** Estudiar con simuladores de examen, revisar cada pregunta fallida, y documentar mis errores en este diario.
+- **Lo que puedo mejorar:** Profundizar mas en los estandares ISO relacionados, y practicar mas preguntas de diseño de pruebas (no solo definiciones). Entender la fiolosofia ISTQB mas alla de memorizar terminos, pero tambien memorizar el lenguaje tecnico requerido.
+- **Plan de estudio:** Continuar con simuladores, enfocarme en preguntas de diseño de pruebas y técnicas, y revisar los estandares ISO 29119 (partes 1, 4 y 11) para entender mejor las definiciones y técnicas.

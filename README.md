@@ -21,7 +21,7 @@ No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evide
 | Automatización (Selenium/Python) | 🔒 Planeado para el próximo nivel       |
 
 ## 🎯 Meta a Corto Plazo
-- [ ] Completar exámenes de preparación para ISTQB.
+- [x] Completar exámenes de preparación para ISTQB.
 - [ ] Subir mi primer reporte de prueba automatizado.
 - [ ] Documentar todo el ciclo de vida de una app real.
 
