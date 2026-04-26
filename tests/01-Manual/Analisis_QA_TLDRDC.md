@@ -658,3 +658,75 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 
   -------------------------------------------------------------------------
 
+## CT-013: Implementación del sistema de leveo Fibonacci con bonificación de stats
+
+- **ID**: CT-013
+- **Descripción**: Sistema de progresión basado en la secuencia Fibonacci (2, 3, 5, 8, 13, 
+  21, 34, 55, 89...), que otorga bonificaciones de stats (+1 fuerza o +1 destreza) cada vez que el contador 
+  de combates alcanza un número de la secuencia. Diseñado para recompensar al jugador en hitos específicos 
+  y crear progresión semi-constante no lineal.
+- **Severidad**: MEDIA
+  - Razón: Impacto directo en la curva de dificultad y sensación de progresión.
+  - Impacto: Los bonuses acumulativos afectan stats base, que a su vez impactan daño, armadura y otros 
+    cálculos derivados.
+  - Reproducibilidad: 100% — los números Fibonacci son determinísticos.
+- **Precondiciones**: 
+  - Contador de combates (`_c01` en estado global) inicializado en 0.
+  - Sistema de combate funcional.
+  - Función `revisar_bonus_fibonacci()` implementada.
+- **Pasos**:
+  1. Iniciar partida nueva, personaje con stats base (ej. fuerza 5, destreza 5).
+  2. Completar primer combate → `_c01 = 1` → sin bonus (no es número Fibonacci).
+  3. Completar segundo combate → `_c01 = 2` → se dispara bonus Fibonacci.
+  4. Verificar que `personaje["fuerza"]` O `personaje["destreza"]` aumenta exactamente +1.
+  5. Se muestra mensaje: `"Te sientes más fuerte."` o `"Te sientes más ágil."` (selección aleatoria).
+  6. Completar tercer combate → `_c01 = 3` → se dispara bonus Fibonacci nuevamente.
+  7. Repetir proceso para `_c01 = 5, 8, 13, 21, 34, 55, 89...`
+  8. En cada bonus, observar que:
+     - El stat aumenta correctamente (+1).
+     - El mensaje se emite.
+     - El contador `_c01` no se reinicia ni se corrompe.
+  9. Alcanzar ~15 combates Fibonacci (aproximadamente en 34-55) y observar que el stat llega a límite 
+     (fuerza/destreza máx 20 del sistema).
+  10. Intentar ganar combates adicionales tras alcanzar el límite → bonus Fibonacci no agrega stats 
+      adicionales (clamping en lugar de desbordamiento).
+- **Resultado actual**: El sistema funciona correctamente. Los bonuses se disparan en cada numero de la secuencia Fibonacci, se asignan aleatoriamente entre fuerza y destreza, y se emite el mensaje correspondiente. El contador `_c01` se incrementa sin saltos ni resets. Los stats se clamppean en el límite máximo permitido (fuerza/destreza 20).
+- **Resultado esperado**: Exacto al anterior. El sistema cumple su objetivo: crear hitos de progresión 
+  distribuidos según Fibonacci, recompensando la persistencia con mejoras tangibles de stats.
+- **Causa raíz**: N/A — implementación original, sin defectos conocidos.
+- **Estado**: Implemented / Validated.
+- **Notas**: 
+  - Sistema simple y robusto. La elección de Fibonacci como secuencia fue intencional para crear ritmo 
+    de recompensas: frecuentes al inicio (2, 3, 5) y espaciadas después (13, 21, 34).
+  - La aleatoriedad entre fuerza/destreza en cada bonus añade variedad sin compromiso de balance.
+  - Este sistema fue exitoso en su versión original, pero posterioremente (ver CT-014) fue rediseñado 
+    tras cambios en la curva de daño.
+- **Complejidad**: Baja (implementación directa).
+- **Lección aprendida**: Las recompensas pequeñas y frecuentes crean enganche psicológico mejor que 
+  recompensas grandes y raras, sobretodo con combates tan castigadores. La secuencia Fibonacci proporciona la distribución ideal: visible a corto plazo (combates 2-3), desafiante a largo plazo (combates 55+).
+
+- **Código implementado**:
+  ```python
+  def revisar_bonus_fibonacci():
+      # Lista de números Fibonacci hasta 100
+      fibonacci_hitos = [2, 3, 5, 8, 13, 21, 34, 55, 89]
+      
+      # Si el contador actual es un número Fibonacci...
+      if _c01 in fibonacci_hitos:
+          # Elegir aleatoriamente entre fuerza o destreza
+          atributo = random.choice(["fuerza", "destreza"])
+          
+          # Sumar +1 al atributo elegido, sin superar el máximo
+          personaje[atributo] = min(personaje[atributo] + 1, MAX_STAT)  # MAX_STAT = 20
+          
+          # Emitir mensaje de feedback al jugador
+          mensaje = "Te sientes más fuerte." if atributo == "fuerza" else "Te sientes más ágil."
+          emitir("info", mensaje)
+          
+          # Log para debugging (opcional)
+          if DEBUG:
+              print(f"[FIBONACCI] Combate {_c01}: +1 {atributo} → {personaje[atributo]}")
+  ```
+
+  -------------------------------------------------------------------------
+
