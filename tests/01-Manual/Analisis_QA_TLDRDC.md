@@ -730,3 +730,113 @@ Los ejemplos son casos reales, pero no estructurados de ninguna manera, puesto q
 
   -------------------------------------------------------------------------
 
+## CT-014: Migración del sistema Fibonacci de stats planos a narrativa lore
+
+- **ID**: CT-014
+- **Descripción**: El sistema de "leveo Fibonacci" comenzó como mecánica de progresión que otorgaba 
+  stats planos (+1 fuerza o +1 destreza) cada cierto número de combates (números Fibonacci: 2, 3, 5, 8, 
+  13, 21, 34, 55, 89...). Sin embargo, tras ajustar los multiplicadores de daño y límites en el sistema 
+  de combate, estos bonuses se volvieron irrelevantes: el jugador acumulaba más stats en los eventos, 
+  diluyendo el peso del sistema de leveo de stats a niveles altos. Para mantener la mecánica sin romper el balance, se refactorizó el sistema para reemplazar los stats planos por flavor text narrativo y revelación progresiva de lore, convirtiendo los hitos Fibonacci en momentos de "toma de conciencia" del personaje.
+- **Severidad**: MEDIA
+  - Razón: Fue una iteración intencional (no un bug previo), pero impactó la curva de progresión 
+    y la cohesión narrativa.
+  - Impacto: El sistema pasó de mecánica jugable (stats) a experiencia narrativa (lore).
+  - Reproducibilidad: 100% — los números Fibonacci siempre disparan el mismo código.
+- **Precondiciones**: 
+  - Combates completados acumulativamente (contador `_c01` en estado global).
+  - Sistema de eventos y combate funcional.
+  - Textos de lore disponibles en la base de datos de narrativa.
+- **Fases**:
+
+  **Fase 1 (Pre-refactor): Sistema de stats Fibonacci (ver CT-013)**
+  1. Ganar combate 2 (segundo combate ganado) → se ejecuta `revisar_bonus_fibonacci()`.
+  2. Verificar que `personaje["fuerza"]` o `personaje["destreza"]` aumenta en +1.
+  3. Se muestra mensaje: `"Te sientes más fuerte."` o `"Te sientes más ágil."`
+  4. Repetir para combates 3, 5, 8, 13, 21, 34, 55...
+  5. Observar que tras ~10-15 combates Fibonacci, el personaje alcanza los límites de stats permitidos 
+     (fuerza/destreza máx 20).
+  
+  **Fase 2 (Post-refactor): Sistema de narrativa Fibonacci**
+  1. Ganar combate 2 → se ejecuta `revisar_bonus_fibonacci()`.
+  2. En lugar de +1 stat, se emite un texto narrativo: `"Te das cuenta..."`.
+  3. Los textos son progresivos: números bajos (2-13) revelan insights menores, 
+  números altos (55+) revelan lore profundo.
+  4. Repetir para combates 3, 5, 8, 13, 21, 34, 55, 89...
+  5. Verificar que los textos se muestran en el momento correcto sin interferir con el flujo de combate.
+  6. Confirmar que el stat `_c01` (contador de combates) se incrementa correctamente.
+
+- **Resultado actual (Fase 1)**: El sistema de stats Fibonacci funcionaba correctamente, asignando +1 stat 
+  en cada hito. Sin embargo, tras los ajustes de daño base y multiplicadores de stats en combate, estos 
+  bonuses acumulativos hacían que el personaje alcanzara stats excesivos (fuerza 20 tras ~15 combates), 
+  rompiendo el balance de dificultad. El mensaje `"Te sientes más fuerte"` era funcional pero sin carga 
+  narrativa.
+- **Resultado actual (Fase 2)**: El sistema de narrativa Fibonacci funciona correctamente. Los textos se 
+  emiten en los hitos correctos, reemplazando completamente los stats planos. No hay corrupción de estado 
+  ni sincronización de contador `_c01`. Los textos son progresivos en profundidad de lore según el número 
+  Fibonacci (números altos revelan secretos de la lore del juego).
+- **Resultado esperado**: 
+  - Fase 1 (ver CT-013): Los stats planos siguen siendo funcionales, pero no escalan bien con 
+    el nuevo balance de combate.
+  - Fase 2 (refactor): El sistema de narrativa debe mantener la mecánica de "hitos especiales" pero con 
+    carga narrativa. Los números Fibonacci deben sentirse significativos por su contenido lore, no por 
+    bonuses de stats. Sin cambios accidentales en stats que rompan el balance.
+- **Causa raíz**: Fase 1 no era un defecto técnico, sino un problema de diseño: la progresión lineal de 
+  stats chocaba con los multiplicadores ajustados. La solución no fue "arreglarlo", sino "rediseñarlo".
+- **Solución implementada**: 
+  1. Se eliminó la lógica de asignación de stats en `revisar_bonus_fibonacci()`.
+  2. Se reemplazó por emisión de textos narrativos vía `emitir("lore", texto_fibonacci)`.
+  3. Se creó una tabla de textos por número Fibonacci, indexada por hito (2, 3, 5, 8, 13, 21, 34, 55, 89+).
+  4. Los textos en números bajos hablan de "tomas de conciencia" (ej. "Empiezas a entender..."), mientras que números altos revelan lore profundo (ej. en 55+, referencias a la verdadera naturaleza de la mazmorra o del personaje).
+  5. Se validó que el contador `_c01` seguía incrementándose correctamente sin interferencias.
+  6. No se modificó la lista de números Fibonacci ni su cálculo: el cambio fue exclusivamente en la salida.
+- **Estado**: Implemented / Validated.
+- **Notas**: 
+  - No fue un bug, sino una iteración de diseño. El cambio fue sencillo porque la estructura de 
+    `revisar_bonus_fibonacci()` ya existía y era modular — solo requirió cambiar qué sucedía al 
+    dispararla.
+  - La fase de desarrollo del lore adicional fue el trabajo real, no producto de IA.
+  - La decisión de mantener los números Fibonacci como "hitos especiales" vs quitarlos completamente 
+    fue crucial: elegir reemplazarlos por narrativa en lugar de eliminarlos preservó el sentido de 
+    progresión.
+  - Se confirmó que los textos Fibonacci se muestran antes de retornar a exploración, evitando pérdida 
+    de narrativa en el flujo.
+  - Comparar con CT-013 para ver cómo se comportaba antes de este refactor.
+- **Complejidad**: Baja (cambio de salida, no de lógica). El trabajo adicional fue narrativo, no técnico.
+- **Lección aprendida**: Cuando una mecánica es funcional pero narrativamente vacía, la solución no es 
+  eliminarla sino darle significado. En lugar de quitarla, se le dio propósito (lore), lo que la hizo 
+  más valiosa sin romper el código existente. Esto es un ejemplo de refactorización "inteligente": no 
+  es cambiar la estructura, es cambiar el uso que se le dá, manteniendo la funcionalidad original.
+
+- **Código implementado**:
+  ```python
+  # Antes (stats planos)
+  def revisar_bonus_fibonacci():
+      if _c01 in [2, 3, 5, 8, 13, 21, 34, 55, 89]:
+          if random.choice([True, False]):
+              personaje["fuerza"] += 1
+          else:
+              personaje["destreza"] += 1
+          emitir("info", "Te sientes más fuerte.")
+
+  # Después (narrativa)
+  TEXTOS_FIBONACCI = {
+      2: "Comienzas a notar un patrón en tus movimientos...",
+      3: "Cada golpe te enseña algo nuevo sobre ti mismo.",
+      5: "La mazmorra no es tan caótica como parecía.",
+      8: "Entiendes que todo tiene un propósito.",
+      13: "Los ecos de la mazmorra revelan verdades ocultas.",
+      21: "Tu mente se expande hacia algo más allá de la carne.",
+      34: "Ves lo que otros no pueden ver.",
+      55: "La verdad sobre tu naturaleza empieza a emerger.",
+      89: "Eres parte de algo más antiguo y terrible de lo que imaginabas.",
+  }
+
+  def revisar_bonus_fibonacci():
+      if _c01 in TEXTOS_FIBONACCI:
+          emitir("lore", TEXTOS_FIBONACCI[_c01])
+          # Sin cambios de stats, sin corrupción de balance
+  ```
+
+  -------------------------------------------------------------------------
+
