@@ -38,19 +38,22 @@ ASSERT:
   - personaje["nombre"] en JSON
 ```
 
-#### Test P1.2: JSON contiene estado global
+#### Test P1.2: JSON contiene estado global COMPLETO
 ```
-ARRANGE: personaje + estado["armas_jugador"], estado["ruta_jugador"], etc.
+ARRANGE: personaje + todo estado global
 ACT: guardar_partida(personaje)
 ASSERT:
-  - JSON contiene:
-    - "personaje"
-    - "armas_jugador"
-    - "ruta_jugador"
-    - "eventos_superados"
-    - "bolsa_eventos"
-    - "_c01" (contador combates)
-    - etc.
+  - JSON contiene TODOS estos campos:
+    - "personaje" (dict)
+    - "armas_jugador" (dict)
+    - "ruta_jugador" (list)
+    - "eventos_superados" (int)
+    - "bolsa_eventos" (list)
+    - "bolsa_exploracion" (list)
+    - "pasos_nivel2" (list) ← CRÍTICO, no documentado antes
+    - "pasos_secretos" (list) ← CRÍTICO, no documentado antes
+    - "veces_guardado" (int)
+    - "_c01" (int, contador combates)
 ```
 
 #### Test P1.3: Integridad de datos
@@ -125,19 +128,25 @@ ASSERT:
   - No es None
 ```
 
-#### Test P2.2: Restaura estado global
+#### Test P2.2: Restaura estado global COMPLETO
 ```
 ARRANGE:
-  - guardado.json con:
+  - guardado.json con todos los campos:
     - _c01: 42
     - eventos_superados: 15
     - bolsa_eventos: [1,2,3]
+    - pasos_nivel2: ["d", "i"]
+    - pasos_secretos: []
+    - veces_guardado: 3
 ACT:
   - cargar_partida()
 ASSERT:
   - estado["_c01"] == 42
   - estado["eventos_superados"] == 15
   - estado["bolsa_eventos"] == [1,2,3]
+  - estado["pasos_nivel2"] == ["d", "i"]
+  - estado["pasos_secretos"] == []
+  - estado["veces_guardado"] == 3
 ```
 
 #### Test P2.3: Archivo no existe retorna None

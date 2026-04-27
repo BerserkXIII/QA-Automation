@@ -59,7 +59,7 @@ ASSERT:
   - No es None
 ```
 
-#### Test I2.2: Aplica redimensión
+#### Test I2.2: Redimensión SOLO si PIL disponible
 ```
 ARRANGE:
   - PNG original 200x200
@@ -67,7 +67,9 @@ ARRANGE:
 ACT:
   - img = manager.cargar_imagen("/assets/daga.png", (50, 50))
 ASSERT:
-  - img.size == (50, 50)
+  - Si PIL disponible: img.size == (50, 50)  (redimensionado)
+  - Si NO PIL: retorna tk.PhotoImage nativo (sin redimensión, tamaño original)
+  - Sin excepción en ambos casos
 ```
 
 #### Test I2.3: Imagen no existe retorna None
@@ -115,18 +117,17 @@ ASSERT:
   - Clave caché incluye (ruta, tamaño)
 ```
 
-#### Test I2.7: Caché lleno desaloja old entries
+#### Test I2.7: Sin límite hard de caché
 ```
 ARRANGE:
-  - manager = ImagenManager(ruta, caché_size=2)
-  - Cargar 3 imágenes diferentes
+  - manager = ImagenManager()  (sin parámetro caché_size)
+  - Cargar 10 imágenes diferentes
 ACT:
-  - img1 = cargar_imagen("/a.png")
-  - img2 = cargar_imagen("/b.png")
-  - img3 = cargar_imagen("/c.png")  ← Debe desalojar img1
+  - Para i en 1..10: manager.cargar_imagen(f"/img_{i}.png")
 ASSERT:
-  - len(manager.caché) <= 2
-  - img3 en caché
+  - len(manager._cache) == 10  (todas permanecen)
+  - Sin desalojo automático
+  - Limpieza manual vía limpiar_cache()
 ```
 
 #### Test I2.8: Redimensión preserva aspecto (opcional)
@@ -217,6 +218,9 @@ def manager(tmp_path):
 
 - **I2.3, I2.4**: Tests defensivos críticos — spritesfaltantes no rompen UI
 - **I2.5**: Caché es optimización importante para rendimiento
-- **I2.7**: Si caché tiene política de desalojo (LRU), debe ser testable
-- PIL.Image.LANCZOS es buen filtro para redimensión de sprites pequeños
+- **I2.2**: PIL es opcional; fallback a tk.PhotoImage nativo para PNG
+  - `manager.pil_disponible` indica si PIL está disponible
+  - Sin PIL: redimensión usa `Image.thumbnail()` (aspecto preservado)
+- **I2.7**: NO hay límite hard de caché; limpieza manual vía `limpiar_cache()`
 - Tests pueden usar `tmp_path` fixture de pytest para archivos temporales
+- Fixture debe mockar `PIL_DISPONIBLE` para testear fallback

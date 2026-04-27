@@ -90,7 +90,7 @@ ASSERT:
   - resultado == 5 + ((6 + 9) // 3) == 5 + 5 == 10
 ```
 
-#### Test C1.6: Mínimo daño 1
+#### Test C1.6: Daño mínimo sin garantía (no clampea)
 ```
 ARRANGE:
   - arma = {"daño": 0, "tipo": "sutil"}
@@ -98,7 +98,7 @@ ARRANGE:
 ACT:
   - resultado = calcular_daño(arma, p)
 ASSERT:
-  - resultado >= 1  (nunca retorna 0 o negativo)
+  - resultado == 0  (código no clampea a 1, es responsabilidad del caller)
 ```
 
 ---
@@ -130,7 +130,10 @@ ASSERT:
   - p["destreza"] == 5  (10-5)
   - p["vida"] == 10
   - p["pociones"] == 6
-  - p["armas"] == {}
+  - p["armas"] == {}  (vacío, sin daga previa)
+  - p["vida_max"] == 25
+  - p["pociones_max"] == 10
+  - p["armadura_max"] == 5
 ```
 
 #### Test C2.2: Nombre vacío se rechaza
@@ -180,12 +183,25 @@ ASSERT:
   - p["armadura"] == 0
 ```
 
-#### Test C2.5: Campos requeridos presentes
+#### Test C2.5: Campos secretos inicializados
 ```
-ARRANGE: Entrada válida
+ARRANGE: Entrada válida (1-9 para fuerza)
 ACT: p = crear_personaje()
 ASSERT:
-  - p contiene: nombre, vida, pociones, fuerza, destreza, armadura, armas, nivel, etc.
+  - Campos requeridos: nombre, vida, pociones, fuerza, destreza, armadura, armas, nivel
+  - Campos secretos inicializados:
+    - moscas: 0
+    - brazos: 0
+    - sombra: 0
+    - sangre: 0
+    - _pw: 0
+    - tiene_llave: False
+    - rencor: False
+    - hitos_brazos_reclamados: []
+    - evento_brazos_final_completado: False
+    - evento_brazos_segundo_completado: False
+    - bolsa_acecho: [1, 2, 3]
+    - _x9f: False
 ```
 
 ---
@@ -316,16 +332,18 @@ ASSERT:
   - p["pociones"] == 4
 ```
 
-#### Test C3.10: Key desconocida no rompe
+#### Test C3.10: Key desconocida emite alerta pero procesa
 ```
 ARRANGE:
-  - p = {"vida": 10}
+  - p = {"vida": 10, "otros_campos": 0}
   - evento = {"key_fake": 999}
+  - Mock alerta()
 ACT:
   - aplicar_evento(evento, p)
 ASSERT:
+  - alerta() fue llamado con "[DEV] aplicar_evento: key desconocida 'key_fake'"
+  - p["key_fake"] == 999 (se asignó igual)
   - Sin excepción
-  - p sin cambios  (o alerta emitida)
 ```
 
 ---

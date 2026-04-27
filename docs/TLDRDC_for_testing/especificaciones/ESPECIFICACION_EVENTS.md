@@ -145,73 +145,82 @@ ASSERT: Funciona igual que B3.2
 
 ### Función: `_evento_1(personaje)`
 
-**¿Qué hace?**
-- Loop interactivo: pregunta "¿Abres cofre?"
-- Si SÍ: elige aleatoriamente poción/corte/vacío
-  - poción: retorna `{"pociones": 1}`
-  - corte: retorna `{"vida": -1}`
-  - vacío: retorna `{}`
-- Si NO: combate aleatorio o escape
+**Qué hace:**
+- LOOP mientras respuesta invalida:
+  - Pregunta: \"Quieres abrir el cofre? (s/n)\"
+  - Si \"s\": random.choice([\"pocion\", \"vacio\", \"corte\"])
+    - pocion -> retorna {\"pociones\": 1}
+    - corte -> retorna {\"vida\": -1}
+    - vacio -> retorna {}
+  - Si \"n\": random.choices([\"sombra\", \"mutilado\", \"escape\"])
+    - sombra -> llama combate(), retorna {}
+    - mutilado -> llama combate(), retorna {}
+    - escape -> narración, retorna {}
+  - Otro -> alerta, loop reintenta
 
 **Casos a testear:**
 
-#### Test E1.1: Retorna dict válido (poción)
+#### Test E1.1: rama ABRIR cofre -> POCION
 ```
 ARRANGE:
-  - p = Personaje mock
-  - Mock leer_input() para retornar "s"
-  - Mock random.choice() para retornar "poción"
+  - p = Personaje({vida: 10})
+  - Mock leer_input() retorna "s"
+  - Mock random.choice() retorna "pocion"
 ACT:
   - resultado = _evento_1(p)
 ASSERT:
-  - resultado == {"pociones": 1}
-  - Tipo dict
+  - resultado == {pociones: 1}
 ```
 
-#### Test E1.2: Retorna dict con daño (corte)
+#### Test E1.2: rama ABRIR -> CORTE (dano)
 ```
 ARRANGE:
+  - p = Personaje({vida: 10})
   - Mock leer_input() retorna "s"
   - Mock random.choice() retorna "corte"
 ACT:
   - resultado = _evento_1(p)
 ASSERT:
-  - resultado == {"vida": -1}
+  - resultado == {vida: -1}
 ```
 
-#### Test E1.3: Retorna dict vacío (vacío)
+#### Test E1.3: rama NO ABRIR -> SOMBRA (combate)
 ```
 ARRANGE:
-  - Mock leer_input() retorna "s"
-  - Mock random.choice() retorna "vacío"
+  - p = Personaje({vida: 10})
+  - Mock leer_input() retorna "n"
+  - Mock random.choices retorna "sombra"
+  - Mock combate()
 ACT:
   - resultado = _evento_1(p)
 ASSERT:
   - resultado == {}
+  - combate() fue llamado (llamada a enemigo_aleatorio)
 ```
 
-#### Test E1.4: Rechaza entrada inválida
+#### Test E1.4: rechaza input invalido (loop reintenta)
 ```
 ARRANGE:
-  - Mock leer_input() retorna "xyz" (inválido)
-  - Luego retorna "s" (válido)
+  - p = Personaje({})
+  - Mock leer_input() retorna ["xyz", "s"]
+  - Mock alerta()
 ACT:
   - resultado = _evento_1(p)
 ASSERT:
-  - Se repitió la pregunta (loop)
-  - Evento procesado cuando entrada válida
+  - alerta() llamado con "Respuesta no válida"
+  - Loop continuó, resultado es válido
 ```
 
-#### Test E1.5: Rama NO (sin abrir)
+#### Test E1.5: rama ABRIR -> VACIO (sin treasuro)
 ```
 ARRANGE:
-  - Mock leer_input() retorna "n"
-  - Mock random.choices() para determinismo
+  - p = Personaje({})
+  - Mock leer_input() retorna "s"
+  - Mock random.choice() retorna "vacio"
 ACT:
   - resultado = _evento_1(p)
 ASSERT:
-  - Retorna dict vacío
-  - Se ejecutó rama alternativa (escape/combate no invocado)
+  - resultado == {}
 ```
 
 ---
