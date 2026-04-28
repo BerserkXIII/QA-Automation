@@ -183,7 +183,7 @@ def mock_fin_derrota():
 # ════════════════════════════════════════════════════════════════════
 
 @pytest.fixture
-def personaje_reactivo():
+def personaje_reactivo(personaje_base):
     """Personaje con soporte para observadores (Observer pattern)."""
     class Personaje(dict):
         def __init__(self, *args, **kwargs):
@@ -200,7 +200,7 @@ def personaje_reactivo():
                 if self.activo and key in self._watchers:
                     self._watchers[key](value)
     
-    p = Personaje(personaje_base())
+    p = Personaje(personaje_base)
     p.activo = True
     return p
 
