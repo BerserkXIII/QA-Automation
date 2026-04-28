@@ -15,7 +15,7 @@ Un **sistema completo de 96+ tests automatizados** para TLDRDC.
 
 ---
 
-## 📂 Qué Ya Está Hecho
+## 📂 Qué Está Hecho
 
 | Archivo | Propósito | Estado |
 |---------|-----------|--------|
