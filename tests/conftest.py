@@ -98,6 +98,13 @@ def estado_con_armas(estado_test):
     }
     return estado_test
 
+@pytest.fixture
+def estado_bolsa_vacia(estado_test):
+    """Estado con bolsas de eventos y exploración vacías."""
+    estado_test["bolsa_eventos"] = []
+    estado_test["bolsa_exploracion"] = []
+    return estado_test
+
 # ════════════════════════════════════════════════════════════════════
 # ARMAS FIXTURES
 # ════════════════════════════════════════════════════════════════════
@@ -176,6 +183,16 @@ def mock_enemigo_aleatorio():
 @pytest.fixture
 def mock_fin_derrota():
     """Mock para fin_derrota() — activar derrota."""
+    return Mock(return_value=None)
+
+@pytest.fixture
+def mock_random_choice():
+    """Mock para random.choice() — selecciona un elemento de lista."""
+    return Mock(return_value=None)
+
+@pytest.fixture
+def mock_random_choices():
+    """Mock para random.choices() — selecciona múltiples elementos."""
     return Mock(return_value=None)
 
 # ════════════════════════════════════════════════════════════════════
