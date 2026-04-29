@@ -14,6 +14,8 @@ Uso en tus tests:
 import pytest
 from unittest.mock import Mock, MagicMock, patch
 from collections import deque
+import sys
+import os
 
 # ════════════════════════════════════════════════════════════════════
 # PERSONAJE FIXTURES
@@ -255,6 +257,49 @@ def bridge_mock():
             self._valor = texto
     
     return _BridgeMock()
+
+# ════════════════════════════════════════════════════════════════════
+# IMAGEN FIXTURES (UI Manager)
+# ════════════════════════════════════════════════════════════════════
+
+@pytest.fixture
+def valid_png(tmp_path):
+    """Crea PNG válido 100x100 rojo para tests."""
+    try:
+        from PIL import Image
+        img = Image.new("RGB", (100, 100), color=(255, 0, 0))
+        png_path = tmp_path / "test_valid.png"
+        img.save(png_path)
+        return str(png_path)
+    except ImportError:
+        # Si PIL no disponible, crear un arquivo PNG manualmente
+        # PNG header + minimal valid PNG structure
+        png_path = tmp_path / "test_valid.png"
+        with open(png_path, "wb") as f:
+            # Escribir PNG mínimo válido (100x100)
+            f.write(
+                b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00d\x00\x00\x00d'
+                b'\x08\x02\x00\x00\x00\xf6\x18\xff\xa0\x00\x00\x00\x19tEXtSoftware'
+                b'\x00Adobe ImageReadyq\xc9e<\x00\x00\x00\x1dIDATx\xdab\xf0\xcf\xc0'
+                b'\x00\x00\x03\x00\x00\x05\x00\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82'
+            )
+        return str(png_path)
+
+@pytest.fixture
+def corrupt_png(tmp_path):
+    """Crea archivo PNG corrupto para tests de error."""
+    png_path = tmp_path / "corrupt.png"
+    with open(png_path, "wb") as f:
+        # PNG header válido pero data corrupta
+        f.write(b"\x89PNG\r\n\x1a\n" + b"INVALID_CORRUPTED_DATA")
+    return str(png_path)
+
+@pytest.fixture
+def imagen_manager(tmp_path):
+    """Instancia de ImagenManager para tests."""
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../docs/TLDRDC_for_testing/modules'))
+    from ui_imagen_manager import ImagenManager
+    return ImagenManager()
 
 # ════════════════════════════════════════════════════════════════════
 # COMPOSITE FIXTURES (Todo junto)
