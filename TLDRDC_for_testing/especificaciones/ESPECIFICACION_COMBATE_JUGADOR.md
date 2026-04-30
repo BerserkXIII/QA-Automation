@@ -93,7 +93,7 @@ ASSERT:
 
 ---
 
-## PARTE 2: TURNO_JUGADOR (8 tests — Didáctico)
+## PARTE 2: TURNO_JUGADOR (8 tests)
 
 ### Descripción
 Lee acción del jugador (ataque/poción/huida/stance), ejecuta, retorna `("ataque"|"huida", stance)`.
@@ -181,7 +181,7 @@ ASSERT:
   - Mock alerta() emitido (falla anunciada)
 ```
 
-### T2.7: Stance bloquear toggle
+### T2.7: Stance bloquear activa
 ```
 ARRANGE:
   - Mock leer_input() → "bl", "daga"
@@ -193,7 +193,7 @@ ASSERT:
   - "bloqueo" in última llamada a sistema()
 ```
 
-### T2.8: Stance esquivar toggle
+### T2.8: Stance esquivar activa
 ```
 ARRANGE:
   - Mock leer_input() → "esq", "daga"
