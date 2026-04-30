@@ -15,7 +15,7 @@ import sys
 import os
 
 # Importar funciones de events.py
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../docs/TLDRDC_for_testing/modules'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../TLDRDC_for_testing/modules'))
 import events
 
 

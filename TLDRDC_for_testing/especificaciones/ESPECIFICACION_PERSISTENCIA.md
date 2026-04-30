@@ -14,6 +14,28 @@ Dos funciones que manejan **guardado y cargado de partidas**:
 
 ---
 
+## MATRIZ DE PRUEBAS
+
+| Test ID | Función | Validación |
+|---------|---------|-----------|
+| P1.1 | guardar_partida | Archivo creado, JSON válido |
+| P1.2 | guardar_partida | Contiene estado global |
+| P1.3 | guardar_partida | Integridad de datos (valores correctos) |
+| P1.4 | guardar_partida | Fichero temporal se limpia |
+| P1.5 | guardar_partida | Carpeta se crea si no existe |
+| P1.6 | guardar_partida | Error emite alerta sin crash |
+| P2.1 | cargar_partida | Carga exitosa |
+| P2.2 | cargar_partida | Restaura estado global |
+| P2.3 | cargar_partida | No existe → None |
+| P2.4 | cargar_partida | Migración: eventos_superados lista → int |
+| P2.5 | cargar_partida | JSON corrupto → None + alerta |
+| P2.6 | cargar_partida | Campos requeridos presentes |
+| P2.7 | cargar_partida | Sincroniza armas desde estado |
+| P2.8 | cargar_partida | Valida campos mínimos |
+| P3.1 | intentar_guardar | Incrementa veces_guardado |
+
+---
+
 ## FUNCIÓN: `guardar_partida(personaje)`
 
 **¿Qué hace?**
@@ -74,13 +96,16 @@ ASSERT:
   - data["personaje"]["armas"]["daga"]["daño"] == 2
 ```
 
-#### Test P1.4: Fichero temporal se elimina tras éxito
+#### Test P1.4: Fichero temporal se elimina tras éxito (atomic write)
 ```
-ARRANGE: Guardar exitosa
+ARRANGE: Guardar exitosa completada
 ACT:
-  - Verificar si guardado_tmp.json existe
+  - Inmediatamente después de guardar_partida(), revisar si guardado_tmp.json existe
+  - Verificar que guardado.json sí existe y contiene datos válidos
 ASSERT:
-  - guardado_tmp.json no existe (reemplazado atómicamente)
+  - guardado_tmp.json NO existe (eliminado por os.replace() que es atómico)
+  - guardado.json existe y es válido
+  - Garantiza que crash durante escritura no deja archivo corrupto
 ```
 
 #### Test P1.5: Si carpeta no existe, se crea
@@ -109,12 +134,12 @@ ASSERT:
 
 **¿Qué hace?**
 - Si archivo no existe: retorna None
-- Lee JSON desde guardado.json
+- Lee JSON desde guardado.json (UTF-8 encoding)
 - Restaura estado global desde JSON
-- **MIGRACIONES**: Si eventos_superados es lista (guardado viejo), convierte a 0
-- Valida campos requeridos
-- Sincroniza personaje["armas"] desde estado["armas_jugador"]
-- Retorna personaje dict
+- **MIGRACIONES**: Si eventos_superados es lista (guardados pre-v0.6), convertir a int 0
+- Valida que campos requeridos estén presentes
+- Sincroniza armas: copia desde estado["armas_jugador"] hacia personaje["armas"]
+- Retorna personaje dict o None si falla validación
 
 #### Test P2.1: Cargar partida exitosa
 ```
@@ -159,15 +184,16 @@ ASSERT:
   - alerta() emitida ("No hay partida guardada")
 ```
 
-#### Test P2.4: Migración: eventos_superados lista → int
+#### Test P2.4: Migración: eventos_superados lista → int (backward compatibility)
 ```
 ARRANGE:
-  - Guardado antiguo con "eventos_superados": [1,2,3]  (lista, no int)
+  - Guardado antiguo (pre-v0.6) con "eventos_superados": [1,2,3]  (lista de IDs, no contador int)
 ACT:
   - personaje = cargar_partida()
 ASSERT:
-  - estado["eventos_superados"] == 0  (convertido, no lista)
-  - Compatibilidad backward mantiene juego funcional
+  - estado["eventos_superados"] == 0  (convertido a int, valor seguro)
+  - Código no crashea (isinstance() valida tipo)
+  - Juego funciona aunque se pierda info de lista (diseño intencional de cambio de versión)
 ```
 
 #### Test P2.5: JSON corrupto emite alerta
@@ -197,13 +223,14 @@ ASSERT:
 ```
 ARRANGE:
   - guardado.json con:
-    - personaje: {"armas": {}}
-    - armas_jugador: {"daga": {"daño": 2}}
+    - personaje: {"nombre": "Test", "vida": 10, "armas": {}}
+    - armas_jugador: {"daga": {"daño": 2, "tipo": "sutil"}}
 ACT:
   - personaje = cargar_partida()
 ASSERT:
-  - personaje["armas"]["daga"]["daño"] == 2
-  - (armas_jugador sincronizadas a personaje)
+  - personaje["armas"] ahora tiene: {"daga": {"daño": 2, "tipo": "sutil"}}
+  - Armas de estado["armas_jugador"] se copiaron a personaje["armas"]
+  - (El diseño guarda armas en estado, no en personaje, por lo que requiere sincronización al cargar)
 ```
 
 #### Test P2.8: Validación de campos mínimos
@@ -233,28 +260,6 @@ ACT:
 ASSERT:
   - estado["veces_guardado"] == 6
 ```
-
----
-
-## MATRIZ DE PRUEBAS
-
-| Test ID | Función | Validación |
-|---------|---------|-----------|
-| P1.1 | guardar_partida | Archivo creado, JSON válido |
-| P1.2 | guardar_partida | Contiene estado global |
-| P1.3 | guardar_partida | Integridad de datos (valores correctos) |
-| P1.4 | guardar_partida | Fichero temporal se limpia |
-| P1.5 | guardar_partida | Carpeta se crea si no existe |
-| P1.6 | guardar_partida | Error emite alerta sin crash |
-| P2.1 | cargar_partida | Carga exitosa |
-| P2.2 | cargar_partida | Restaura estado global |
-| P2.3 | cargar_partida | No existe → None |
-| P2.4 | cargar_partida | Migración: eventos_superados lista → int |
-| P2.5 | cargar_partida | JSON corrupto → None + alerta |
-| P2.6 | cargar_partida | Campos requeridos presentes |
-| P2.7 | cargar_partida | Sincroniza armas desde estado |
-| P2.8 | cargar_partida | Valida campos mínimos |
-| P3.1 | intentar_guardar | Incrementa veces_guardado |
 
 ---
 
@@ -303,7 +308,10 @@ with patch('TLDRDC_Prueba1.CARPETA_SAVE') as mock_carpeta:
 
 ## NOTAS
 
-- **CRÍTICO P1.4**: Guardar atómico con temp file es defensa contra corrupción
-- **P2.4**: Test de migración es crucial para backward compatibility
-- Tests de persistencia pueden reutilizar archivos temporales (pytest tmp_path)
-- Validar que tanto read como write funcionan con encoding UTF-8
+- **CRÍTICO P1.4**: Guardar atómico con temp file (`os.replace()`) es defensa contra corrupción. Si el proceso crashea durante `json.dump()`, `guardado.json` anterior permanece intacto.
+- **P2.4**: Test de migración es crucial para backward compatibility. Datos de partidas guardadas en v0.5 o anterior donde `eventos_superados` era lista.
+- **P2.7**: Sincronización de armas es necesaria porque el diseño persiste armas en `estado["armas_jugador"]`, no en `personaje["armas"]`. Al cargar, hay que copiarlas.
+- Tests de persistencia deben reutilizar archivos temporales (`pytest tmp_path`) para aislar del AppData real del usuario.
+- **IMPORTANTE**: Todas las operaciones I/O usan UTF-8 encoding para soportar caracteres especiales en nombres de personaje.
+- P1.5: `os.makedirs(CARPETA_SAVE, exist_ok=True)` debe ser verificado en mock.
+- P1.6: Mockear `open()` para forzar IOError, no intentar escritura a disco protegido real.

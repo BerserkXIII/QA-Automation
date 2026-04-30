@@ -12,6 +12,23 @@
 
 ---
 
+## MATRIZ DE PRUEBAS
+
+| Test ID | Función | Validación |
+|---------|---------|-----------|
+| I1.1 | __init__ | Inicialización correcta |
+| I2.1 | cargar_imagen | Carga PNG válido |
+| I2.2 | cargar_imagen | Redimensión aplicada |
+| I2.3 | cargar_imagen | No existe → None |
+| I2.4 | cargar_imagen | Corrupto → None |
+| I2.5 | cargar_imagen | Caché funciona |
+| I2.6 | cargar_imagen | Caché por (ruta, tamaño) |
+| I2.7 | cargar_imagen | Caché LRU o FIFO |
+| I2.8 | cargar_imagen | Aspecto preservado |
+| I3.1 | validar_rutas | Detecta carpetas faltantes |
+
+---
+
 ## CLASE: `ImagenManager`
 
 ### Función: `__init__(ruta_base, caché_size=100)`
@@ -160,23 +177,6 @@ ASSERT:
   - Alerta emitida o log de advertencia
   - No crash, pero indica problema
 ```
-
----
-
-## MATRIZ DE PRUEBAS
-
-| Test ID | Función | Validación |
-|---------|---------|-----------|
-| I1.1 | __init__ | Inicialización correcta |
-| I2.1 | cargar_imagen | Carga PNG válido |
-| I2.2 | cargar_imagen | Redimensión aplicada |
-| I2.3 | cargar_imagen | No existe → None |
-| I2.4 | cargar_imagen | Corrupto → None |
-| I2.5 | cargar_imagen | Caché funciona |
-| I2.6 | cargar_imagen | Caché por (ruta, tamaño) |
-| I2.7 | cargar_imagen | Caché LRU o FIFO |
-| I2.8 | cargar_imagen | Aspecto preservado |
-| I3.1 | validar_rutas | Detecta carpetas faltantes |
 
 ---
 

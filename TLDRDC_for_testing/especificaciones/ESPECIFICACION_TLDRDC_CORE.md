@@ -13,6 +13,29 @@ Tres funciones críticas del monolito:
 
 ---
 
+## MATRIZ DE PRUEBAS
+
+| Test ID | Función | Validación |
+|---------|---------|-----------|
+| C1.1 | calcular_daño | Sin tipo: daño base |
+| C1.2 | calcular_daño | Sutil + destreza baja |
+| C1.3 | calcular_daño | Sutil + destreza alta |
+| C1.4 | calcular_daño | Pesada + fuerza |
+| C1.5 | calcular_daño | Mixta (fórmula correcta) |
+| C1.6 | calcular_daño | Mínimo 1 daño |
+| C2.1 | crear_personaje | Entrada válida |
+| C2.2 | crear_personaje | Nombre vacío rechazado |
+| C2.3 | crear_personaje | Fuerza fuera rango |
+| C2.4 | crear_personaje | Armadura según destreza |
+| C2.5 | crear_personaje | Campos requeridos |
+| C3.1 | aplicar_evento | Suma vida normal |
+| C3.2 | aplicar_evento | Vida clampea máximo |
+| C3.3 | aplicar_evento | Vida clampea mínimo |
+| C3.4 | aplicar_evento | Muerte → fin_derrota + early return |
+| C3.5 | aplicar_evento | Pociones se clampean |
+
+---
+
 ## FUNCIÓN: `calcular_daño(arma, personaje)`
 
 **¿Qué hace?**
@@ -345,34 +368,6 @@ ASSERT:
   - p["key_fake"] == 999 (se asignó igual)
   - Sin excepción
 ```
-
----
-
-## MATRIZ DE PRUEBAS
-
-| Test ID | Función | Validación |
-|---------|---------|-----------|
-| C1.1 | calcular_daño | Sin tipo: daño base |
-| C1.2 | calcular_daño | Sutil + destreza baja |
-| C1.3 | calcular_daño | Sutil + destreza alta |
-| C1.4 | calcular_daño | Pesada + fuerza |
-| C1.5 | calcular_daño | Mixta (fórmula correcta) |
-| C1.6 | calcular_daño | Mínimo 1 daño |
-| C2.1 | crear_personaje | Entrada válida |
-| C2.2 | crear_personaje | Nombre vacío rechazado |
-| C2.3 | crear_personaje | Fuerza fuera rango |
-| C2.4 | crear_personaje | Armadura según destreza |
-| C2.5 | crear_personaje | Campos requeridos |
-| C3.1 | aplicar_evento | Suma vida normal |
-| C3.2 | aplicar_evento | Vida clampea máximo |
-| C3.3 | aplicar_evento | Vida clampea mínimo |
-| C3.4 | aplicar_evento | Muerte → fin_derrota + early return |
-| C3.5 | aplicar_evento | Pociones se clampean |
-| C3.6 | aplicar_evento | Stats clampean a 20 |
-| C3.7 | aplicar_evento | Armadura no baja 0 |
-| C3.8 | aplicar_evento | Añadir arma válida |
-| C3.9 | aplicar_evento | Múltiples cambios simultáneos |
-| C3.10 | aplicar_evento | Key desconocida sin error |
 
 ---
 

@@ -6,13 +6,35 @@
 
 ## RESUMEN EJECUTIVO
 
-`events.py` gestiona **dos sistemas independientes**:
+`events.py` gestiona **tres sistemas independientes**:
 1. **Bolsa de Eventos** — Garantiza que cada evento (1-20) aparezca una sola vez sin repetición inmediata
 2. **Bolsa de Exploración** — Similar pero para textos descriptivos (1-15)
 3. **Eventos Individuales** — Funciones `_evento_1()...20()` que aplican lógica + narrativa
 
 ---
 
+## MATRIZ DE PRUEBAS
+
+| Test ID | Módulo | Función | Validación |
+|---------|--------|---------|-----------|
+| B1.1 | Bolsa Eventos | rellenar | 20 eventos, sin duplicados |
+| B1.2 | Bolsa Eventos | rellenar | Orden aleatorio |
+| B1.3 | Bolsa Eventos | rellenar | Reemplaza contenido previo |
+| B2.1 | Bolsa Exploración | rellenar | 15 textos |
+| B2.2 | Bolsa Exploración | rellenar | IDs 1-15 presentes |
+| B3.1 | Bolsa Eventos | obtener | Retorna válido, decrementa |
+| B3.2 | Bolsa Eventos | obtener | Rellena automático si vacía |
+| B3.3 | Bolsa Eventos | obtener | Ciclo completo 20 eventos |
+| B3.4 | Bolsa Eventos | obtener | Sin repetición inmediata |
+| B4.1 | Bolsa Exploración | obtener | Retorna válido 1-15 |
+| B4.2 | Bolsa Exploración | obtener | Rellena automático |
+| E1.1 | Evento 1 | _evento_1 | Retorna dict poción |
+| E1.2 | Evento 1 | _evento_1 | Retorna dict daño |
+| E1.3 | Evento 1 | _evento_1 | Retorna dict vacío |
+| E1.4 | Evento 1 | _evento_1 | Rechaza entrada inválida |
+| E1.5 | Evento 1 | _evento_1 | Rama NO funciona |
+
+---
 ## MÓDULO: Bolsa de Eventos
 
 ### Función: `rellenar_bolsa_eventos()`
@@ -225,28 +247,6 @@ ASSERT:
 
 ---
 
-## MATRIZ DE PRUEBAS
-
-| Test ID | Módulo | Función | Validación |
-|---------|--------|---------|-----------|
-| B1.1 | Bolsa Eventos | rellenar | 20 eventos, sin duplicados |
-| B1.2 | Bolsa Eventos | rellenar | Orden aleatorio |
-| B1.3 | Bolsa Eventos | rellenar | Reemplaza contenido previo |
-| B2.1 | Bolsa Exploración | rellenar | 15 textos |
-| B2.2 | Bolsa Exploración | rellenar | IDs 1-15 presentes |
-| B3.1 | Bolsa Eventos | obtener | Retorna válido, decrementa |
-| B3.2 | Bolsa Eventos | obtener | Rellena automático si vacía |
-| B3.3 | Bolsa Eventos | obtener | Ciclo completo 20 eventos |
-| B3.4 | Bolsa Eventos | obtener | Sin repetición inmediata |
-| B4.1 | Bolsa Exploración | obtener | Retorna válido 1-15 |
-| B4.2 | Bolsa Exploración | obtener | Rellena automático |
-| E1.1 | Evento 1 | _evento_1 | Retorna dict poción |
-| E1.2 | Evento 1 | _evento_1 | Retorna dict daño |
-| E1.3 | Evento 1 | _evento_1 | Retorna dict vacío |
-| E1.4 | Evento 1 | _evento_1 | Rechaza entrada inválida |
-| E1.5 | Evento 1 | _evento_1 | Rama NO funciona |
-
----
 
 ## FIXTURES NECESARIAS
 

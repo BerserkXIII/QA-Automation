@@ -14,6 +14,25 @@ Sistema de **sincronización de hilos** para Tkinter + juego:
 
 ---
 
+## MATRIZ DE PRUEBAS
+
+| Test ID | Componente | Validación |
+|---------|-----------|-----------|
+| T1.1 | _Bridge.__init__ | Inicialización sin threading |
+| T1.2 | _Bridge.esperar | Bloquea hasta dato |
+| T1.3 | _Bridge.recibir | Asigna valor y unbloquea |
+| T2.1 | Poll - primer tick | Ejecuta callback inicial |
+| T2.2 | Poll - siguiente | Diferencia: nueva data vs sin data |
+| T2.3 | Poll - timeout | Sigue ticking después timeout |
+| T2.4 | Poll - múltiples callbacks | Todos ejecutados en orden |
+| T3.1 | Thread PoJ - start | Thread inicia correctamente |
+| T3.2 | Thread PoJ - loop | Itera {preguntar → input → Bridge} |
+| T3.3 | Thread PoJ - interrupt | Event.set() termina thread limpiamente |
+| T3.4 | Main + Thread - sync | Datos fluyen Bridge → main |
+| T3.5 | Main + Thread - contención | Sin race conditions |
+
+---
+
 ## CLASE: `_Bridge`
 
 **¿Qué hace?**
@@ -216,27 +235,6 @@ ASSERT:
   - Sin exception
   - Todos los mensajes procesados eventualmente
 ```
-
----
-
-## MATRIZ DE PRUEBAS
-
-| Test ID | Componente | Validación |
-|---------|-----------|-----------|
-| T1.1 | _Bridge.esperar | Bloquea hasta recibir() |
-| T1.2 | _Bridge.esperar | Event.wait() llamado |
-| T1.3 | _Bridge.esperar | Retorna valor |
-| T1.4 | _Bridge.recibir | Almacena valor |
-| T1.5 | _Bridge.recibir | Set event |
-| T1.6 | _Bridge.recibir | Desbloquea esperar() |
-| T2.1 | polling | Procesa mensaje de cola |
-| T2.2 | polling | Respeta _ocupado flag |
-| T2.3 | polling | Un mensaje por ciclo |
-| T2.4 | polling | Reschedule root.after() |
-| T2.5 | polling | Cola vacía sin error |
-| T2.6 | polling | Thread-safe FIFO |
-| T3.1 | Integración | Full sync cycle |
-| T3.2 | Integración | Sin deadlock/crash |
 
 ---
 

@@ -12,6 +12,21 @@ Tests de **integración entre módulos** — validan que cambios en un módulo f
 
 ---
 
+## MATRIZ DE PRUEBAS (Integration)
+
+| Test ID | Módulos | Escenario |
+|---------|---------|-----------|
+| INT1 | reactive + aplicar_evento | Observer se dispara |
+| INT2 | reactive + aplicar_evento | Múltiples observadores |
+| INT3 | _Bridge + polling | Hilos sincronizados |
+| INT4 | polling + _ocupado | Respeta flag |
+| INT5 | eventos + aplicar + reactive | Stats → UI actualiza |
+| INT6 | guardar + cargar | Integridad datos |
+| INT7 | imagen_manager + UI | Sprites faltan, fallback OK |
+| INT8 | calcular_daño + combate | Daño en contexto |
+
+---
+
 ## TEST: `reactive.py + aplicar_evento()`
 
 ### Test INT1: Observer se dispara cuando evento aplica stats
@@ -212,21 +227,6 @@ ASSERT:
   - daño == 5 + (8 // 2) == 9
   - enemigo["vida"] == 11
 ```
-
----
-
-## MATRIZ DE PRUEBAS (Integration)
-
-| Test ID | Módulos | Escenario |
-|---------|---------|-----------|
-| INT1 | reactive + aplicar_evento | Observer se dispara |
-| INT2 | reactive + aplicar_evento | Múltiples observadores |
-| INT3 | _Bridge + polling | Hilos sincronizados |
-| INT4 | polling + _ocupado | Respeta flag |
-| INT5 | eventos + aplicar + reactive | Stats → UI actualiza |
-| INT6 | guardar + cargar | Integridad datos |
-| INT7 | imagen_manager + UI | Sprites faltan, fallback OK |
-| INT8 | calcular_daño + combate | Daño en contexto |
 
 ---
 

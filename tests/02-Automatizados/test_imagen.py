@@ -15,7 +15,7 @@ import os
 import tempfile
 
 # Importar ImagenManager
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../docs/TLDRDC_for_testing/modules'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../TLDRDC_for_testing/modules'))
 from ui_imagen_manager import ImagenManager, PIL_DISPONIBLE
 
 
