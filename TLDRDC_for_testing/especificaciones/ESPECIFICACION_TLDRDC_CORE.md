@@ -1,14 +1,8 @@
-# Especificación de Tests — TLDRDC_PRUEBA1.PY (CORE)
+# Especificación de Tests — TLDRDC CORE
 
-*Versión: 0.3 (Test Spec)*
+*Versión: 1.0*
 
----
-
-## RESUMEN EJECUTIVO
-
-**Dos funciones pures del monolito (NO incluyen combate):**
-1. **crear_personaje()** — Inicialización: stats balanceados, campos secretos, validación input
-2. **aplicar_evento(evento, personaje)** — Aplicación genérica: modifica stats, pociones, armas, campos personalizados
+**Total: 32 tests**
 
 ---
 
@@ -16,163 +10,146 @@
 
 | Test ID | Función | Validación |
 |---------|---------|-----------|
-| C1.1 | crear_personaje | Entrada válida |
-| C1.2 | crear_personaje | Nombre vacío rechazado |
-| C1.3 | crear_personaje | Fuerza fuera rango |
-| C1.4 | crear_personaje | Armadura según destreza |
-| C1.5 | crear_personaje | Nombre a lowercase |
-| C1.6 | crear_personaje | Campos máximos y secretos |
-| C2.1 | aplicar_evento | Suma vida normal |
-| C2.2 | aplicar_evento | Vida clampea máximo |
-| C2.3 | aplicar_evento | Vida clampea mínimo |
-| C2.4 | aplicar_evento | Muerte → fin_derrota + early return |
-| C2.5 | aplicar_evento | Pociones se clampean máximo |
-| C2.6 | aplicar_evento | Stats se clampean a 20 |
-| C2.7 | aplicar_evento | Armadura no baja de 0 |
-| C2.8 | aplicar_evento | Añadir arma válida |
-| C2.9 | aplicar_evento | Múltiples cambios simultáneamente |
-| C2.10 | aplicar_evento | Stats negativos sin límite mínimo |
-| C2.11 | aplicar_evento | Pociones pueden ser negativas |
-| C2.12 | aplicar_evento | Key desconocida se asigna |
-| C2.13 | aplicar_evento | Key válida no existente se suma |
-| C2.14 | aplicar_evento | Callback UI armas se invoca |
+| 1.1 | crear_personaje | Entrada válida |
+| 1.2 | crear_personaje | Nombre vacío rechazado |
+| 1.3 | crear_personaje | Fuerza fuera rango |
+| 1.4 | crear_personaje | Armadura según destreza |
+| 1.5 | crear_personaje | Nombre a lowercase |
+| 1.6 | crear_personaje | Campos máximos y secretos |
+| 2.1 | aplicar_evento | Suma vida normal |
+| 2.2 | aplicar_evento | Vida clampea máximo |
+| 2.3 | aplicar_evento | Vida clampea mínimo |
+| 2.4 | aplicar_evento | Muerte → fin_derrota() + early return |
+| 2.5 | aplicar_evento | Pociones clampea máximo |
+| 2.6 | aplicar_evento | Stats clampean a 20 |
+| 2.7 | aplicar_evento | Armadura no baja de 0 |
+| 2.8 | aplicar_evento | Añadir arma válida |
+| 2.9 | aplicar_evento | Múltiples cambios simultáneos |
+| 2.10 | aplicar_evento | Stats negativos sin límite mínimo |
+| 2.11 | aplicar_evento | Pociones pueden ser negativas |
+| 2.12 | aplicar_evento | Key desconocida se asigna con alerta |
+| 2.13 | aplicar_evento | Key válida no existente se suma |
+| 2.14 | aplicar_evento | Callback UI armas se invoca |
+| 3.1 | fin_derrota | Retorna True si tiene _flg1 |
+| 3.2 | fin_derrota | Retorna False sin _flg1 |
+| 3.3 | fin_derrota | Limpia _flg1 tras usar |
+| 4.1 | resolver_eventos_post_combate | Retorna evento tras victoria |
+| 4.2 | resolver_eventos_post_combate | Retorna None sin evento |
+| 5.1 | explorar | Retorna texto + aplica evento |
+| 5.2 | explorar | Actualiza eventos_superados |
+| 5.3 | explorar | Maneja exploración sin evento |
+| 6.1 | validar_personaje | Personaje válido retorna True |
+| 6.2 | validar_personaje | Personaje inválido retorna False |
+| 7.1 | decrementar_efectos_temporales | Decrementa jugador |
+| 7.2 | decrementar_efectos_temporales | Limpia enemigo con duración ≤0 |
 
 ---
 
-## FUNCIÓN: `crear_personaje()`
+# PARTE 1: CREAR_PERSONAJE (6 tests)
 
-**¿Qué hace?**
-- Loop: pregunta nombre (debe ser no vacío)
+### Descripción
+Función que crea un nuevo personaje mediante entrada del usuario. 
+- Loop: pregunta nombre (debe ser no vacío, se convierte a lowercase)
 - Loop: pregunta fuerza en rango [1-9]
 - Calcula destreza = 10 - fuerza
-- Calcula armadura según destreza:
-  - destreza ≥ 9 → armadura = 4
-  - destreza ≥ 6 → armadura = 2
-  - destreza ≥ 3 → armadura = 1
-  - resto → armadura = 0
-- Retorna Personaje dict con todos los stats
+- Calcula armadura según destreza: (≥9→4, ≥6→2, ≥3→1, resto→0)
+- Inicializa campos máximos y secretos
 
-#### Test C1.1: Entrada válida primera vez
+### 1.1: Entrada válida primera vez
 ```
 ARRANGE:
-  - Mock pedir_input():
-    - retorna "jugador" (nombre)
-    - retorna "5" (fuerza)
+  - Mock pedir_input() → ["jugador", "5"]
 ACT:
   - p = crear_personaje()
 ASSERT:
   - p["nombre"] == "jugador"
   - p["fuerza"] == 5
-  - p["destreza"] == 5  (10-5)
+  - p["destreza"] == 5
   - p["vida"] == 10
   - p["pociones"] == 6
-  - p["armas"] == {}  (vacío, sin daga previa)
   - p["vida_max"] == 25
   - p["pociones_max"] == 10
   - p["armadura_max"] == 5
 ```
 
-#### Test C1.2: Nombre vacío se rechaza
+### 1.2: Nombre vacío se rechaza
 ```
 ARRANGE:
-  - Mock pedir_input():
-    - retorna ""  (vacío)
-    - retorna ""  (vacío de nuevo)
-    - retorna "test"  (válido)
-    - retorna "5"
+  - Mock pedir_input() → ["", "", "test", "5"]
 ACT:
   - p = crear_personaje()
 ASSERT:
   - p["nombre"] == "test"
-  - Se repitió pregunta (alerta emitida)
+  - pedir_input() llamado 4 veces (2 intentos nombre + 1 ok + 1 fuerza)
 ```
 
-#### Test C1.3: Fuerza fuera de rango rechazada
+### 1.3: Fuerza fuera [1-9] se rechaza
 ```
 ARRANGE:
-  - Mock pedir_input():
-    - retorna "test"
-    - retorna "0"  (fuera)
-    - retorna "10"  (fuera)
-    - retorna "5"  (válido)
+  - Mock pedir_input() → ["test", "0", "10", "5"]
 ACT:
   - p = crear_personaje()
 ASSERT:
   - p["fuerza"] == 5
-  - Se repitió pregunta 2 veces
+  - pedir_input() llamado 4 veces
 ```
 
-#### Test C1.4: Armadura según destreza (extremos)
+### 1.4: Armadura según destreza (extremos)
 ```
 ARRANGE:
-  - Mock retorna fuerza = 1 (destreza = 9)
+  - Mock pedir_input() → ["test", "1"] (destreza=9)
 ACT:
   - p = crear_personaje()
 ASSERT:
+  - p["destreza"] == 9
   - p["armadura"] == 4
-```
 
-#### Test C1.5: Nombre se convierte a lowercase
-```
-ARRANGE:
-  - Mock retorna "JuGaDoR" (mayúsculas)
-  - Mock retorna "5" (fuerza)
+ARRANGE ALTERNATE:
+  - Mock pedir_input() → ["test", "9"] (destreza=1)
 ACT:
   - p = crear_personaje()
 ASSERT:
-  - p["nombre"] == "jugador"  (lowercase)
+  - p["destreza"] == 1
+  - p["armadura"] == 0
 ```
 
-#### Test C1.6: Campos máximos y secretos inicializados
+### 1.5: Nombre se convierte a lowercase
 ```
-ARRANGE: Entrada válida (1-9 para fuerza)
-ACT: p = crear_personaje()
+ARRANGE:
+  - Mock pedir_input() → ["JuGaDoR", "5"]
+ACT:
+  - p = crear_personaje()
 ASSERT:
-  - Campos máximos:
-    - vida_max: 25
-    - pociones_max: 10
-    - armadura_max: 5
-  - Campos secretos inicializados:
-    - moscas: 0
-    - brazos: 0
-    - sombra: 0
-    - sangre: 0
-    - _pw: 0
-    - tiene_llave: False
-    - rencor: False
-    - hitos_brazos_reclamados: []
-    - evento_brazos_final_completado: False
-    - evento_brazos_segundo_completado: False
-    - bolsa_acecho: [1, 2, 3]
-    - _x9f: False
+  - p["nombre"] == "jugador"
 ```
+
+### 1.6: Campos máximos y secretos inicializados
+```
+ARRANGE:
+  - Mock pedir_input() → ["test", "5"]
+ACT:
+  - p = crear_personaje()
+ASSERT:
+  - Campos max: vida_max=25, pociones_max=10, armadura_max=5
+  - Campos secretos: moscas=0, brazos=0, sombra=0, sangre=0
+  - _pw=0, tiene_llave=False, rencor=False
+  - bolsa_acecho=[1,2,3]
+  - _x9f=False
 ```
 
 ---
 
-## FUNCIÓN: `aplicar_evento(evento, personaje)`
+## PARTE 2: APLICAR_EVENTO (14 tests)
 
-**¿Qué hace?**
-- Itera sobre claves en `evento` dict
-- Aplica cambios según clave:
-  - `"vida"`: suma valor (clampea [0, vida_max])
-  - `"pociones"`: suma valor (clampea [0, pociones_max])
-  - `"fuerza"`: suma valor (clampea [0, 20])
-  - `"destreza"`: suma valor (clampea [0, 20])
-  - `"armadura"`: suma valor (clampea [0, armadura_max])
-  - `"armas"`: dict {nombre: stats} → añade armas
-- **CRÍTICO**: Si vida llega a 0, llama `fin_derrota()` y retorna inmediatamente
+### Descripción
+Aplica un evento (dict de cambios) al personaje. Itera claves y suma valores según tipo.
+- "vida": suma (clampea [0, vida_max]), si=0→fin_derrota()+return
+- "pociones": suma (clampea [0, pociones_max])
+- "fuerza"/"destreza": suma (clampea [0, 20])
+- "armadura": suma (clampea [0, armadura_max])
+- "armas": dict de armas → añade + callback UI
 
-**Test Constants**
-```python
-EVENTO_VIDA_POSITIVA = {"vida": 5}
-EVENTO_VIDA_NEGATIVA = {"vida": -3}
-EVENTO_MUERTE = {"vida": -100}
-EVENTO_ARMA = {"armas": {"daga": {}}}
-EVENTO_STATS = {"fuerza": 2, "destreza": 1}
-```
-
-#### Test C2.1: Suma vida (sin límite)
+### 2.1: Suma vida normal
 ```
 ARRANGE:
   - p = {"vida": 10, "vida_max": 15}
@@ -183,7 +160,7 @@ ASSERT:
   - p["vida"] == 13
 ```
 
-#### Test C2.2: Vida clampea a máximo
+### 2.2: Vida clampea máximo
 ```
 ARRANGE:
   - p = {"vida": 12, "vida_max": 15}
@@ -191,10 +168,10 @@ ARRANGE:
 ACT:
   - aplicar_evento(evento, p)
 ASSERT:
-  - p["vida"] == 15  (no 22)
+  - p["vida"] == 15
 ```
 
-#### Test C2.3: Vida clampea a 0 (mínimo)
+### 2.3: Vida clampea 0 (mínimo)
 ```
 ARRANGE:
   - p = {"vida": 5}
@@ -205,20 +182,20 @@ ASSERT:
   - p["vida"] == 0
 ```
 
-#### Test C2.4: Vida a 0 llama fin_derrota() y retorna
+### 2.4: Vida a 0 → fin_derrota() + early return
 ```
 ARRANGE:
   - p = {"vida": 2}
-  - evento = {"vida": -2, "fuerza": +5}  (fuerza no debe aplicarse)
+  - evento = {"vida": -2, "fuerza": 5}
   - Mock fin_derrota()
 ACT:
   - aplicar_evento(evento, p)
 ASSERT:
-  - fin_derrota.assert_called_once()
-  - p["fuerza"] NO fue modificado (retorno early)
+  - fin_derrota() llamado una vez
+  - p["fuerza"] NO modificado (early return)
 ```
 
-#### Test C2.5: Pociones se clampean
+### 2.5: Pociones clampea máximo
 ```
 ARRANGE:
   - p = {"pociones": 8, "pociones_max": 10}
@@ -226,10 +203,10 @@ ARRANGE:
 ACT:
   - aplicar_evento(evento, p)
 ASSERT:
-  - p["pociones"] == 10  (no 13)
+  - p["pociones"] == 10
 ```
 
-#### Test C2.6: Stats se clampean a 20
+### 2.6: Stats clampean a 20
 ```
 ARRANGE:
   - p = {"fuerza": 18}
@@ -240,7 +217,7 @@ ASSERT:
   - p["fuerza"] == 20
 ```
 
-#### Test C2.7: Armadura no baja de 0
+### 2.7: Armadura no baja de 0
 ```
 ARRANGE:
   - p = {"armadura": 2}
@@ -251,7 +228,7 @@ ASSERT:
   - p["armadura"] == 0
 ```
 
-#### Test C2.8: Añadir arma válida
+### 2.8: Añadir arma válida
 ```
 ARRANGE:
   - p = {"armas": {}}
@@ -259,11 +236,10 @@ ARRANGE:
 ACT:
   - aplicar_evento(evento, p)
 ASSERT:
-  - "daga" in p["armas"]
   - p["armas"]["daga"] == {"daño": 2}
 ```
 
-#### Test C2.9: Múltiples cambios simultáneamente
+### 2.9: Múltiples cambios simultáneos
 ```
 ARRANGE:
   - p = {"vida": 10, "fuerza": 5, "pociones": 3}
@@ -276,18 +252,18 @@ ASSERT:
   - p["pociones"] == 4
 ```
 
-#### Test C2.10: Stats negativos sin límite mínimo
+### 2.10: Stats negativos sin límite mínimo
 ```
 ARRANGE:
-  - p = {"fuerza": 5}  (sin fuerza_max)
+  - p = {"fuerza": 5}
   - evento = {"fuerza": -10}
 ACT:
   - aplicar_evento(evento, p)
 ASSERT:
-  - p["fuerza"] == -5  (Sin protección si no existe *_max)
+  - p["fuerza"] == -5
 ```
 
-#### Test C2.11: Pociones pueden ser negativas
+### 2.11: Pociones pueden ser negativas
 ```
 ARRANGE:
   - p = {"pociones": 2, "pociones_max": 10}
@@ -295,100 +271,262 @@ ARRANGE:
 ACT:
   - aplicar_evento(evento, p)
 ASSERT:
-  - p["pociones"] == -3  (No hay límite mínimo)
+  - p["pociones"] == -3
 ```
 
-#### Test C2.12: Key desconocida se asigna si no está en personaje
+### 2.12: Key desconocida se asigna con alerta
 ```
 ARRANGE:
-  - p = {"vida": 10}  (sin "campo_nuevo")
+  - p = {"vida": 10}
   - evento = {"campo_nuevo": 5}
   - Mock alerta()
 ACT:
   - aplicar_evento(evento, p)
 ASSERT:
-  - alerta() fue llamado (key_desconocida)
-  - p["campo_nuevo"] == 5  (Se creó el campo)
+  - alerta() llamado
+  - p["campo_nuevo"] == 5
 ```
 
-#### Test C2.13: Key válida pero no existente se suma
+### 2.13: Key válida no existente se suma
 ```
 ARRANGE:
-  - p = {"vida": 10}  (sin "moscas" que es válida)
+  - p = {"vida": 10}
   - evento = {"moscas": 1}
 ACT:
   - aplicar_evento(evento, p)
 ASSERT:
-  - p["moscas"] == 1  (Se creó y se asignó)
+  - p["moscas"] == 1
 ```
 
-#### Test C2.14: Callback UI armas se invoca al aplicar armas
+### 2.14: Callback UI armas se invoca
 ```
 ARRANGE:
   - p = {"armas": {}}
   - evento = {"armas": {"daga": {"daño": 2}}}
-  - Mock _callback_ui_armas
+  - Mock _callback_ui_armas()
 ACT:
   - aplicar_evento(evento, p)
 ASSERT:
-  - _callback_ui_armas() fue llamada una vez
-  - p["armas"] contiene "daga"
+  - _callback_ui_armas() llamado
+  - p["armas"]["daga"] presente
 ```
 
 ---
 
-## FIXTURES NECESARIAS
+## PARTE 3: FIN_DERROTA (3 tests)
+
+### Descripción
+Gestiona la derrota del jugador. Si personaje tiene _flg1 (revive), lo limpia y retorna True.
+Caso contrario retorna False.
+
+### 3.1: Retorna True si tiene _flg1
+```
+ARRANGE:
+  - p = {"_flg1": True}
+  - Mock sistema() para UI
+ACT:
+  - resultado = fin_derrota(p)
+ASSERT:
+  - resultado == True
+  - "_flg1" not in p
+```
+
+### 3.2: Retorna False sin _flg1
+```
+ARRANGE:
+  - p = {"_flg1": False}
+  - Mock sistema()
+ACT:
+  - resultado = fin_derrota(p)
+ASSERT:
+  - resultado == False
+  - p["_flg1"] == False
+```
+
+### 3.3: Limpia _flg1 tras usar
+```
+ARRANGE:
+  - p = {"_flg1": True}
+  - Mock sistema()
+ACT:
+  - fin_derrota(p)
+  - resultado2 = fin_derrota(p)
+ASSERT:
+  - Primera llamada: True
+  - Segunda llamada: False
+```
+
+---
+
+## PARTE 4: RESOLVER_EVENTOS_POST_COMBATE (2 tests)
+
+### Descripción
+Retorna un evento al jugador tras victoria en combate si existen condiciones especiales.
+Retorna None si no hay evento especial.
+
+### 4.1: Retorna evento tras victoria
+```
+ARRANGE:
+  - personaje = {"vida": 10}
+  - enemigo = {"nombre": "Carcelero"}
+  - Mock obtener_evento_de_bolsa() → {"vida": 2}
+ACT:
+  - evento = resolver_eventos_post_combate(personaje, enemigo)
+ASSERT:
+  - evento is not None
+  - evento["vida"] == 2
+```
+
+### 4.2: Retorna None sin evento
+```
+ARRANGE:
+  - personaje = {"vida": 10}
+  - enemigo = {"nombre": "Carcelero"}
+  - Mock obtener_evento_de_bolsa() → None
+ACT:
+  - evento = resolver_eventos_post_combate(personaje, enemigo)
+ASSERT:
+  - evento is None
+```
+
+---
+
+## PARTE 5: EXPLORAR (3 tests)
+
+### Descripción
+Realiza exploración: obtiene texto + evento, aplica cambios, retorna descripción.
+
+### 5.1: Retorna texto + aplica evento
+```
+ARRANGE:
+  - p = personaje_base.copy()
+  - Mock obtener_texto_exploracion_de_bolsa() → "Encuentras un cofre..."
+  - Mock obtener_evento_de_bolsa() → {"vida": 1}
+ACT:
+  - resultado = explorar(p)
+ASSERT:
+  - resultado contiene "cofre" (o similar)
+  - p["vida"] fue modificado
+```
+
+### 5.2: Actualiza eventos_superados
+```
+ARRANGE:
+  - estado["eventos_superados"] = 0
+  - Mock obtener_texto/evento
+ACT:
+  - explorar(personaje)
+ASSERT:
+  - estado["eventos_superados"] == 1
+```
+
+### 5.3: Maneja exploración sin evento
+```
+ARRANGE:
+  - Mock obtener_evento_de_bolsa() → None
+ACT:
+  - resultado = explorar(personaje)
+ASSERT:
+  - personaje NO modificado
+  - resultado contiene texto
+```
+
+---
+
+## PARTE 6: VALIDAR_PERSONAJE (2 tests)
+
+### Descripción
+Valida que personaje tenga todos los campos críticos requeridos.
+
+### 6.1: Personaje válido retorna True
+```
+ARRANGE:
+  - p = personaje_base.copy() (con todos campos)
+ACT:
+  - valido = validar_personaje(p)
+ASSERT:
+  - valido == True
+```
+
+### 6.2: Personaje inválido retorna False
+```
+ARRANGE:
+  - p = personaje_base.copy()
+  - del p["vida"]
+ACT:
+  - valido = validar_personaje(p)
+ASSERT:
+  - valido == False
+```
+
+---
+
+## PARTE 7: DECREMENTAR_EFECTOS_TEMPORALES (2 tests)
+
+### Descripción
+Decrementa duración de efectos temporales cada turno.
+- Jugador: resta 1 a cada efecto
+- Enemigo: además limpia efectos con duración ≤ 0
+
+### 7.1: Decrementa jugador
+```
+ARRANGE:
+  - p = {"_efectos_temporales": {"stun": 2, "bleed": 1}}
+ACT:
+  - decrementar_efectos_temporales_jugador(p)
+ASSERT:
+  - p["_efectos_temporales"]["stun"] == 1
+  - p["_efectos_temporales"]["bleed"] == 0
+```
+
+### 7.2: Limpia enemigo con duración ≤ 0
+```
+ARRANGE:
+  - e = {"_efectos_temporales": {"stun": 0, "bleed": 1}}
+ACT:
+  - decrementar_efectos_temporales_enemigo(e)
+ASSERT:
+  - "stun" not in e["_efectos_temporales"]
+  - e["_efectos_temporales"]["bleed"] == 0
+```
+
+---
+
+## FIXTURES
 
 ```python
-from unittest.mock import Mock, patch
+@pytest.fixture
+def personaje_core():
+    return {
+        "nombre": "test",
+        "vida": 10,
+        "vida_max": 25,
+        "fuerza": 5,
+        "destreza": 5,
+        "pociones": 6,
+        "pociones_max": 10,
+        "armadura": 2,
+        "armadura_max": 5,
+        "armas": {},
+        "_efectos_temporales": {},
+        "_flg1": False,
+    }
 
-# Personajes base
-personaje_base = {
-    "nombre": "Test",
-    "vida": 10,
-    "vida_max": 25,
-    "fuerza": 5,
-    "destreza": 5,
-    "pociones": 6,
-    "pociones_max": 10,
-    "armadura": 2,
-    "armas": {},
-}
+@pytest.fixture
+def enemigo_core():
+    return {
+        "nombre": "Carcelero",
+        "vida": 20,
+        "vida_max": 20,
+        "daño": (2, 4),
+        "jefe": False,
+        "_efectos_temporales": {},
+    }
 
-# Mock funciones globales
-with patch('TLDRDC_Prueba1.fin_derrota') as mock_fin:
-    pass
-
-with patch('TLDRDC_Prueba1.pedir_input') as mock_input:
-    mock_input.return_value = "5"
+@pytest.fixture
+def estado_core():
+    return {
+        "eventos_superados": 0,
+        "_c01": 0,
+    }
 ```
-
----
-
-## NOTAS
-
-### Hallazgos de Implementación (v0.3):
-- **crear_personaje()**: 
-  - Nombre se convierte a lowercase (línea ~770)
-  - vida_max (25), pociones_max (10), armadura_max (5) se establecen siempre (líneas ~818-821)
-  - Loop de validación para nombre vacío y fuerza fuera [1-9]
-
-- **aplicar_evento()**: 
-  - _KEYS_VALIDAS define 18 claves permitidas (línea 2562-2572)
-  - Vida: se clampea [0, vida_max], si llega a 0 → fin_derrota() + early return
-  - Pociones: NO tiene límite mínimo (puede ser negativa)
-  - Fuerza/Destreza: Solo se clampean si existe *_max en personaje (sin protección por defecto)
-  - Armadura: Se clampea [0, armadura_max]
-  - Armas: Invoca _callback_ui_armas() después (línea 2645-2646)
-  - Keys desconocidas: Emiten alerta pero se asignan igual
-
-### Critical Path:
-- **C2.4**: Early return en muerte es **DEBE testear** con mock de fin_derrota
-- **C2.11**: Pociones sin límite mínimo es comportamiento intencional (no defender como vida)
-- **C2.10**: Stats sin _max pueden ser negativos (diseño para flexibilidad)
-
-### Líneas de Código (v0.3):
-- crear_personaje: líneas 759-843
-- aplicar_evento: líneas 2570-2660
-- _KEYS_VALIDAS: líneas 2562-2572
-- _callback_ui_armas: líneas 725, 2645-2646
