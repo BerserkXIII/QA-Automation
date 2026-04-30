@@ -1,17 +1,17 @@
 # Especificación de Tests — COMBATE_ENEMIGO
 
-*Versión: 1.0*
+*Versión: 2.0*
 
-**Total: 20 tests**
-- T3: `enemigo_aleatorio(nombre)` + Jefes especiales (11 tests)
+**Total: 23 tests**
+- T3: `enemigo_aleatorio(nombre)` + Jefes especiales (14 tests)
 - T4: `turno_enemigo(personaje, enemigo, stance)` (9 tests)
 
 ---
 
-## PARTE 1: ENEMIGO_ALEATORIO + JEFES (11 tests)
+## PARTE 1: ENEMIGO_ALEATORIO + JEFES (14 tests)
 
 ### Descripción
-Genera enemigos aleatorios o específicos. Mapeo completo de 6 tipos base + 8 jefes especiales.
+Genera enemigos aleatorios o específicos. Mapeo completo de 6 tipos base + 9 jefes especiales.
 
 **Enemigos base (6):**
 - Larvas de Sangre (10 hp)
@@ -21,15 +21,16 @@ Genera enemigos aleatorios o específicos. Mapeo completo de 6 tipos base + 8 je
 - Rabioso (22 hp)
 - Sombra tenebrosa (15 hp)
 
-**Jefes especiales (8):**
-- Forrix: 30 hp (sangrado pasivo + recuperación impia)
-- Fabius v1: 45 hp (Hoz de Sangre)
-- Fabius v2: 60 hp (Hoja Noche, sin _pw)
-- Fabius v3: 30 hp (default)
-- Sanakht: 20 hp (acuchillamiento + esquiva)
-- Mano Demoniaca: 30 hp (regeneración)
-- Bel'akhor: 150 hp (4 habilidades)
-- Ka-Banda: 50 hp (frensi demoniaco)
+**Jefes especiales (9) — Orden de tests:**
+1. Forrix: 30 hp (sangrado pasivo + recuperación impia)
+2. Sanakht: 20 hp (acuchillamiento + esquiva)
+3. Ka-Banda: 50 hp (frensi demoniaco)
+4. Mano Demoniaca: 30 hp (regeneración)
+5. Bel'akhor: 150 hp (4 habilidades)
+6. Fabius v1: 45 hp (Hoz de Sangre)
+7. Fabius v2: 60 hp (Hoja Noche)
+8. Fabius v3: 30 hp (default)
+9. Fabius v4: 0 hp (estado crítico/fallido)
 
 ### T3.1: Retorna enemigo con nombre
 ```
@@ -81,65 +82,152 @@ ASSERT:
   - len(e["habilidades"]) >= 1
 ```
 
-### T3.6: Forrix (Jefe - 30 hp)
+### T3.6: Forrix, el Carcelero (30 hp - Jefe #1)
 ```
 ARRANGE: crear_carcelero()
 ACT:
-  - e = enemigo específico
+  - e = enemigo_aleatorio("Forrix, el Carcelero")
 ASSERT:
   - e["nombre"] == "Forrix, el Carcelero"
   - e["vida"] == 30
+  - e["vida_max"] == 30
   - e["jefe"] == True
-  - Habilidades: Gancho de Carnicero (pasiva, sangrado 1), Recuperacion Impia (activa, heal 4 + damage_boost 20%)
+  - Habilidades incluyen:
+    - Gancho de Carnicero (pasiva, sangrado 1)
+    - Recuperacion Impia (activa, heal 4 + damage_boost 20%)
+  - e["armadura"] >= 0
+  - e["daño"] es tupla (min, max)
 ```
 
-### T3.7: Fabius v1 (45 hp - Hoz de Sangre)
-```
-ARRANGE: crear_amo_mazmorra() con Hoz
-ACT:
-  - e = enemigo específico
-ASSERT:
-  - e["vida"] == 45
-  - Habilidades: Sutura de Dolor (pasiva, sangrado 2), Inyección Quirúrgica (activa, heal 3 + damage_boost 25%)
-```
-
-### T3.8: Fabius v2 (60 hp - Hoja Noche)
-```
-ARRANGE: crear_amo_mazmorra() con Hoja (sin _pw==1)
-ACT:
-  - e = enemigo específico
-ASSERT:
-  - e["vida"] == 60
-  - Incluye: Incisión Mortal (activa, 50%, damage_boost 40% + sangrado 3)
-```
-
-### T3.9: Fabius v3 (30 hp - default)
-```
-ARRANGE: crear_amo_mazmorra() sin condiciones
-ACT:
-  - e = enemigo específico
-ASSERT:
-  - e["vida"] == 30
-  - Solo Sutura de Dolor
-```
-
-### T3.10: Sanakht (20 hp)
+### T3.7: Sanakht, la Sombra Sangrienta (20 hp - Jefe #2)
 ```
 ARRANGE: crear_sombra_sangrienta()
 ACT:
-  - e = enemigo específico
+  - e = enemigo_aleatorio("Sanakht, la Sombra Sangrienta")
 ASSERT:
-  - e["vida"] == 20
   - e["nombre"] == "Sanakht, la Sombra Sangrienta"
-  - Habilidades: Acuchillamiento (ataque + sangrado 2), Sombra Oculta (reduce precisión 2 turnos)
+  - e["vida"] == 20
+  - e["vida_max"] == 20
+  - e["jefe"] == True
+  - Habilidades incluyen:
+    - Acuchillamiento (ataque especial + sangrado 2)
+    - Sombra Oculta (pasiva, reduce precisión 2 turnos)
+  - e["esquiva"] tiene valor específico
 ```
 
-### T3.11: Otros jefes (multi-check)
+### T3.8: Ka-Banda (50 hp - Jefe #3)
 ```
-Validar que existen:
-- Mano Demoniaca (30 hp, regeneración)
-- Bel'akhor (150 hp, 4 habilidades)
-- Ka-Banda (50 hp, frensi demoniaco)
+ARRANGE: crear_ka_banda()
+ACT:
+  - e = enemigo_aleatorio("Ka-Banda")
+ASSERT:
+  - e["nombre"] == "Ka-Banda"
+  - e["vida"] == 50
+  - e["vida_max"] == 50
+  - e["jefe"] == True
+  - Habilidades incluyen:
+    - Frensi Demoniaco (activa, damage_boost 50% por 2 turnos)
+  - e["daño"] valor base para frensi
+```
+
+### T3.9: Mano Demoniaca (30 hp - Jefe #4)
+```
+ARRANGE: crear_mano_demoniaca()
+ACT:
+  - e = enemigo_aleatorio("Mano Demoniaca")
+ASSERT:
+  - e["nombre"] == "Mano Demoniaca"
+  - e["vida"] == 30
+  - e["vida_max"] == 30
+  - e["jefe"] == True
+  - Habilidades incluyen:
+    - Regeneración (pasiva, heal 2 cada turno)
+    - Garra Demoniaca (activa, damage_boost 25%)
+  - e["_efectos_temporales"] inicializado
+```
+
+### T3.10: Bel'akhor (150 hp - Jefe #5)
+```
+ARRANGE: crear_bel_akhor()
+ACT:
+  - e = enemigo_aleatorio("Bel'akhor")
+ASSERT:
+  - e["nombre"] == "Bel'akhor"
+  - e["vida"] == 150
+  - e["vida_max"] == 150
+  - e["jefe"] == True
+  - Habilidades: exactamente 4 habilidades especiales
+    - Drenaje de Almas (activa, heal 5 + damage_boost 30%)
+    - Arrebato Apocalíptico (activa, 60% probabilidad, damage_boost 75%)
+    - Azotazo Demoniaco (pasiva, sangrado 3)
+    - Otro efecto adicional
+  - e["armadura"] valor alto (jefe potente)
+  - e["daño"] rango significativo
+```
+
+### T3.11: Fabius v1 — Hoz de Sangre (45 hp - Jefe #6)
+```
+ARRANGE: crear_amo_mazmorra() con _pw=="hoz"
+ACT:
+  - e = enemigo_aleatorio("Fabius, Amo de Mazmorra (v1)")
+ASSERT:
+  - e["nombre"] == "Fabius, Amo de Mazmorra"
+  - e["vida"] == 45
+  - e["vida_max"] == 45
+  - e["jefe"] == True
+  - e["_pw"] == "hoz" (arma codificada)
+  - Habilidades:
+    - Sutura de Dolor (pasiva, sangrado 2)
+    - Inyección Quirúrgica (activa, heal 3 + damage_boost 25%)
+  - e["daño"] bonus por arma
+```
+
+### T3.12: Fabius v2 — Hoja Noche (60 hp - Jefe #7)
+```
+ARRANGE: crear_amo_mazmorra() con _pw=="hoja" (_pw != 1)
+ACT:
+  - e = enemigo_aleatorio("Fabius, Amo de Mazmorra (v2)")
+ASSERT:
+  - e["nombre"] == "Fabius, Amo de Mazmorra"
+  - e["vida"] == 60
+  - e["vida_max"] == 60
+  - e["jefe"] == True
+  - e["_pw"] == "hoja" (arma codificada)
+  - Habilidades incluyen:
+    - Sutura de Dolor (pasiva, sangrado 2)
+    - Incisión Mortal (activa, 50% probabilidad, damage_boost 40% + sangrado 3)
+  - e["daño"] mayor que v1
+```
+
+### T3.13: Fabius v3 — Default (30 hp - Jefe #8)
+```
+ARRANGE: crear_amo_mazmorra() sin condiciones especiales
+ACT:
+  - e = enemigo_aleatorio("Fabius, Amo de Mazmorra (v3)")
+ASSERT:
+  - e["nombre"] == "Fabius, Amo de Mazmorra"
+  - e["vida"] == 30
+  - e["vida_max"] == 30
+  - e["jefe"] == True
+  - e["_pw"] == None (sin arma especial)
+  - Habilidades:
+    - Solo Sutura de Dolor (pasiva, sangrado 2)
+  - Versión base, menos habilidades que v1/v2
+```
+
+### T3.14: Fabius v4 — Estado Crítico (0 hp - Jefe #9)
+```
+ARRANGE: crear_amo_mazmorra() con condición especial (_pw == 1)
+ACT:
+  - e = enemigo_aleatorio("Fabius, Amo de Mazmorra (v4)")
+ASSERT:
+  - e["nombre"] == "Fabius, Amo de Mazmorra"
+  - e["vida"] == 0
+  - e["vida_max"] == 0
+  - e["jefe"] == True
+  - Estado especial: enemy_muerto o _estado == "critico"
+  - Habilidades: vacías o solo pasivas inactivas
+  - Representa versión final/fallida de Fabius
 ```
 
 ---
