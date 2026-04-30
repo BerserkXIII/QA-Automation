@@ -1,6 +1,6 @@
 # Especificación de Tests — INTEGRATION TESTS (EXHAUSTIVO)
 
-*Versión: 1.0 (Análisis Completo: 171 Unit Tests → 25+ Integration Tests)*
+*Versión: 1.0*
 
 ---
 
