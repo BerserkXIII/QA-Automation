@@ -1,15 +1,14 @@
 # Especificación de Tests — TLDRDC_PRUEBA1.PY (CORE)
 
-*Versión: 0.2 (Test Spec)*
+*Versión: 0.3 (Test Spec)*
 
 ---
 
 ## RESUMEN EJECUTIVO
 
-Tres funciones críticas del monolito:
-1. **calcular_daño(arma, personaje)** — Retorna daño + bonificaciones por stats
-2. **crear_personaje()** — Crea nuevo personaje con stats iniciales balanceados
-3. **aplicar_evento(evento, personaje)** — Aplica cambios de evento al personaje (stats, armas, vida, etc.)
+**Dos funciones pures del monolito (NO incluyen combate):**
+1. **crear_personaje()** — Inicialización: stats balanceados, campos secretos, validación input
+2. **aplicar_evento(evento, personaje)** — Aplicación genérica: modifica stats, pociones, armas, campos personalizados
 
 ---
 
@@ -17,112 +16,26 @@ Tres funciones críticas del monolito:
 
 | Test ID | Función | Validación |
 |---------|---------|-----------|
-| C1.1 | calcular_daño | Sin tipo: daño base |
-| C1.2 | calcular_daño | Sutil + destreza baja |
-| C1.3 | calcular_daño | Sutil + destreza alta |
-| C1.4 | calcular_daño | Pesada + fuerza |
-| C1.5 | calcular_daño | Mixta (fórmula correcta) |
-| C1.6 | calcular_daño | Mínimo 1 daño |
-| C2.1 | crear_personaje | Entrada válida |
-| C2.2 | crear_personaje | Nombre vacío rechazado |
-| C2.3 | crear_personaje | Fuerza fuera rango |
-| C2.4 | crear_personaje | Armadura según destreza |
-| C2.5 | crear_personaje | Campos requeridos |
-| C3.1 | aplicar_evento | Suma vida normal |
-| C3.2 | aplicar_evento | Vida clampea máximo |
-| C3.3 | aplicar_evento | Vida clampea mínimo |
-| C3.4 | aplicar_evento | Muerte → fin_derrota + early return |
-| C3.5 | aplicar_evento | Pociones se clampean |
-
----
-
-## FUNCIÓN: `calcular_daño(arma, personaje)`
-
-**¿Qué hace?**
-- Toma dict arma con `{"daño": X, "tipo": Y, ...}`
-- Calcula bonificación según tipo de arma:
-  - `"sutil"` → daño += destreza // 2
-  - `"pesada"` → daño += fuerza // 2
-  - `"mixta"` → daño += (fuerza + destreza) // 3
-  - Sin tipo → sin bonificación
-- Retorna daño final (número ≥ 1)
-
-**Datos de Test (Constants)**
-```python
-ARMAS = {
-    "daga": {"daño": 2, "tipo": "sutil"},
-    "martillo": {"daño": 5, "tipo": "pesada"},
-    "cimitarra": {"daño": 5, "tipo": "mixta"},
-}
-PERSONAJE_BAJO = {"fuerza": 2, "destreza": 2}
-PERSONAJE_ALTO = {"fuerza": 10, "destreza": 10}
-```
-
-#### Test C1.1: Daño base sin tipo
-```
-ARRANGE:
-  - arma = {"daño": 3}  (sin "tipo")
-  - p = PERSONAJE_ALTO
-ACT:
-  - resultado = calcular_daño(arma, p)
-ASSERT:
-  - resultado == 3  (sin bonificación)
-```
-
-#### Test C1.2: Tipo sutil + destreza baja
-```
-ARRANGE:
-  - arma = ARMAS["daga"]  (daño: 2, tipo: sutil)
-  - p = {"destreza": 4}
-ACT:
-  - resultado = calcular_daño(arma, p)
-ASSERT:
-  - resultado == 2 + (4 // 2) == 4
-```
-
-#### Test C1.3: Tipo sutil + destreza alta
-```
-ARRANGE:
-  - arma = ARMAS["daga"]
-  - p = {"destreza": 10}
-ACT:
-  - resultado = calcular_daño(arma, p)
-ASSERT:
-  - resultado == 2 + 5 == 7
-```
-
-#### Test C1.4: Tipo pesada + fuerza
-```
-ARRANGE:
-  - arma = ARMAS["martillo"]  (daño: 5, tipo: pesada)
-  - p = {"fuerza": 8}
-ACT:
-  - resultado = calcular_daño(arma, p)
-ASSERT:
-  - resultado == 5 + (8 // 2) == 9
-```
-
-#### Test C1.5: Tipo mixta
-```
-ARRANGE:
-  - arma = ARMAS["cimitarra"]  (daño: 5, tipo: mixta)
-  - p = {"fuerza": 6, "destreza": 9}
-ACT:
-  - resultado = calcular_daño(arma, p)
-ASSERT:
-  - resultado == 5 + ((6 + 9) // 3) == 5 + 5 == 10
-```
-
-#### Test C1.6: Daño mínimo sin garantía (no clampea)
-```
-ARRANGE:
-  - arma = {"daño": 0, "tipo": "sutil"}
-  - p = {"destreza": 0}
-ACT:
-  - resultado = calcular_daño(arma, p)
-ASSERT:
-  - resultado == 0  (código no clampea a 1, es responsabilidad del caller)
-```
+| C1.1 | crear_personaje | Entrada válida |
+| C1.2 | crear_personaje | Nombre vacío rechazado |
+| C1.3 | crear_personaje | Fuerza fuera rango |
+| C1.4 | crear_personaje | Armadura según destreza |
+| C1.5 | crear_personaje | Nombre a lowercase |
+| C1.6 | crear_personaje | Campos máximos y secretos |
+| C2.1 | aplicar_evento | Suma vida normal |
+| C2.2 | aplicar_evento | Vida clampea máximo |
+| C2.3 | aplicar_evento | Vida clampea mínimo |
+| C2.4 | aplicar_evento | Muerte → fin_derrota + early return |
+| C2.5 | aplicar_evento | Pociones se clampean máximo |
+| C2.6 | aplicar_evento | Stats se clampean a 20 |
+| C2.7 | aplicar_evento | Armadura no baja de 0 |
+| C2.8 | aplicar_evento | Añadir arma válida |
+| C2.9 | aplicar_evento | Múltiples cambios simultáneamente |
+| C2.10 | aplicar_evento | Stats negativos sin límite mínimo |
+| C2.11 | aplicar_evento | Pociones pueden ser negativas |
+| C2.12 | aplicar_evento | Key desconocida se asigna |
+| C2.13 | aplicar_evento | Key válida no existente se suma |
+| C2.14 | aplicar_evento | Callback UI armas se invoca |
 
 ---
 
@@ -139,7 +52,7 @@ ASSERT:
   - resto → armadura = 0
 - Retorna Personaje dict con todos los stats
 
-#### Test C2.1: Entrada válida primera vez
+#### Test C1.1: Entrada válida primera vez
 ```
 ARRANGE:
   - Mock pedir_input():
@@ -159,7 +72,7 @@ ASSERT:
   - p["armadura_max"] == 5
 ```
 
-#### Test C2.2: Nombre vacío se rechaza
+#### Test C1.2: Nombre vacío se rechaza
 ```
 ARRANGE:
   - Mock pedir_input():
@@ -174,7 +87,7 @@ ASSERT:
   - Se repitió pregunta (alerta emitida)
 ```
 
-#### Test C2.3: Fuerza fuera de rango rechazada
+#### Test C1.3: Fuerza fuera de rango rechazada
 ```
 ARRANGE:
   - Mock pedir_input():
@@ -189,7 +102,7 @@ ASSERT:
   - Se repitió pregunta 2 veces
 ```
 
-#### Test C2.4: Armadura según destreza (extremos)
+#### Test C1.4: Armadura según destreza (extremos)
 ```
 ARRANGE:
   - Mock retorna fuerza = 1 (destreza = 9)
@@ -197,21 +110,28 @@ ACT:
   - p = crear_personaje()
 ASSERT:
   - p["armadura"] == 4
+```
 
+#### Test C1.5: Nombre se convierte a lowercase
+```
 ARRANGE:
-  - Mock retorna fuerza = 9 (destreza = 1)
+  - Mock retorna "JuGaDoR" (mayúsculas)
+  - Mock retorna "5" (fuerza)
 ACT:
   - p = crear_personaje()
 ASSERT:
-  - p["armadura"] == 0
+  - p["nombre"] == "jugador"  (lowercase)
 ```
 
-#### Test C2.5: Campos secretos inicializados
+#### Test C1.6: Campos máximos y secretos inicializados
 ```
 ARRANGE: Entrada válida (1-9 para fuerza)
 ACT: p = crear_personaje()
 ASSERT:
-  - Campos requeridos: nombre, vida, pociones, fuerza, destreza, armadura, armas, nivel
+  - Campos máximos:
+    - vida_max: 25
+    - pociones_max: 10
+    - armadura_max: 5
   - Campos secretos inicializados:
     - moscas: 0
     - brazos: 0
@@ -225,6 +145,7 @@ ASSERT:
     - evento_brazos_segundo_completado: False
     - bolsa_acecho: [1, 2, 3]
     - _x9f: False
+```
 ```
 
 ---
@@ -251,7 +172,7 @@ EVENTO_ARMA = {"armas": {"daga": {}}}
 EVENTO_STATS = {"fuerza": 2, "destreza": 1}
 ```
 
-#### Test C3.1: Suma vida (sin límite)
+#### Test C2.1: Suma vida (sin límite)
 ```
 ARRANGE:
   - p = {"vida": 10, "vida_max": 15}
@@ -262,7 +183,7 @@ ASSERT:
   - p["vida"] == 13
 ```
 
-#### Test C3.2: Vida clampea a máximo
+#### Test C2.2: Vida clampea a máximo
 ```
 ARRANGE:
   - p = {"vida": 12, "vida_max": 15}
@@ -273,7 +194,7 @@ ASSERT:
   - p["vida"] == 15  (no 22)
 ```
 
-#### Test C3.3: Vida clampea a 0 (mínimo)
+#### Test C2.3: Vida clampea a 0 (mínimo)
 ```
 ARRANGE:
   - p = {"vida": 5}
@@ -284,7 +205,7 @@ ASSERT:
   - p["vida"] == 0
 ```
 
-#### Test C3.4: Vida a 0 llama fin_derrota() y retorna
+#### Test C2.4: Vida a 0 llama fin_derrota() y retorna
 ```
 ARRANGE:
   - p = {"vida": 2}
@@ -297,7 +218,7 @@ ASSERT:
   - p["fuerza"] NO fue modificado (retorno early)
 ```
 
-#### Test C3.5: Pociones se clampean
+#### Test C2.5: Pociones se clampean
 ```
 ARRANGE:
   - p = {"pociones": 8, "pociones_max": 10}
@@ -308,7 +229,7 @@ ASSERT:
   - p["pociones"] == 10  (no 13)
 ```
 
-#### Test C3.6: Stats se clampean a 20
+#### Test C2.6: Stats se clampean a 20
 ```
 ARRANGE:
   - p = {"fuerza": 18}
@@ -319,7 +240,7 @@ ASSERT:
   - p["fuerza"] == 20
 ```
 
-#### Test C3.7: Armadura no baja de 0
+#### Test C2.7: Armadura no baja de 0
 ```
 ARRANGE:
   - p = {"armadura": 2}
@@ -330,7 +251,7 @@ ASSERT:
   - p["armadura"] == 0
 ```
 
-#### Test C3.8: Añadir arma válida
+#### Test C2.8: Añadir arma válida
 ```
 ARRANGE:
   - p = {"armas": {}}
@@ -342,7 +263,7 @@ ASSERT:
   - p["armas"]["daga"] == {"daño": 2}
 ```
 
-#### Test C3.9: Múltiples cambios simultáneamente
+#### Test C2.9: Múltiples cambios simultáneamente
 ```
 ARRANGE:
   - p = {"vida": 10, "fuerza": 5, "pociones": 3}
@@ -355,18 +276,63 @@ ASSERT:
   - p["pociones"] == 4
 ```
 
-#### Test C3.10: Key desconocida emite alerta pero procesa
+#### Test C2.10: Stats negativos sin límite mínimo
 ```
 ARRANGE:
-  - p = {"vida": 10, "otros_campos": 0}
-  - evento = {"key_fake": 999}
+  - p = {"fuerza": 5}  (sin fuerza_max)
+  - evento = {"fuerza": -10}
+ACT:
+  - aplicar_evento(evento, p)
+ASSERT:
+  - p["fuerza"] == -5  (Sin protección si no existe *_max)
+```
+
+#### Test C2.11: Pociones pueden ser negativas
+```
+ARRANGE:
+  - p = {"pociones": 2, "pociones_max": 10}
+  - evento = {"pociones": -5}
+ACT:
+  - aplicar_evento(evento, p)
+ASSERT:
+  - p["pociones"] == -3  (No hay límite mínimo)
+```
+
+#### Test C2.12: Key desconocida se asigna si no está en personaje
+```
+ARRANGE:
+  - p = {"vida": 10}  (sin "campo_nuevo")
+  - evento = {"campo_nuevo": 5}
   - Mock alerta()
 ACT:
   - aplicar_evento(evento, p)
 ASSERT:
-  - alerta() fue llamado con "[DEV] aplicar_evento: key desconocida 'key_fake'"
-  - p["key_fake"] == 999 (se asignó igual)
-  - Sin excepción
+  - alerta() fue llamado (key_desconocida)
+  - p["campo_nuevo"] == 5  (Se creó el campo)
+```
+
+#### Test C2.13: Key válida pero no existente se suma
+```
+ARRANGE:
+  - p = {"vida": 10}  (sin "moscas" que es válida)
+  - evento = {"moscas": 1}
+ACT:
+  - aplicar_evento(evento, p)
+ASSERT:
+  - p["moscas"] == 1  (Se creó y se asignó)
+```
+
+#### Test C2.14: Callback UI armas se invoca al aplicar armas
+```
+ARRANGE:
+  - p = {"armas": {}}
+  - evento = {"armas": {"daga": {"daño": 2}}}
+  - Mock _callback_ui_armas
+ACT:
+  - aplicar_evento(evento, p)
+ASSERT:
+  - _callback_ui_armas() fue llamada una vez
+  - p["armas"] contiene "daga"
 ```
 
 ---
@@ -401,6 +367,28 @@ with patch('TLDRDC_Prueba1.pedir_input') as mock_input:
 
 ## NOTAS
 
-- C3.4 es **CRÍTICO**: test de early return (muerte bloquea resto de aplicación)
-- Todos los clamping son límites defensivos necesarios
-- aplicar_evento() inyecta callback para sincronizar UI (si es necesario, mockar)
+### Hallazgos de Implementación (v0.3):
+- **crear_personaje()**: 
+  - Nombre se convierte a lowercase (línea ~770)
+  - vida_max (25), pociones_max (10), armadura_max (5) se establecen siempre (líneas ~818-821)
+  - Loop de validación para nombre vacío y fuerza fuera [1-9]
+
+- **aplicar_evento()**: 
+  - _KEYS_VALIDAS define 18 claves permitidas (línea 2562-2572)
+  - Vida: se clampea [0, vida_max], si llega a 0 → fin_derrota() + early return
+  - Pociones: NO tiene límite mínimo (puede ser negativa)
+  - Fuerza/Destreza: Solo se clampean si existe *_max en personaje (sin protección por defecto)
+  - Armadura: Se clampea [0, armadura_max]
+  - Armas: Invoca _callback_ui_armas() después (línea 2645-2646)
+  - Keys desconocidas: Emiten alerta pero se asignan igual
+
+### Critical Path:
+- **C2.4**: Early return en muerte es **DEBE testear** con mock de fin_derrota
+- **C2.11**: Pociones sin límite mínimo es comportamiento intencional (no defender como vida)
+- **C2.10**: Stats sin _max pueden ser negativos (diseño para flexibilidad)
+
+### Líneas de Código (v0.3):
+- crear_personaje: líneas 759-843
+- aplicar_evento: líneas 2570-2660
+- _KEYS_VALIDAS: líneas 2562-2572
+- _callback_ui_armas: líneas 725, 2645-2646
