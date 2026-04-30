@@ -1,10 +1,10 @@
 # Especificación de Tests — COMBATE_JUGADOR
 
-*Versión: 1.0*
+*Versión: 1.3 (Simplificado + Stances)*
 
-**Total: 22 tests**
+**Total: 16 tests**
 - T1: `calcular_daño(arma, personaje)` (6 tests)
-- T2: `turno_jugador(personaje, enemigo)` (16 tests)
+- T2: `turno_jugador(personaje, enemigo)` (10 tests)
 
 ---
 
@@ -93,97 +93,72 @@ ASSERT:
 
 ---
 
-## PARTE 2: TURNO_JUGADOR (16 tests)
+## PARTE 2: TURNO_JUGADOR (8 tests — Didáctico)
 
 ### Descripción
-Lee acción del jugador (ataque/poción/huida/stance), ejecuta, retorna `("ataque"|"huida", stance_actual)`.
+Lee acción del jugador (ataque/poción/huida/stance), ejecuta, retorna `("ataque"|"huida", stance)`.
 
-**Acciones:**
-- Ataque: nombre de arma
-- Poción: "p", "pot", "pocion"
-- Huida: "h", "huir"
-- Bloquear: "bl", "blo", "bloquear"
-- Esquivar: "esq", "esquivar"
+**Nota**: Versión simplificada (8 tests) enfocada en **diferenciadores de comportamiento**. 
+Combate completo e integraciones testadas en COMBATE_LOOP.md (T5-T7).
 
-**Modificadores de stance:**
-- `bloquear`: daño *= 0.5
-- `esquivar`: daño *= 0.67, probabilidad -= 33%
+---
 
-### T2.1: Ataque exitoso golpea
+### T2.1: Ataque exitoso reduce vida enemigo
 ```
 ARRANGE:
-  - p = {"vida": 10, "destreza": 5, "armas": {"daga": {"daño": 2, "golpe": 100, "tipo": "sutil"}}}
-  - e = {"vida": 10, "nombre": "Test", "esquiva": 0}
+  - p = personaje_combate (armas cargadas)
+  - e = enemigo_combate (vida 10)
   - Mock leer_input() → "daga"
-  - Mock random.randint(1,100) → 90
+  - Mock random.randint() → 96 (> 95% golpe, éxito)
 ACT:
   - resultado, stance = turno_jugador(p, e)
 ASSERT:
   - resultado == "ataque"
-  - e["vida"] < 10
+  - e["vida"] < 10 (daño aplicado)
   - stance is None
 ```
 
-### T2.2: Ataque falla por % probabilidad
+### T2.2: Ataque falla cuando roll > probabilidad golpe
 ```
 ARRANGE:
-  - arma = {"daño": 2, "golpe": 10, "tipo": "sutil"}
-  - Mock random.randint(1,100) → 11 (falla)
+  - arma = {"daño": 2, "golpe": 10}
+  - Mock leer_input() → nombre_arma
+  - Mock random.randint() → 11 (> 10%, falla)
 ACT:
   - turno_jugador(p, e)
 ASSERT:
   - e["vida"] == 10 (sin daño)
 ```
 
-### T2.3: Poción usa y sana +4
+### T2.3: Poción sana +4 vida
 ```
 ARRANGE:
-  - p = {"vida": 6, "vida_max": 10, "pociones": 2}
+  - p["vida"] = 6, p["vida_max"] = 10, p["pociones"] = 2
   - Mock leer_input() → "p", luego "daga"
 ACT:
   - turno_jugador(p, e)
 ASSERT:
-  - p["pociones"] == 1
-  - p["vida"] == 10
+  - p["pociones"] == 1 (consumida)
+  - p["vida"] == 10 (6 + 4, clampeada a max)
 ```
 
-### T2.4: Poción solo 1x por turno
+### T2.4: Poción bloqueada sin pociones
 ```
 ARRANGE:
-  - Mock leer_input() → "p", "p", "daga"
-ACT:
-  - turno_jugador(p, e)
-ASSERT:
-  - p["pociones"] == 4 (solo 1 consumida)
-```
-
-### T2.5: Sin pociones rechaza
-```
-ARRANGE:
-  - p = {"vida": 5, "pociones": 0}
+  - p["pociones"] = 0, p["vida"] = 5
   - Mock leer_input() → "p", luego "daga"
+  - Mock alerta()
 ACT:
   - turno_jugador(p, e)
 ASSERT:
-  - Alerta emitida
-  - p["vida"] == 5
+  - alerta.called (rechazada)
+  - p["vida"] == 5 (sin cambios)
 ```
 
-### T2.6: Vida máxima rechaza poción
+### T2.5: Huida exitosa cuando 1d20+destreza ≥ 15
 ```
 ARRANGE:
-  - p = {"vida": 10, "vida_max": 10, "pociones": 1}
-  - Mock leer_input() → "p", luego "daga"
-ACT:
-  - turno_jugador(p, e)
-ASSERT:
-  - p["pociones"] == 1 (no consumida)
-```
-
-### T2.7: Huida cálculo 1d20 + destreza ≥ 15
-```
-ARRANGE:
-  - p = {"vida": 10, "destreza": 5}
+  - p["destreza"] = 5
   - Mock leer_input() → "h"
   - Mock random.randint(1,20) → 10 (10+5=15, éxito)
 ACT:
@@ -193,103 +168,73 @@ ASSERT:
   - stance is None
 ```
 
-### T2.8: Huida solo 1 intento por turno
+### T2.6: Huida falla cuando 1d20+destreza < 15
 ```
 ARRANGE:
-  - Mock leer_input() → "h", "h", "daga"
-  - Mock random.randint → 5 (falla primer intento)
-ACT:
-  - turno_jugador(p, e)
-ASSERT:
-  - Alerta 2º intento: "Ya has intentado huir"
-```
-
-### T2.9: Huida retorna tupla
-```
-ARRANGE:
-  - Mock random.randint → 20 (éxito garantizado)
+  - p["destreza"] = 2
+  - Mock leer_input() → "h", luego "daga"
+  - Mock random.randint(1,20) → 5 (5+2=7, falla)
 ACT:
   - resultado, stance = turno_jugador(p, e)
 ASSERT:
-  - isinstance(resultado, str) and resultado == "huida"
-  - stance is None
+  - resultado == "ataque" (continúa turno)
+  - Mock alerta() emitido (falla anunciada)
 ```
 
-### T2.10: Stance Bloquear toggle ON
+### T2.7: Stance bloquear toggle
 ```
 ARRANGE:
   - Mock leer_input() → "bl", "daga"
+  - Mock sistema()
 ACT:
   - turno_jugador(p, e)
 ASSERT:
-  - Sistema: "Postura de bloqueo activa"
+  - sistema.called (anuncio de stance)
+  - "bloqueo" in última llamada a sistema()
 ```
 
-### T2.11: Stance Esquivar toggle ON
+### T2.8: Stance esquivar toggle
 ```
 ARRANGE:
   - Mock leer_input() → "esq", "daga"
+  - Mock sistema()
 ACT:
   - turno_jugador(p, e)
 ASSERT:
-  - Sistema: "Postura de esquiva activa"
+  - sistema.called (anuncio de stance)
+  - "esquiva" in última llamada a sistema()
 ```
 
-### T2.12: Stance Bloquear reduce daño 50%
+### T2.9: Sin stance (ataque normal sin modificadores)
 ```
 ARRANGE:
-  - p = {"vida": 10, "fuerza": 10, "armas": {"test": {"daño": 10, "golpe": 100}}}
-  - e = {"vida": 20, "nombre": "Test", "esquiva": 0}
-  - stance = "bloquear"
+  - p = personaje_combate (sin stance activo)
+  - e = enemigo_combate (vida 10)
+  - arma = {"daño": 3, "golpe": 100}
+  - Mock leer_input() → nombre_arma
+  - Mock random.randint() → 80 (éxito)
 ACT:
-  - turno_jugador(p, e)
+  - resultado, stance = turno_jugador(p, e)
 ASSERT:
-  - Daño aplicado < 10 (reducido por bloqueo)
+  - resultado == "ataque"
+  - stance is None (sin stance)
+  - e["vida"] == 7 (daño completo: 10 - 3)
 ```
 
-### T2.13: Arma Sangrado
+### T2.10: Efectos de arma aplicados (sangrado, stun, vida)
 ```
 ARRANGE:
-  - arma = {"daño": 5, "golpe": 100, "sangrado": 2, "tipo": "sutil"}
-  - e = {"vida": 10, "sangrado": 0}
+  - arma = {"daño": 5, "golpe": 100, "sangrado": 2, "stun": 3, "vida": 1, "tipo": "sutil"}
+  - e = {"vida": 10, "sangrado": 0, "stun": 0}
+  - p["vida"] = 5, p["vida_max"] = 10
+  - Mock leer_input() → nombre_arma
+  - Mock random.randint() → 100 (éxito + stun activation)
 ACT:
   - turno_jugador(p, e)
 ASSERT:
   - e["sangrado"] == 2
-```
-
-### T2.14: Arma Stun
-```
-ARRANGE:
-  - arma = {"daño": 5, "golpe": 100, "stun": 3, "tipo": "sutil"}
-  - e = {"vida": 10, "stun": 0}
-  - Mock random.randint(1,6) → 2 (≤ 3, activa stun)
-ACT:
-  - turno_jugador(p, e)
-ASSERT:
   - e["stun"] >= 1
-```
-
-### T2.15: Arma Vida (lifesteal)
-```
-ARRANGE:
-  - arma = {"daño": 5, "golpe": 100, "vida": 3, "tipo": "sutil"}
-  - p = {"vida": 5, "vida_max": 10}
-ACT:
-  - turno_jugador(p, e)
-ASSERT:
-  - p["vida"] == 8
-```
-
-### T2.16: Arma Auto-Daño
-```
-ARRANGE:
-  - arma = {"daño": 7, "golpe": 100, "auto_daño": 1, "tipo": "sutil"}
-  - p = {"vida": 10}
-ACT:
-  - turno_jugador(p, e)
-ASSERT:
-  - p["vida"] == 9
+  - p["vida"] == 6 (lifesteal aplicado: 5 + 1)
 ```
 
 ---
@@ -297,8 +242,8 @@ ASSERT:
 ## FIXTURES NECESARIAS
 
 ```python
-# Personaje base
-personaje_base = {
+# Desde conftest_combate.py
+personaje_combate = {
     "nombre": "jugador",
     "vida": 10,
     "vida_max": 25,
@@ -308,14 +253,13 @@ personaje_base = {
     "pociones_max": 10,
     "armadura": 2,
     "armadura_max": 5,
-    "armas": {"daga": {"daño": 2, "golpe": 95, "sangrado": 1, "tipo": "sutil"}},
+    "armas": {...},  # Cargadas desde estado_global_mock
     "_huyo_combate": False,
     "_efectos_temporales": {},
     "stun": 0,
 }
 
-# Enemigo base
-enemigo_base = {
+enemigo_combate = {
     "nombre": "Larvas de Sangre",
     "vida": 10,
     "vida_max": 10,
@@ -336,8 +280,9 @@ enemigo_base = {
 
 | Item | Valor |
 |------|-------|
-| Total Tests | 22 |
-| Función Principal | calcular_daño, turno_jugador |
-| Líneas Código | ~864, ~3794 |
-| Categorías | 2 |
-| Mocks Necesarios | leer_input, random.randint |
+| Total Tests | 16 |
+| T1 (calcular_daño) | 6 tests |
+| T2 (turno_jugador) | 10 tests (simplificado didáctico) |
+| Versión | 1.3 (Simplified + Stances) |
+| Mocks Principales | leer_input, random.randint, alerta, sistema |
+| Nota | Integración completa de combate en COMBATE_LOOP.md |
