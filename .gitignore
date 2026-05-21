@@ -29,3 +29,4 @@ venv/
 # Archivos de configuración de IDEs
 ListadoCasosPrueba.md
 docs/SPEC_DEBUG_MODE.md
+scripts/
