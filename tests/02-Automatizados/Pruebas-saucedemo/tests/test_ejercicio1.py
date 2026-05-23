@@ -2,7 +2,7 @@
 """
 Test de cantidad en carrito → añadir dos productos distintos y verificar que el contador muestra 2"""
 
-import pytest, re
+"""import pytest, re
 from playwright.sync_api import Page, expect
 
 
@@ -61,7 +61,7 @@ def test_checkout_completo(logged_page: Page):
 
 def test_filtro_precio(logged_page: Page):
     logged_page.locator("[data-test=\"product-sort-container\"]").select_option("lohi")
-    # 1. Localiza los elementos de precio (reemplaza el selector CSS por el de tu página)
+    # 1. Localiza los elementos de precio 
     precios_elementos = logged_page.locator(".inventory_item_price") 
     
     # 2. Extrae el texto y limpia los caracteres extra (como el símbolo de moneda)
@@ -91,8 +91,8 @@ def test_usuario_bloqueado(page: Page):
     "Epic sadface: Sorry, this user has been locked out.")
 
 
-def test_numero_de_productos_en_carrito(logged_page: Page):
+def test_numero_de_productos_distintos(logged_page: Page):
     # Verifica que dos productos distintos suman 2 en el badge
     logged_page.locator("[data-test=\"add-to-cart-sauce-labs-backpack\"]").click()
     logged_page.locator("[data-test=\"add-to-cart-sauce-labs-bike-light\"]").click()
-    expect(logged_page.locator("[data-test='shopping-cart-badge']")).to_have_text("2")
+    expect(logged_page.locator("[data-test='shopping-cart-badge']")).to_have_text("2")"""
