@@ -17,5 +17,8 @@ class LoginPage:
     def verificar_login_exitoso(self):
         expect(self.page.get_by_text("Products")).to_be_visible()
 
+    def verificar_carrito(self):
+        expect(self.page.locator("[data-test='shopping-cart-badge']"))
+
     def verificar_login_fallido(self, mensaje_esperado):
         expect(self.page.locator("[data-test='error']")).to_have_text(mensaje_esperado)

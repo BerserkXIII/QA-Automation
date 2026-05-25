@@ -18,3 +18,6 @@ def logged_page(page):
     login.verificar_login_exitoso()
     return InventoryPage(page)
 
+
+    
+
