@@ -18,7 +18,7 @@ No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evide
 |----------------------------------|-----------------------------------------|
 | Testing Manual                   | ✅ Activo (Actualización constante)     |
 | Git & GitHub                     | ✅ Activo (Práctico)                    |
-| Automatización (Selenium/Python) | ✅ Activo (Práctico)                    |
+| Automatización (Playwright/Python) | ✅ Activo (Práctico)                    |
 
 ## 🎯 Meta a Corto Plazo
 - [x] Completar exámenes de preparación para ISTQB.
@@ -30,7 +30,7 @@ No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evide
 - [x] Integración de CI/CD pipelines (GitHub Actions o similares).
 - [x] Explorar testing con IA: prompts para generar casos de prueba.
 - [ ] Crear un portafolio con proyecto real testeado (end-to-end).
-- [ ] Transición de manual a automatización (documentar la curva de aprendizaje).
+- [x] Transición de manual a automatización (documentar la curva de aprendizaje).
 
 ## 💡 Cómo leer este portafolio
 1.  Comienza en [README.md](./README.md) para ver el panorama general.

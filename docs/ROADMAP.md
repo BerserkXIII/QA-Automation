@@ -7,7 +7,7 @@
 - [x] Hacer pull requests (Repo Prácticas-GitHub)
 
 ## Mes 3-4: Automatización Básica
-- [ ] Instalar Selenium + Python
+- [ ] Instalar Playwright + Python
 - [ ] Primer test automatizado
 - [ ] Documentar el proceso
 

@@ -74,8 +74,8 @@ def test_checkout_completo(logged_page):
     logged_page.agregar_producto_al_carrito("sauce-labs-bike-light")
     cart = logged_page.ir_al_carrito()
     expect(logged_page.page).to_have_url("https://www.saucedemo.com/cart.html")
-    cart.verificar_producto_en_carrito("sauce-labs-backpack")
-    cart.verificar_producto_en_carrito("sauce-labs-bike-light")
+    cart.verificar_producto_en_carrito("Sauce Labs Backpack")
+    cart.verificar_producto_en_carrito("Sauce Labs Bike Light")
     cart.eliminar_producto_del_carrito("sauce-labs-backpack")
     cart.boton_checkout()
     cart.info_checkout("Juan", "Perez", "12345")
@@ -89,3 +89,20 @@ def test_continuar_comprando(logged_page):
     expect(logged_page.page).to_have_url("https://www.saucedemo.com/cart.html")
     cart.continuar_comprando()
     expect(logged_page.page.get_by_text("Products")).to_be_visible()
+
+def test_aislamiento_carrito(logged_page):
+    expect(logged_page.page).to_have_url("https://www.saucedemo.com/inventory.html")
+    logged_page.agregar_producto_al_carrito("sauce-labs-backpack")
+    logged_page.agregar_producto_al_carrito("sauce-labs-bike-light")
+    cart = logged_page.ir_al_carrito()
+    expect(logged_page.page).to_have_url("https://www.saucedemo.com/cart.html")
+    cart.eliminar_producto_del_carrito("sauce-labs-backpack")
+    cart.verificar_producto_en_carrito("Sauce Labs Bike Light")
+
+def test_checkout_carrito_vacio(logged_page):
+    cart = logged_page.ir_al_carrito()
+    expect(logged_page.page).to_have_url("https://www.saucedemo.com/cart.html")
+    cart.boton_checkout()
+    # Bug conocido: saucedemo permite checkout sin productos
+    cart.info_checkout("Juan", "Perez", "12345")
+    cart.finalizar_checkout()

@@ -6,11 +6,12 @@ class CartPage:
     def __init__(self, page):
         self.page = page
 
-    def verificar_producto_en_carrito(self, producto_id):
-        self.cart_badge = self.page.locator(f"[data-test='text='{producto_id}']")
+    def verificar_producto_en_carrito(self, nombre_producto):
+        expect(self.page.get_by_text(nombre_producto)).to_be_visible()
 
-    def eliminar_producto_del_carrito(self, producto_id):
-        self.page.locator(f"[data-test='remove-{producto_id}']").click()
+    def eliminar_producto_del_carrito(self, nombre_producto):
+        self.page.locator(f"[data-test='remove-{nombre_producto}']").click()
+        expect(self.page.get_by_text(nombre_producto)).not_to_be_visible()
 
     def boton_checkout(self):
         self.page.locator("[data-test='checkout']").click()
