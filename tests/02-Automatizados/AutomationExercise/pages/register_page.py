@@ -27,7 +27,6 @@ class RegisterPage:
         self.page.get_by_role("textbox", name="Mobile Number *").fill(user["phone"])
         self.page.get_by_role("button", name="Create Account").click()
         expect(self.page).to_have_url("https://automationexercise.com/account_created")
-        #self.page.pause()
         self.page.locator("[data-qa='continue-button']").click()
 
     def cerrar_pop_up1(self):

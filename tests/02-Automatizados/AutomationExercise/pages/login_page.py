@@ -12,12 +12,16 @@ class LoginPage:
     def ir_a_login(self):
         self.page.goto(constants.LOGIN_URL)
 
-    def ir_a_registro(self, user):
-        print(f"\n=== URL al registrar: {self.page.url} ===\n")
-        self.page.locator("[data-qa='signup-name']").fill(user["first_name"])
-        self.page.locator("[data-qa='signup-email']").fill(user["email"])
+    def registro(self, new_user):
+        self.page.locator("[data-qa='signup-name']").fill(new_user["first_name"])
+        self.page.locator("[data-qa='signup-email']").fill(new_user["email"])
         self.page.locator("[data-qa='signup-button']").click()
         return RegisterPage(self.page)
+    
+    def registro_usuario_existente(self):
+        self.page.locator("[data-qa='signup-name']").fill(constants.VALID_USER["first_name"])
+        self.page.locator("[data-qa='signup-email']").fill(constants.VALID_USER["email"])
+        self.page.locator("[data-qa='signup-button']").click()
 
     def verificar_login(self):
         expect(self.page).to_have_url(constants.LOGIN_URL)
@@ -26,4 +30,10 @@ class LoginPage:
         expect(self.page).to_have_url(constants.LOGIN_URL)
         self.page.locator("[data-qa='login-email']").fill(constants.VALID_USER["email"])
         self.page.locator("[data-qa='login-password']").fill(constants.VALID_USER["password"])
+        self.page.locator("[data-qa='login-button']").click()
+
+    def login_incorrecto(self):
+        expect(self.page).to_have_url(constants.LOGIN_URL)
+        self.page.locator("[data-qa='login-email']").fill(constants.INVALID_USER["email"])
+        self.page.locator("[data-qa='login-password']").fill(constants.INVALID_USER["password"])
         self.page.locator("[data-qa='login-button']").click()

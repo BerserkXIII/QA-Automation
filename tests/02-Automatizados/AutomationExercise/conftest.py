@@ -39,8 +39,8 @@ def register_page(page):
 
 @pytest.fixture
 def logged_user(page):
-    home_page.ir_a_login()
-    login_page.login_correcto()
-    home_page.verificar_home()
-    return home_page
+    home = HomePage(page)
+    login = home.boton_login()
+    login.login_correcto()
+    return home
 
