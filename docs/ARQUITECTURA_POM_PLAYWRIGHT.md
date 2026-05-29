@@ -271,3 +271,70 @@ def test_carrito(logged_page):
 ```
 
 Código limpio, mantenible, y que falla en el lugar correcto cuando algo rompe.
+
+
+*Lección: Por qué headless y headed no son iguales*
+
+**El problema raíz**
+
+- Cuando Playwright corre en modo headless, lanza un navegador sin interfaz gráfica. Ese navegador usa configuraciones por defecto del sistema operativo o del propio Chromium, que pueden diferir de tu navegador normal.
+
+**Las diferencias más comunes:**
+
+- Idioma → headed usa el idioma de tu Windows. Headless usa el idioma por defecto de Chromium, normalmente inglés. Por eso "Consentir" se convierte en "Consent".
+- Resolución → headless tiene una resolución por defecto distinta. Elementos que se ven en headed pueden estar fuera del viewport en headless.
+- Cookies y localStorage → headless empieza siempre limpio. Si tu headed tiene cookies guardadas de visitas anteriores, el comportamiento puede diferir.
+- Velocidad → headless va más rápido, lo que causa race conditions donde el código intenta interactuar con elementos que aún no han cargado.
+
+**Las soluciones por orden de preferencia**
+
+1. Forzar locale en conftest → lo que acabas de hacer. Soluciona el problema de idioma de raíz:
+
+python@pytest.fixture(scope="session")
+def browser_context_args(browser_context_args):
+    return {
+        **browser_context_args,
+        "locale": "es-ES",
+        "viewport": {"width": 1280, "height": 720}  # resolución consistente
+    }
+
+Añade también viewport para evitar problemas de resolución.
+
+2. Selectores robustos → no dependas de texto cuando puedas evitarlo:
+
+page.get_by_role("button", name="Consentir") # Frágil, depende del idioma
+
+# Robusto, no depende del idioma
+page.locator("[id='cookie-consent-button']")
+page.locator("[data-testid='accept-cookies']")
+
+Cuando veas un botón de cookies o popup, mira si tiene un id o data-testid en el inspector. Ese selector nunca cambia por idioma.
+
+3. Fallback de nombres → cuando no tienes otra opción, como en este caso:
+
+pythonfor name in ["Consentir", "Consent", "Accept", "Aceptar"]:
+    try:
+        boton = page.get_by_role("button", name=name)
+        boton.wait_for(state="visible", timeout=2000)
+        boton.click()
+        return
+    except:
+        continue
+
+4. wait_for_load_state → para race conditions de velocidad:
+
+pythonpage.goto(URL)
+page.wait_for_load_state("networkidle")  # espera a que la red esté quieta
+
+El proceso de diagnóstico cuando algo falla solo en headless
+
+## Esto es lo que has aprendido hoy de forma práctica:
+
+1. Añade prints para saber hasta dónde llega el código
+2. Lista los elementos visibles cuando falla
+3. Compara con lo que ves en headed
+4. Identifica la diferencia (idioma, resolución, timing)
+5. Aplica la solución adecuada
+
+**Regla general**
+Diseña tus tests para headless desde el principio. Headless es el entorno real donde correrán en CI/CD. Headed es solo para desarrollar y debuggear. Si algo funciona en headed pero no en headless, el problema está en el test, no en el entorno.

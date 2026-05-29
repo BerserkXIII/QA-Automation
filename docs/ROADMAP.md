@@ -7,8 +7,8 @@
 - [x] Hacer pull requests (Repo Prácticas-GitHub)
 
 ## Mes 3-4: Automatización Básica
-- [ ] Instalar Playwright + Python
-- [ ] Primer test automatizado
+- [x] Instalar Playwright + Python
+- [x] Primer test automatizado
 - [ ] Documentar el proceso
 
 ## Mes 5+: IA en Testing

@@ -21,6 +21,7 @@ temp/
 node_modules/
 __pycache__/
 venv/
+venv2/
 .pytest_cache/
 
 # Caches del navegador 
@@ -31,4 +32,4 @@ ListadoCasosPrueba.md
 docs/SPEC_DEBUG_MODE.md
 scripts/
 notas.txt
-Prueba_ejercicio1.py
+constants.py
