@@ -2,6 +2,7 @@
 import pytest
 import constants
 from pages.login_page import LoginPage
+from pages.products_page import ProductsPage
 from playwright.sync_api import expect
 
 class HomePage:
@@ -9,7 +10,10 @@ class HomePage:
         self.page = page
 
     def ir_a_home(self):
-        self.page.goto(constants.HOME_URL)        
+        self.page.goto(constants.HOME_URL) 
+
+    def ir_a_login(self):
+        self.page.goto(constants.LOGIN_URL)       
         
     def verificar_home(self):
         expect(self.page).to_have_url(constants.HOME_URL)
@@ -30,3 +34,8 @@ class HomePage:
     def boton_login(self):
         self.page.get_by_role("link", name="Signup / Login").click()
         return LoginPage(self.page)
+    
+    def boton_productos(self):
+        self.page.get_by_role("link", name="Products").click()
+        return ProductsPage(self.page)
+    

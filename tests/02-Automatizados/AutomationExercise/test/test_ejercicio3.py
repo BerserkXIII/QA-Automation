@@ -34,3 +34,12 @@ def test_logout(home_page, logged_user):
     logged_user.page.get_by_role("link", name="Logout").click()
     expect(logged_user.page).to_have_url("https://automationexercise.com/login")
     
+def test_agregar_producto_al_carrito(logged_user):
+    logged_user.verificar_usuario_logueado()
+    products_page = logged_user.boton_productos()
+    products_page.verificar_productpage()
+    products_page.agregar_producto_al_carrito(1)
+    products_page.agregar_producto_al_carrito(6)
+
+
+    

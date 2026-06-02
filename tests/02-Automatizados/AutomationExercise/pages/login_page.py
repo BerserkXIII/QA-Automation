@@ -9,9 +9,6 @@ class LoginPage:
     def __init__(self, page):
         self.page = page
 
-    def ir_a_login(self):
-        self.page.goto(constants.LOGIN_URL)
-
     def registro(self, new_user):
         self.page.locator("[data-qa='signup-name']").fill(new_user["first_name"])
         self.page.locator("[data-qa='signup-email']").fill(new_user["email"])
@@ -37,3 +34,5 @@ class LoginPage:
         self.page.locator("[data-qa='login-email']").fill(constants.INVALID_USER["email"])
         self.page.locator("[data-qa='login-password']").fill(constants.INVALID_USER["password"])
         self.page.locator("[data-qa='login-button']").click()
+
+    
