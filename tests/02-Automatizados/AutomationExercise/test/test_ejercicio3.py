@@ -38,8 +38,26 @@ def test_agregar_producto_al_carrito(logged_user):
     logged_user.verificar_usuario_logueado()
     products_page = logged_user.boton_productos()
     products_page.verificar_productpage()
-    products_page.agregar_producto_al_carrito(1)
-    products_page.agregar_producto_al_carrito(6)
-
-
+    prods_agregados = [1, 6]
+    products_page.agregar_producto_al_carrito(prods_agregados)
+    cart_page = products_page.boton_cart()
+    cart_page.verificar_cartpage()
+    cart_page.verificar_producto_en_carrito(prods_agregados)
     
+def test_borrar_producto_del_carrito(carrito_lleno):
+    cart_page, prods_agregados = carrito_lleno
+    cart_page.verificar_cartpage()
+    cart_page.verificar_producto_en_carrito(prods_agregados)
+    cart_page.borrar_producto(prods_agregados)
+    expect(cart_page.page.locator("#empty_cart")).to_contain_text("Cart is empty!")
+
+def test_checkout_completo(carrito_lleno):
+    cart_page, prods_agregados = carrito_lleno
+    cart_page.verificar_cartpage()
+    cart_page.verificar_producto_en_carrito(prods_agregados)
+    checkout_page = cart_page.boton_checkout()
+    checkout_page.verificar_checkoutpage()
+    checkout_page.boton_place_order()
+    checkout_page.completar_formulario_checkout()
+    #expect(checkout_page).to_have_url("https://automationexercise.com/payment_done/0")
+    checkout_page.verificar_orden_completada()

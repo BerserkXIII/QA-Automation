@@ -22,7 +22,7 @@ class HomePage:
         expect(self.page.get_by_text(f"Logged in as {constants.VALID_USER['first_name']} {constants.VALID_USER['last_name']}")).to_be_visible()
 
     def cerrar_pop_up(self):
-        for name in ["Consentir"]:
+        for name in ["Consentir", "Consent"]:
             boton = self.page.get_by_role("button", name=name)
             try:
                 boton.wait_for(state="visible", timeout=3000)

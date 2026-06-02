@@ -4,7 +4,8 @@ import constants
 from playwright.sync_api import expect
 from pages.home_page import HomePage
 from pages.login_page import LoginPage
-#from pages.cart_page import CartPage
+from pages.cart_page import CartPage
+from pages.register_page import RegisterPage
 
 
 @pytest.fixture(scope="session")
@@ -30,9 +31,9 @@ def login_page(page):
 
 @pytest.fixture
 def cart_page(page):
-    home = logged_user = HomePage(page)
-    login = carrito_lleno = login_page = LoginPage(page)
-    return CartPage(page)
+    cart = CartPage(page)
+    cart.verificar_cartpage()
+    return cart
 
 @pytest.fixture
 def new_user():
@@ -51,3 +52,12 @@ def logged_user(home_page):
     login.login_correcto()
     return home_page
 
+@pytest.fixture
+def carrito_lleno(logged_user):
+    logged_user.verificar_usuario_logueado()
+    products_page = logged_user.boton_productos()
+    products_page.verificar_productpage()
+    prods_agregados = [2, 3, 5, 7, 12, 15]
+    products_page.agregar_producto_al_carrito(prods_agregados)
+    cart_page = products_page.boton_cart()
+    return cart_page, prods_agregados
