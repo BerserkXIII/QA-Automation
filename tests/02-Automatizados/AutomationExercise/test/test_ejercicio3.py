@@ -71,5 +71,11 @@ def test_checkout_completo(carrito_lleno):
     checkout_page.verificar_checkoutpage()
     checkout_page.boton_place_order()
     checkout_page.completar_formulario_checkout()
-    #expect(checkout_page).to_have_url("https://automationexercise.com/payment_done/0")
     checkout_page.verificar_orden_completada()
+
+def test_verificar_categorias(logged_user):
+    logged_user.verificar_usuario_logueado()
+    products_page = logged_user.boton_productos()
+    products_page.verificar_productpage()
+    products_page.verificar_categorias()
+    products_page.verificar_brands()

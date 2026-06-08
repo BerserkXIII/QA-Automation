@@ -4,6 +4,7 @@ import pytest
 import constants
 from pages.cart_page import CartPage
 from playwright.sync_api import expect
+from urllib.parse import unquote
 
 class ProductsPage:
     def __init__(self, page):
@@ -34,3 +35,25 @@ class ProductsPage:
             precios[numero_prod] = precio
         return precios
     
+    def verificar_categorias(self):
+        paneles = ["Women", "Men", "Kids"]
+        for panel in paneles:
+            self.page.locator(f"a[href='#{panel}']").click()
+            links = self.page.locator(f"#{panel} .panel-body a").all()
+            for link in links:
+                url_relativa = link.get_attribute("href")
+                link.click()
+                expect(self.page).to_have_url(f"{constants.HOME_URL.rstrip('/')}{url_relativa}")
+                self.page.go_back()
+                self.page.locator(f"a[href='#{panel}']").click()
+
+
+    def verificar_brands(self):
+        links = self.page.locator(".brands-name a").all()
+        for link in links:
+            url_relativa = link.get_attribute("href")
+            link.click()
+            url_actual = unquote(self.page.url)
+            url_esperada = f"{constants.HOME_URL.rstrip('/')}{url_relativa}"
+            assert url_actual == url_esperada, f"URL incorrecta: {url_actual}"
+            self.page.go_back()
