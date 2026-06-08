@@ -34,7 +34,7 @@ def test_logout(home_page, logged_user):
     logged_user.page.get_by_role("link", name="Logout").click()
     expect(logged_user.page).to_have_url("https://automationexercise.com/login")
     
-def test_agregar_producto_al_carrito(logged_user):
+def test_agregar_producto_carrito(logged_user):
     logged_user.verificar_usuario_logueado()
     products_page = logged_user.boton_productos()
     products_page.verificar_productpage()
@@ -43,6 +43,18 @@ def test_agregar_producto_al_carrito(logged_user):
     cart_page = products_page.boton_cart()
     cart_page.verificar_cartpage()
     cart_page.verificar_producto_en_carrito(prods_agregados)
+
+def test_agregar_producto_carrito_hover(logged_user):
+    logged_user.verificar_usuario_logueado()
+    products_page = logged_user.boton_productos()
+    products_page.verificar_productpage()
+    prods_agregados = [1, 6]
+    products_page.hover_producto(prods_agregados)
+    precios = products_page.precio_producto(prods_agregados)
+    cart_page = products_page.boton_cart()
+    cart_page.verificar_cartpage()
+    cart_page.verificar_producto_en_carrito(prods_agregados)
+    cart_page.comparar_precios(precios)
     
 def test_borrar_producto_del_carrito(carrito_lleno):
     cart_page, prods_agregados = carrito_lleno

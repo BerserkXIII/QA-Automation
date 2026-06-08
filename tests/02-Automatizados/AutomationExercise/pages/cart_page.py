@@ -23,4 +23,8 @@ class CartPage:
     def boton_checkout(self):
         self.page.get_by_text("Proceed To Checkout").click()
         return CheckoutPage(self.page)
-            
+    
+    def comparar_precios(self, precios):
+        for numero_prod, precio in precios.items():
+            precio_carrito = self.page.locator(f"#product-{numero_prod} .cart_price p").inner_text()
+            assert precio == precio_carrito, f"Producto {numero_prod}: esperado {precio}, encontrado {precio_carrito}"
