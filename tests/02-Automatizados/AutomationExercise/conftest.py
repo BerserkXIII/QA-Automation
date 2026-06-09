@@ -64,4 +64,23 @@ def carrito_lleno(logged_user):
     cart_page = products_page.boton_cart()
     return cart_page, prods_agregados
 
+@pytest.fixture(autouse=True)
+def setup_ads(page):
+    # Bloquea peticiones de publicidad a nivel de red
+    page.route("**/*googlesyndication*", lambda route: route.abort())
+    page.route("**/*doubleclick*", lambda route: route.abort())
+    page.route("**/*googleadservices*", lambda route: route.abort())
+    page.route("**/*google/ads*", lambda route: route.abort())
+    
+    # Handler para popups que escapen al bloqueo
+    def handler_vignette():
+        try:
+            page.locator("#dismiss-button-element").click(timeout=1000)
+        except:
+            pass
 
+    page.add_locator_handler(
+        page.locator("#ad_position_box"),
+        handler_vignette,
+        no_wait_after=True
+    )

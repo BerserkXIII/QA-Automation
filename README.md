@@ -52,6 +52,8 @@ Implementé el patrón **Page Object Model** para escalar pruebas mantenibles.
 | **Pruebas-saucedemo** | SauceDemo | Aprender POM desde cero | ✅ Completado |
 | **AutomationExercise** | E-commerce ficticio | Validar patrones | ✅ Activo |
 
+> ⚠️ **Nota sobre AutomationExercise**: Esta web tiene publicidad muy agresiva que aparece aleatoriamente. **No es realista para una suite de tests limpia en producción**, pero es excelente para practicar manejo de popups, handlers dinámicos y debugging de problemas inesperados. No es un buen escenario real de prueba, pero si para entender el manejo de estos elementos. Hay codigo en los tests para manejarlo, pero en varias ocasiones por run no lo consigue.
+
 
 ### Arquitectura & Conceptos
 

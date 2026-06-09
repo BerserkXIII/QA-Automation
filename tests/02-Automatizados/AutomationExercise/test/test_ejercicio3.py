@@ -88,3 +88,12 @@ def test_escribir_review_producto(logged_user):
     for numero in numero_prod:
         products_page.view_product(numero)
         products_page.escribir_review()
+
+def test_suscripcion(home_page):
+    home_page.suscribirse()
+    expect(home_page.page.locator("#success-subscribe")).to_be_visible()
+
+def test_scroll_button(home_page):
+    home_page.scroll_button()
+    posicion = home_page.page.evaluate("window.scrollY")
+    assert posicion == 0

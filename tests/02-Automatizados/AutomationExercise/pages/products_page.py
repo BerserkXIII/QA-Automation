@@ -2,7 +2,6 @@
 
 import pytest
 import constants
-import conftest as ct
 from pages.cart_page import CartPage
 from playwright.sync_api import expect
 from urllib.parse import unquote
@@ -46,7 +45,7 @@ class ProductsPage:
                 link.click()
                 expect(self.page).to_have_url(f"{constants.HOME_URL.rstrip('/')}{url_relativa}")
                 self.page.go_back()
-                self.page.locator(f"a[href='#{panel}']").click()
+                self.page.locator(f"a[href='#{panel}']").click(force=True)
 
 
     def verificar_brands(self):
@@ -60,7 +59,7 @@ class ProductsPage:
             self.page.go_back()
     
     def view_product(self, numero_prod):
-        self.page.locator(f"a[href='/product_details/{numero_prod}']").click()
+        self.page.locator(f"a[href='/product_details/{numero_prod}']").click(force=True)
         expect(self.page).to_have_url(f"{constants.HOME_URL}product_details/{numero_prod}")
         try:
             self.page.locator("#dismiss-button-element").click(timeout=2000)
@@ -75,7 +74,3 @@ class ProductsPage:
         expect(self.page.locator(".alert-success").first).to_be_visible()
         expect(self.page.get_by_text("Thank you for your review.")).to_be_visible()
         self.page.go_back()
-        try:
-            self.page.locator("#dismiss-button-element").click(timeout=2000)
-        except:
-            pass

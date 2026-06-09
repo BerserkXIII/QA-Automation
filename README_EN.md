@@ -50,6 +50,8 @@ I implemented the **Page Object Model** pattern to scale maintainable tests.
 | **Pruebas-saucedemo** | SauceDemo | Learn POM from scratch | ✅ Completed |
 | **AutomationExercise** | Fictional e-commerce | Validate patterns | ✅ Active |
 
+> ⚠️ **Note about AutomationExercise**: This website has very aggressive advertising that appears randomly. **It's not realistic for a clean production test suite**, but it's excellent for practicing popup handling, dynamic handlers, and debugging unexpected issues. It's not a good real-world testing scenario, but it's useful for understanding how these elements work. There's code in the tests to handle it, but it fails to do so on several occasions when run.
+
 
 
 ### Architecture & Concepts

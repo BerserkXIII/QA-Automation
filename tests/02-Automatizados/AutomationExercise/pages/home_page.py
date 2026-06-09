@@ -10,7 +10,7 @@ class HomePage:
         self.page = page
 
     def ir_a_home(self):
-        self.page.goto(constants.HOME_URL) 
+        self.page.goto(constants.HOME_URL)
 
     def ir_a_login(self):
         self.page.goto(constants.LOGIN_URL)       
@@ -39,3 +39,11 @@ class HomePage:
         self.page.get_by_role("link", name="Products").click()
         return ProductsPage(self.page)
     
+    def suscribirse(self):
+        self.page.get_by_placeholder("Your email address").fill(constants.VALID_USER['email'])
+        self.page.locator("#subscribe").click()
+    
+    def scroll_button(self):
+        self.page.evaluate("window.scrollTo(0, document.body.scrollHeight);")
+        self.page.locator("#scrollUp").click()
+        self.page.wait_for_function("window.scrollY === 0")
