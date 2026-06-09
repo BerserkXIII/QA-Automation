@@ -15,22 +15,7 @@ def browser_context_args(browser_context_args):
         "locale": "es-ES"
     }
 
-@pytest.fixture(autouse=True)
-def cerrar_ads(page):
-    def handler():
-        for i in range(4):
-            try:
-                boton = page.frame_locator(f"iframe[name^='aswift_']").nth(i).get_by_role("button", name="Close ad")
-                if boton.is_visible(timeout=500):
-                    boton.click()
-                    return
-            except:
-                continue    
-    page.add_locator_handler(
-        page.locator("iframe[name^='aswift_']").first,
-        handler,
-        no_wait_after=True
-    )
+
 
 @pytest.fixture
 def home_page(page):
@@ -78,3 +63,5 @@ def carrito_lleno(logged_user):
     products_page.agregar_producto_al_carrito(prods_agregados)
     cart_page = products_page.boton_cart()
     return cart_page, prods_agregados
+
+

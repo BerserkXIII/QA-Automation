@@ -79,3 +79,12 @@ def test_verificar_categorias(logged_user):
     products_page.verificar_productpage()
     products_page.verificar_categorias()
     products_page.verificar_brands()
+
+def test_escribir_review_producto(logged_user):
+    logged_user.verificar_usuario_logueado()
+    products_page = logged_user.boton_productos()
+    products_page.verificar_productpage()
+    numero_prod = [1, 6, 15]
+    for numero in numero_prod:
+        products_page.view_product(numero)
+        products_page.escribir_review()
