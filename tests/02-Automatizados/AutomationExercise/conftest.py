@@ -1,6 +1,7 @@
 
 import pytest
 import constants
+import allure
 from playwright.sync_api import expect
 from pages.home_page import HomePage
 from pages.login_page import LoginPage
@@ -15,7 +16,15 @@ def browser_context_args(browser_context_args):
         "locale": "es-ES"
     }
 
-
+@pytest.fixture(autouse=True)
+def attach_screenshot(page, request):
+    yield
+    if request.node.rep_call.failed:
+        allure.attach(
+            page.screenshot(),
+            name="screenshot",
+            attachment_type=allure.attachment_type.PNG
+        )
 
 @pytest.fixture
 def home_page(page):

@@ -1,10 +1,12 @@
 
 
 import pytest
+import allure
 from playwright.sync_api import expect
 
 
-
+@allure.feature("Registro y Login")
+@allure.story("Registro de usuario")
 def test_registrar_usuario(home_page, new_user):
     login = home_page.boton_login()
     register_page = login.registro(new_user)
@@ -12,28 +14,40 @@ def test_registrar_usuario(home_page, new_user):
     register_page.cerrar_pop_up1()
     home_page.verificar_home()
 
+@allure.feature("Registro y Login")
+@allure.story("Registro de usuario existente")
 def test_registrar_usuario_existente(home_page):
     login = home_page.boton_login()
     login.registro_usuario_existente()
     expect(login.page.locator("#form")).to_contain_text("Email Address already exist!")
 
 
+@allure.feature("Registro y Login")
+@allure.story("Login correcto de usuario")
 def test_login_correcto(home_page):
     login = home_page.boton_login()
     login.login_correcto()
     home_page.verificar_home()
     home_page.verificar_usuario_logueado()
-
+    
+@allure.feature("Registro y Login")
+@allure.story("Login incorrecto de usuario")
 def test_login_incorrecto(home_page):
     login = home_page.boton_login()
     login.login_incorrecto()
     expect(login.page.locator("#form")).to_be_visible()
 
+
+@allure.feature("Registro y Login")
+@allure.story("Logout de usuario")
 def test_logout(home_page, logged_user):
     expect(logged_user.page.get_by_role("link", name="Logout")).to_be_visible()
     logged_user.page.get_by_role("link", name="Logout").click()
     expect(logged_user.page).to_have_url("https://automationexercise.com/login")
-    
+
+ 
+@allure.feature("Carrito de compras")
+@allure.story("Agregar producto al carrito")
 def test_agregar_producto_carrito(logged_user):
     logged_user.verificar_usuario_logueado()
     products_page = logged_user.boton_productos()
@@ -44,6 +58,8 @@ def test_agregar_producto_carrito(logged_user):
     cart_page.verificar_cartpage()
     cart_page.verificar_producto_en_carrito(prods_agregados)
 
+@allure.feature("Carrito de compras")
+@allure.story("Agregar producto al carrito con hover")
 def test_agregar_producto_carrito_hover(logged_user):
     logged_user.verificar_usuario_logueado()
     products_page = logged_user.boton_productos()
@@ -55,7 +71,9 @@ def test_agregar_producto_carrito_hover(logged_user):
     cart_page.verificar_cartpage()
     cart_page.verificar_producto_en_carrito(prods_agregados)
     cart_page.comparar_precios(precios)
-    
+
+@allure.feature("Carrito de compras")
+@allure.story("Borrar producto del carrito")
 def test_borrar_producto_del_carrito(carrito_lleno):
     cart_page, prods_agregados = carrito_lleno
     cart_page.verificar_cartpage()
@@ -63,6 +81,8 @@ def test_borrar_producto_del_carrito(carrito_lleno):
     cart_page.borrar_producto(prods_agregados)
     expect(cart_page.page.locator("#empty_cart")).to_contain_text("Cart is empty!")
 
+@allure.feature("Carrito de compras")
+@allure.story("Realizar checkout completo")
 def test_checkout_completo(carrito_lleno):
     cart_page, prods_agregados = carrito_lleno
     cart_page.verificar_cartpage()
@@ -73,6 +93,8 @@ def test_checkout_completo(carrito_lleno):
     checkout_page.completar_formulario_checkout()
     checkout_page.verificar_orden_completada()
 
+@allure.feature("Productos")
+@allure.story("Verificar categorías y marcas")
 def test_verificar_categorias(logged_user):
     logged_user.verificar_usuario_logueado()
     products_page = logged_user.boton_productos()
@@ -80,6 +102,8 @@ def test_verificar_categorias(logged_user):
     products_page.verificar_categorias()
     products_page.verificar_brands()
 
+@allure.feature("Productos")
+@allure.story("Escribir review de producto")
 def test_escribir_review_producto(logged_user):
     logged_user.verificar_usuario_logueado()
     products_page = logged_user.boton_productos()
@@ -89,10 +113,16 @@ def test_escribir_review_producto(logged_user):
         products_page.view_product(numero)
         products_page.escribir_review()
 
+
+@allure.feature("Funciones extra")
+@allure.story("Suscripción a newsletter")
 def test_suscripcion(home_page):
     home_page.suscribirse()
     expect(home_page.page.locator("#success-subscribe")).to_be_visible()
 
+
+@allure.feature("Funciones extra")
+@allure.story("Boton scroll to top")
 def test_scroll_button(home_page):
     home_page.scroll_button()
     posicion = home_page.page.evaluate("window.scrollY")
