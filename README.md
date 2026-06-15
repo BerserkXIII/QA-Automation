@@ -15,6 +15,7 @@ No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evide
 - **[Análisis QA — TLDRDC](./tests/01-Manual/Analisis_QA_TLDRDC.md)**: Ejercicios prácticos de validación y verificación sobre TLDRDC (11 CTs documentados).
 - **[Reportes de Defectos](./tests/03-Reportes/template_defecto.md)**: Template y ejemplos de cómo documentar bugs correctamente.
 - **[Arquitectura POM + Playwright](./documentos/ARQUITECTURA_POM_PLAYWRIGHT.md)**: Patrón Page Object Model implementado en Python.
+- **[Reporte de Allure](https://berserkxiii.github.io/QA-Automation/)**: Reporte de pruebas automatizadas con Allure.
 
 ## 🛠️ Herramientas en mi camino
 |          Categoría               |        Estado Actual                    |

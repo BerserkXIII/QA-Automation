@@ -15,6 +15,7 @@ I'm not Senior, not even Junior, but I'm learning. This code is evidence of stud
 - **[QA Analysis — TLDRDC](./tests/01-Manual/Analisis_QA_TLDRDC.md)**: Practical exercises in validation and verification of TLDRDC (11 CTs documented).
 - **[Defect Reports](./tests/03-Reportes/template_defecto.md)**: Template and examples on how to properly document bugs.
 - **[POM + Playwright Architecture](./docs/ARQUITECTURA_POM_PLAYWRIGHT.md)**: Page Object Model pattern implemented in Python.
+- **[Allure Report](https://berserkxiii.github.io/QA-Automation/)**: Automated test report with Allure.
 
 ## 🛠️ Tools in my journey
 |          Category               |        Current Status                   |
