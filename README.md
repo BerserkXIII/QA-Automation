@@ -13,7 +13,7 @@ No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evide
 ## 📚 Qué encontrarás aquí
 - **[Lecciones Aprendidas](./documentos/LECCIONES_APRENDIDAS.md)**: Teoría, apuntes ISTQB y conceptos. Los apuntes están integrados aquí junto con el diario de aprendizaje.
 - **[Análisis QA — TLDRDC](./tests/01-Manual/Analisis_QA_TLDRDC.md)**: Ejercicios prácticos de validación y verificación sobre TLDRDC (11 CTs documentados).
-- **[Reportes de Defectos](./tests/03-Reportes/template_defecto.md)**: Template y ejemplos de cómo documentar bugs correctamente.
+- **[Test TLDRDC automatizados](./tests/02-Automatizados/TLDRDC)**: Suitecase implementada con IA para TLDRDC.
 - **[Arquitectura POM + Playwright](./documentos/ARQUITECTURA_POM_PLAYWRIGHT.md)**: Patrón Page Object Model implementado en Python.
 - **[Reporte de Allure](https://berserkxiii.github.io/QA-Automation/)**: Reporte de pruebas automatizadas con Allure.
 
