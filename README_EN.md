@@ -51,7 +51,7 @@ I implemented the **Page Object Model** pattern to scale maintainable tests.
 | **Pruebas-saucedemo** | SauceDemo | Learn POM from scratch | ✅ Completed |
 | **AutomationExercise** | Fictional e-commerce | Validate patterns | ✅ Active |
 
-> ⚠️ **Note about AutomationExercise**: This website has very aggressive advertising that appears randomly. **It's not realistic for a clean production test suite**, but it's excellent for practicing popup handling, dynamic handlers, and debugging unexpected issues. It's not a good real-world testing scenario, but it's useful for understanding how these elements work. There's code in the tests to handle it, but it fails to do so on several occasions when run.
+> ⚠️ **Note about AutomationExercise**: This website has very aggressive, randomly-appearing advertising (`google_vignette` popup in a dynamic Google Ads iframe). **It's not realistic for a clean production test suite**, but it was excellent for practicing popup handling, dynamic handlers, network interception, and debugging non-deterministic third-party issues. After trying several strategies (network blocking, `add_locator_handler`, `frame_locator`), the root cause was documented as not 100% mitigable due to depending on an external adversarial system, and the affected test was consciously marked as `flaky` using `pytest-rerunfailures`, instead of chasing an impossible fix.
 
 
 
@@ -74,7 +74,10 @@ pytest test/test_ejercicio3.py -v
 ✅ Fixtures for reusable states  
 ✅ Parametrized fixtures for coverage  
 ✅ Determinism in tests (avoid random)  
-✅ Debugging with `page.pause()`  
+✅ Debugging with `page.pause()`, `print()`, and screenshots  
+✅ Working with dynamic iframes (`frame_locator`) and their limitations with `add_locator_handler`  
+✅ Pytest hooks (`pytest_runtest_makereport`) for correct Allure reporting  
+✅ Judgment for marking a test as `flaky` with justification, instead of chasing 100% against non-deterministic systems  
 
 ---
 
@@ -86,5 +89,5 @@ pytest test/test_ejercicio3.py -v
 5. Check the [ROADMAP](./docs/ROADMAP.md) to understand my learning plan.
 
 ---
-*Last update: [02/06/2026]* 
+*Last update: [08/04/2026]* 
 *Maintained by: Salva_BsK*

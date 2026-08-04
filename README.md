@@ -53,7 +53,7 @@ Implementé el patrón **Page Object Model** para escalar pruebas mantenibles.
 | **Pruebas-saucedemo** | SauceDemo | Aprender POM desde cero | ✅ Completado |
 | **AutomationExercise** | E-commerce ficticio | Validar patrones | ✅ Activo |
 
-> ⚠️ **Nota sobre AutomationExercise**: Esta web tiene publicidad muy agresiva que aparece aleatoriamente. **No es realista para una suite de tests limpia en producción**, pero es excelente para practicar manejo de popups, handlers dinámicos y debugging de problemas inesperados. No es un buen escenario real de prueba, pero si para entender el manejo de estos elementos. Hay codigo en los tests para manejarlo, pero en varias ocasiones por run no lo consigue.
+> ⚠️ **Nota sobre AutomationExercise**: Esta web tiene publicidad muy agresiva que aparece aleatoriamente (popup `google_vignette` en iframe dinámico de Google Ads). **No es realista para una suite de tests limpia en producción**, pero fue excelente para practicar manejo de popups, handlers dinámicos, network interception y debugging de problemas no deterministas de terceros. Tras varias estrategias (bloqueo de red, `add_locator_handler`, `frame_locator`), se documentó la causa raíz como no mitigable al 100% por depender de un sistema adversarial externo, y se marcó el test afectado como `flaky` de forma consciente con `pytest-rerunfailures`, en vez de perseguir un fix imposible.
 
 
 ### Arquitectura & Conceptos
@@ -77,6 +77,9 @@ pytest test/test_ejercicio3.py -v
 ✅ Determinismo en tests (evitar random)  
 ✅ Debugging con `page.pause()`, `print()` y screenshots
 ✅ Diferencias de ejecucion entre `headless` y `headed` (UI puede comportarse distinto)
+✅ Interacción con iframes dinámicos (`frame_locator`) y sus limitaciones con `add_locator_handler`
+✅ Hooks de pytest (`pytest_runtest_makereport`) para reporting correcto en Allure
+✅ Criterio para marcar un test como `flaky` de forma justificada, en vez de perseguir el 100% contra sistemas no deterministas
 
 ---
 
@@ -88,6 +91,5 @@ pytest test/test_ejercicio3.py -v
 5.  Consulta el [ROADMAP](./documentos/ROADMAP.md) para entender mi plan de aprendizaje.
 
 ---
-*Última act 
-*Última actualización: [15/06/2026]* 
+*Última actualización: [04/08/2026]* 
 *Mantenido por: Salva_BsK*
