@@ -102,6 +102,14 @@ def test_verificar_categorias(logged_user):
     products_page.verificar_categorias()
     products_page.verificar_brands()
 
+
+# NOTA: Test marcado como flaky de forma consciente.
+# Causa raíz: Google sirve el popup "google_vignette" en un iframe (aswift_*)
+# con contenido/timing no determinista — varía entre ejecuciones y no se puede
+# interceptar de forma 100% fiable (bloqueo de red parcial, add_locator_handler
+# no se dispara sin acciones, timing random). Se documenta y mitiga con reruns
+# en vez de perseguir un fix imposible contra un sistema de terceros.
+@pytest.mark.flaky(reruns=3, reruns_delay=1)
 @allure.feature("Productos")
 @allure.story("Escribir review de producto")
 def test_escribir_review_producto(logged_user):

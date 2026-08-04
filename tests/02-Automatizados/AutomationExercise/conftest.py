@@ -9,6 +9,12 @@ from pages.cart_page import CartPage
 from pages.register_page import RegisterPage
 
 
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    rep = outcome.get_result()
+    setattr(item, "rep_" + rep.when, rep)
+
 @pytest.fixture(scope="session")
 def browser_context_args(browser_context_args):
     return {
@@ -20,11 +26,16 @@ def browser_context_args(browser_context_args):
 def attach_screenshot(page, request):
     yield
     if request.node.rep_call.failed:
-        allure.attach(
-            page.screenshot(),
-            name="screenshot",
-            attachment_type=allure.attachment_type.PNG
-        )
+        print(">>> INTENTANDO SCREENSHOT")
+        try:
+            allure.attach(
+                page.screenshot(),
+                name="screenshot",
+                attachment_type=allure.attachment_type.PNG
+            )
+            print(">>> SCREENSHOT OK")
+        except Exception as e:
+            print(f">>> SCREENSHOT FALLÓ: {e}")
 
 @pytest.fixture
 def home_page(page):
@@ -75,21 +86,16 @@ def carrito_lleno(logged_user):
 
 @pytest.fixture(autouse=True)
 def setup_ads(page):
-    # Bloquea peticiones de publicidad a nivel de red
-    page.route("**/*googlesyndication*", lambda route: route.abort())
-    page.route("**/*doubleclick*", lambda route: route.abort())
-    page.route("**/*googleadservices*", lambda route: route.abort())
-    page.route("**/*google/ads*", lambda route: route.abort())
-    
-    # Handler para popups que escapen al bloqueo
-    def handler_vignette():
-        try:
-            page.locator("#dismiss-button-element").click(timeout=1000)
-        except:
-            pass
+    ad_patterns = [
+        "**/*googlesyndication*",
+        "**/*doubleclick*",
+        "**/*googleadservices*",
+        "**/*googletagservices*",
+        "**/*adtrafficquality*",
+        "**/pagead/**",
+        "**/*google_vignette*",
+    ]
+    for pattern in ad_patterns:
+        page.route(pattern, lambda route: route.abort())
 
-    page.add_locator_handler(
-        page.locator("#ad_position_box"),
-        handler_vignette,
-        no_wait_after=True
-    )
+    page.on("request", lambda req: print(f"[REQ] {req.url}") if "google" in req.url or "doubleclick" in req.url or "ad" in req.url.lower() else None)
