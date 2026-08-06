@@ -24,7 +24,7 @@ No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evide
 | Git & GitHub                     | ✅ Activo (Práctico)                    |
 | Automatización (Playwright/Python) | ✅ Activo (Práctico)                    |
 | POM + Fixtures + Pytest           | ✅ Activo (Aprendiendo)                 |
-
+| API Testing (ReqRes)                 | ✅ Activo (Práctico)                    |
 ## 🎯 Meta a Corto Plazo
 - [x] Completar exámenes de preparación para ISTQB.
 - [x] Subir mi primer reporte de prueba automatizado.
@@ -52,6 +52,7 @@ Implementé el patrón **Page Object Model** para escalar pruebas mantenibles.
 | **TLDRDC Testing** | Juego de rol propio | Integración end-to-end | 🔄 En progreso (IA based) |
 | **Pruebas-saucedemo** | SauceDemo | Aprender POM desde cero | ✅ Completado |
 | **AutomationExercise** | E-commerce ficticio | Validar patrones | ✅ Activo |
+| **ReqRes API** | ReqRes.in | Aprender testing de APIs | ✅ Activo |
 
 > ⚠️ **Nota sobre AutomationExercise**: Esta web tiene publicidad muy agresiva que aparece aleatoriamente (popup `google_vignette` en iframe dinámico de Google Ads). **No es realista para una suite de tests limpia en producción**, pero fue excelente para practicar manejo de popups, handlers dinámicos, network interception y debugging de problemas no deterministas de terceros. Tras varias estrategias (bloqueo de red, `add_locator_handler`, `frame_locator`), se documentó la causa raíz como no mitigable al 100% por depender de un sistema adversarial externo, y se marcó el test afectado como `flaky` de forma consciente con `pytest-rerunfailures`, en vez de perseguir un fix imposible.
 
@@ -86,10 +87,11 @@ pytest test/test_ejercicio3.py -v
 ## 💡 Cómo leer este portafolio
 1.  Comienza en [README.md](./README.md) para ver el panorama general.
 2.  Revisa [LECCIONES_APRENDIDAS.md](./documentos/LECCIONES_APRENDIDAS.md) para los detalles técnicos y teóricos.
-3.  Mira [Analisis_QA_TLDRDC.md](./tests/01-Manual/Analisis_QA_TLDRDC.md) para ver cómo estructuro mis pruebas (11 CTs documentados).
-4.  Explora [tests/02-Automatizados/](./tests/02-Automatizados/) para ver los proyectos POM en acción.
+3.  Mira [01-Manual](./tests/01-Manual) para ver cómo estructuro mis pruebas en los diferentes contextos.
+4.  Explora [tests/02-Automatizados/](./tests/02-Automatizados/) para ver los proyectos terminados.
 5.  Consulta el [ROADMAP](./documentos/ROADMAP.md) para entender mi plan de aprendizaje.
+6.  Revisa [documents](./documentos/) para material extra de aprendizaje.
 
 ---
-*Última actualización: [04/08/2026]* 
+*Última actualización: [06/08/2026]* 
 *Mantenido por: Salva_BsK*

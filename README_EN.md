@@ -24,6 +24,7 @@ I'm not Senior, not even Junior, but I'm learning. This code is evidence of stud
 | Git & GitHub                     | ✅ Active (Practical)                   |
 | Automation (Playwright/Python)   | ✅ Active (Practical)                   |
 | POM + Fixtures + Pytest          | ✅ Active (Learning)                    |
+| API Testing (ReqRes)                 | ✅ Active (Practical)                    |
 
 ## 🎯 Short-term Goals
 - [x] Complete ISTQB exam preparation.
@@ -50,6 +51,7 @@ I implemented the **Page Object Model** pattern to scale maintainable tests.
 | **TLDRDC Testing** | Own RPG game | End-to-end integration | 🔄 In progress |
 | **Pruebas-saucedemo** | SauceDemo | Learn POM from scratch | ✅ Completed |
 | **AutomationExercise** | Fictional e-commerce | Validate patterns | ✅ Active |
+| **ReqRes API** | ReqRes.in | Learn API testing | ✅ Active |
 
 > ⚠️ **Note about AutomationExercise**: This website has very aggressive, randomly-appearing advertising (`google_vignette` popup in a dynamic Google Ads iframe). **It's not realistic for a clean production test suite**, but it was excellent for practicing popup handling, dynamic handlers, network interception, and debugging non-deterministic third-party issues. After trying several strategies (network blocking, `add_locator_handler`, `frame_locator`), the root cause was documented as not 100% mitigable due to depending on an external adversarial system, and the affected test was consciously marked as `flaky` using `pytest-rerunfailures`, instead of chasing an impossible fix.
 
@@ -84,10 +86,11 @@ pytest test/test_ejercicio3.py -v
 ## 💡 How to read this portfolio
 1. Start in [README.md](./README.md) to see the big picture.
 2. Review [LECCIONES_APRENDIDAS.md](./docs/LECCIONES_APRENDIDAS.md) for technical and theoretical details.
-3. Look at [Analisis_QA_TLDRDC.md](./tests/01-Manual/Analisis_QA_TLDRDC.md) to see how I structure my tests (11 CTs documented).
-4. Explore [tests/02-Automatizados/](./tests/02-Automatizados/) to see POM projects in action.
+3. Look at [01-Manual](./tests/01-Manual) to see how I structure my tests in different contexts.
+4. Explore [tests/02-Automatizados/](./tests/02-Automatizados/) to see my finished projects.
 5. Check the [ROADMAP](./docs/ROADMAP.md) to understand my learning plan.
+6. Review [documents](./docs/) for additional learning material.
 
 ---
-*Last update: [08/04/2026]* 
+*Last update: [08/06/2026]* 
 *Maintained by: Salva_BsK*
