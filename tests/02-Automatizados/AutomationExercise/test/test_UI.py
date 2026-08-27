@@ -5,6 +5,7 @@ import allure
 from playwright.sync_api import expect
 
 
+
 @allure.feature("Registro y Login")
 @allure.story("Registro de usuario")
 def test_registrar_usuario(home_page, new_user):

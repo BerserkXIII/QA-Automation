@@ -44,6 +44,7 @@ def test_requests_rate_limit(headers):
   - Sin embargo, el contador parece actualizarse en el backend con cierto retraso o granularidad que no coincide con el timing de las peticiones del cliente.
   - Está presente también la cabecera `cf-cache-status` (Cloudflare), pero el comportamiento inconsistente del contador sugiere que el problema es en el servidor de GoRest, no en la capa de caché.
   - Este test como está escrito **no es válido** porque depende de un dato no síncrono para tomar decisiones sobre el flujo.
+  - **Importante**: Este no es un bug de GoRest, sino un reflejo de que GoRest es una API realista. En producción, el contador de rate limit es informativo, no una garantía de sincronización exacta. Es aprendizaje arquitectónico, no un descubrimiento de error del servidor.
 - **Lección aprendida**: No asumir que una cabecera de "estado actual" (como `remaining`) se actualiza en tiempo real síncrono con el servidor. En sistemas distribuidos o con backends complejos, puede haber retraso o granularidad en la actualización. Para testear rate limiting de forma confiable, es mejor esperar un `429` y luego validar que las cabeceras de reset están presentes, sin depender del contador exacto como condición de parada.
 
 ### GR-002: Status codes y comportamiento de validación de datos

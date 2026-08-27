@@ -40,7 +40,7 @@ def test_delete_user(headers, usuario_temporal):
 #4
 @pytest.mark.parametrize("id_invalido", ["pizza", "999999", "-1", "0"])
 def test_get_users_id_invalido(headers, id_invalido):
-    response = requests.get(f"{BASE_URL}/users/{id_invalido}", headers=headers, timeout=10  )
+    response = requests.get(f"{BASE_URL}/users/{id_invalido}", headers=headers, timeout=10)
     assert response.status_code == 404
 
 #5
