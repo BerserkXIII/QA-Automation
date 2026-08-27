@@ -18,8 +18,13 @@ class HomePage:
     def verificar_home(self):
         expect(self.page).to_have_url(constants.HOME_URL)
 
-    def verificar_usuario_logueado(self):
-        expect(self.page.get_by_text(f"Logged in as {constants.VALID_USER['first_name']} {constants.VALID_USER['last_name']}")).to_be_visible()
+    def verificar_usuario_logueado(self, first_name=None, last_name=None):
+        first_name = first_name or constants.VALID_USER['first_name']
+        if last_name:
+            texto_esperado = f"Logged in as {first_name} {last_name}"
+        else:
+            texto_esperado = f"Logged in as {first_name}"
+        expect(self.page.get_by_text(texto_esperado)).to_be_visible()
 
     def cerrar_pop_up(self):
         for name in ["Consentir", "Consent"]:

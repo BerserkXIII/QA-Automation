@@ -23,10 +23,12 @@ class LoginPage:
     def verificar_login(self):
         expect(self.page).to_have_url(constants.LOGIN_URL)
     
-    def login_correcto(self):
+    def login_correcto(self, email=None, password=None):
+        email = email or constants.VALID_USER["email"]
+        password = password or constants.VALID_USER["password"]
         expect(self.page).to_have_url(constants.LOGIN_URL)
-        self.page.locator("[data-qa='login-email']").fill(constants.VALID_USER["email"])
-        self.page.locator("[data-qa='login-password']").fill(constants.VALID_USER["password"])
+        self.page.locator("[data-qa='login-email']").fill(email)
+        self.page.locator("[data-qa='login-password']").fill(password)
         self.page.locator("[data-qa='login-button']").click()
 
     def login_incorrecto(self):

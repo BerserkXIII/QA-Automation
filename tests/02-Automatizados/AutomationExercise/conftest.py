@@ -23,7 +23,7 @@ def browser_context_args(browser_context_args):
         "locale": "es-ES"
     }
 
-@pytest.fixture()
+@pytest.fixture(autouse=True)
 def attach_screenshot(page, request):
     yield
     if request.node.rep_call.failed:
@@ -38,6 +38,15 @@ def attach_screenshot(page, request):
         except Exception as e:
             print(f">>> SCREENSHOT FALLÓ: {e}")
 
+
+def capturar_pantalla(page, nombre):
+    print(f">>> Capturando pantalla: {nombre}")
+    allure.attach(
+        page.screenshot(),
+        name=nombre,
+        attachment_type=allure.attachment_type.PNG,
+    )
+    print(f">>> Pantalla capturada: {nombre}")
 
 @pytest.fixture
 def home_page(page):
@@ -86,7 +95,7 @@ def carrito_lleno(logged_user):
     cart_page = products_page.boton_cart()
     return cart_page, prods_agregados
 
-@pytest.fixture(autouse=True)
+"""@pytest.fixture(autouse=True)
 def setup_ads(page):
     ad_patterns = [
         "**/*googlesyndication*",
@@ -100,7 +109,7 @@ def setup_ads(page):
     for pattern in ad_patterns:
         page.route(pattern, lambda route: route.abort())
 
-    page.on("request", lambda req: print(f"[REQ] {req.url}") if "google" in req.url or "doubleclick" in req.url or "ad" in req.url.lower() else None)
+    page.on("request", lambda req: print(f"[REQ] {req.url}") if "google" in req.url or "doubleclick" in req.url or "ad" in req.url.lower() else None)"""
 
 
 @pytest.fixture

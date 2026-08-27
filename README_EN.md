@@ -24,7 +24,7 @@ I'm not Senior, not even Junior, but I'm learning. This code is evidence of stud
 | Git & GitHub                     | ✅ Active (Practical)                   |
 | Automation (Playwright/Python)   | ✅ Active (Practical)                   |
 | POM + Fixtures + Pytest          | ✅ Active (Learning)                    |
-| API Testing (ReqRes)                 | ✅ Active (Practical)                    |
+| API Testing (ReqRes + AutomationExercise) | ✅ Active (Practical)               |
 
 ## 🎯 Short-term Goals
 - [x] Complete ISTQB exam preparation.
@@ -81,6 +81,11 @@ pytest test/test_ejercicio3.py -v
 ✅ Pytest hooks (`pytest_runtest_makereport`) for correct Allure reporting  
 ✅ Judgment for marking a test as `flaky` with justification, instead of chasing 100% against non-deterministic systems  
 
+### Recent Evolution: API and Hybrid Integration
+
+- **[test_API.py](./tests/02-Automatizados/AutomationExercise/test/test_API.py)** was added to expand AutomationExercise coverage with API tests, within the same project and virtual environment as the Playwright suite.
+- **[test_hibrido.py](./tests/02-Automatizados/AutomationExercise/test/test_hibrido.py)** was subsequently created, combining UI and API to check both flows against the same system.
+
 ---
 
 ## 💡 How to read this portfolio
@@ -92,5 +97,5 @@ pytest test/test_ejercicio3.py -v
 6. Review [documents](./docs/) for additional learning material.
 
 ---
-*Last update: [08/06/2026]* 
+*Last update: [27/08/2026]*
 *Maintained by: Salva_BsK*

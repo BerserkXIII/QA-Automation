@@ -1,8 +1,6 @@
 
-
-import requests
 import pytest
-import allure
+import requests
 import constants
 
 def test_get_products_list():

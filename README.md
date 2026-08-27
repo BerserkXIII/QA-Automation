@@ -24,7 +24,7 @@ No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evide
 | Git & GitHub                     | ✅ Activo (Práctico)                    |
 | Automatización (Playwright/Python) | ✅ Activo (Práctico)                    |
 | POM + Fixtures + Pytest           | ✅ Activo (Aprendiendo)                 |
-| API Testing (ReqRes)                 | ✅ Activo (Práctico)                    |
+| API Testing (ReqRes + AutomationExercise) | ✅ Activo (Práctico)               |
 ## 🎯 Meta a Corto Plazo
 - [x] Completar exámenes de preparación para ISTQB.
 - [x] Subir mi primer reporte de prueba automatizado.
@@ -82,6 +82,11 @@ pytest test/test_ejercicio3.py -v
 ✅ Hooks de pytest (`pytest_runtest_makereport`) para reporting correcto en Allure
 ✅ Criterio para marcar un test como `flaky` de forma justificada, en vez de perseguir el 100% contra sistemas no deterministas
 
+### Evolución reciente: API e integración híbrida
+
+- Se añadió **[test_API.py](./tests/02-Automatizados/AutomationExercise/test/test_API.py)** para ampliar la cobertura de AutomationExercise con tests de API, dentro del mismo proyecto y entorno virtual que la suite de Playwright.
+- Posteriormente se creó **[test_hibrido.py](./tests/02-Automatizados/AutomationExercise/test/test_hibrido.py)**, combinando UI y API para comprobar ambos flujos sobre el mismo sistema.
+
 ---
 
 ## 💡 Cómo leer este portafolio
@@ -93,5 +98,5 @@ pytest test/test_ejercicio3.py -v
 6.  Revisa [documents](./documentos/) para material extra de aprendizaje.
 
 ---
-*Última actualización: [06/08/2026]* 
+*Última actualización: [27/08/2026]*
 *Mantenido por: Salva_BsK*
