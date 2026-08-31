@@ -1,4 +1,4 @@
-# [Cuadernillo de aprendizaje] QA Journey to ISTQB-CTFL 
+# [Recorrido QA hacia ISTQB-CTFL] QA Journey to ISTQB-CTFL
 
 ![Estado](https://img.shields.io/badge/estado-Aprendiendo-green) 
 ![Examen](https://img.shields.io/badge/certificado-ISTQB_CTFL-blue)
@@ -7,7 +7,7 @@
 
 ## 🚀 Sobre este repositorio
 Bienvenido a mi portafolio de aprendizaje en Calidad de Software. 
-Este espacio documenta mi camino hacia la certificación **ISTQB-CTFL**, desde las bases manuales hasta el primer paso en automatización.
+Este espacio documenta mi camino hacia la certificación **ISTQB-CTFL**, desde las bases manuales hasta el primer paso en automatizació, uso de PlayWright, APIs y demas.
 No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evidencia de estudio y práctica real, y tiene el proposito de documentar mi aprendizaje y estructurar debidamente un repositorio.
 
 ## 📚 Qué encontrarás aquí
