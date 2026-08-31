@@ -26,17 +26,12 @@ def browser_context_args(browser_context_args):
 @pytest.fixture(autouse=True)
 def attach_screenshot(page, request):
     yield
-    if request.node.rep_call.failed:
-        print(">>> INTENTANDO SCREENSHOT")
-        try:
-            allure.attach(
-                page.screenshot(),
-                name="screenshot",
-                attachment_type=allure.attachment_type.PNG
-            )
-            print(">>> SCREENSHOT OK")
-        except Exception as e:
-            print(f">>> SCREENSHOT FALLÓ: {e}")
+    if request.node.rep_setup.failed or (hasattr(request.node, "rep_call") and request.node.rep_call.failed):
+        allure.attach(
+            page.screenshot(),
+            name="screenshot",
+            attachment_type=allure.attachment_type.PNG
+        )
 
 
 def capturar_pantalla(page, nombre):
@@ -95,7 +90,7 @@ def carrito_lleno(logged_user):
     cart_page = products_page.boton_cart()
     return cart_page, prods_agregados
 
-"""@pytest.fixture(autouse=True)
+@pytest.fixture(autouse=True)
 def setup_ads(page):
     ad_patterns = [
         "**/*googlesyndication*",
@@ -108,8 +103,6 @@ def setup_ads(page):
     ]
     for pattern in ad_patterns:
         page.route(pattern, lambda route: route.abort())
-
-    page.on("request", lambda req: print(f"[REQ] {req.url}") if "google" in req.url or "doubleclick" in req.url or "ad" in req.url.lower() else None)"""
 
 
 @pytest.fixture
