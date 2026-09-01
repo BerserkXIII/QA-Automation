@@ -15,7 +15,8 @@ def api_key():
 
 @pytest.fixture
 def headers(api_key):
-    return {"Authorization": f"Bearer {api_key}"}
+    token = os.getenv("GOREST_TOKEN", "").strip()
+    return {"Authorization": f"Bearer {token}"}
 
 @pytest.fixture
 def usuario_temporal(headers):
