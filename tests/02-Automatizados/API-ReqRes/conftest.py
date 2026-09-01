@@ -12,4 +12,5 @@ def api_key():
 
 @pytest.fixture
 def headers(api_key):
-    return {"x-api-key": api_key}
+    token = os.getenv("REQRES_API_KEY", "").strip()
+    return {"x-api-key": f"{token}"}
