@@ -2,6 +2,7 @@
 
 ![Status](https://img.shields.io/badge/status-Learning-green) 
 ![Exam](https://img.shields.io/badge/certified-ISTQB_CTFL-blue)
+[![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-blue)](https://github.com/BerserkXIII/QA-Automation/actions)
 
 **[🇪🇸 Versión en Español →](./README.md)**
 
@@ -85,6 +86,30 @@ pytest test/test_ejercicio3.py -v
 
 - **[test_API.py](./tests/02-Automatizados/AutomationExercise/test/test_API.py)** was added to expand AutomationExercise coverage with API tests, within the same project and virtual environment as the Playwright suite.
 - **[test_hibrido.py](./tests/02-Automatizados/AutomationExercise/test/test_hibrido.py)** was subsequently created, combining UI and API to check both flows against the same system.
+
+## Continuous Integration (CI) with GitHub Actions
+
+Automation no longer depends only on local execution. Four independent pipelines were implemented, one per project, and they run automatically on every `push` and `pull_request` to `main`. Each pipeline installs dependencies from scratch on a clean Linux machine and runs the complete suite, without relying on any developer's local configuration.
+
+| Project | Coverage | Status |
+|---------|----------|--------|
+| AutomationExercise | UI, API, and hybrid tests | [![AutomationExercise](https://github.com/BerserkXIII/QA-Automation/actions/workflows/tests-automationexercise.yml/badge.svg)](https://github.com/BerserkXIII/QA-Automation/actions/workflows/tests-automationexercise.yml) |
+| SauceDemo | Playwright UI tests | [![SauceDemo](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_saucedemo.yml/badge.svg)](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_saucedemo.yml) |
+| API-ReqRes | API tests | [![API-ReqRes](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_reqres.yml/badge.svg)](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_reqres.yml) |
+| API-GoRest | API tests | [![API-GoRest](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_gorest.yml/badge.svg)](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_gorest.yml) |
+
+### Real problems solved during implementation
+
+These pipelines provided technical learning in addition to making the suites pass:
+
+- **Windows vs. Linux differences:** a `ModuleNotFoundError` caused by case sensitivity in file names did not appear on Windows, but did appear on GitHub's Linux runner. It was resolved by correcting imports and configuring `sys.path` explicitly instead of depending on the operating system.
+- **Secret management:** API keys are never committed to the repository (`.env` remains in `.gitignore`). **GitHub Secrets** are used instead and injected as environment variables in the pipeline. A common copy-and-paste error was also documented: pasting `KEY=value` instead of only the value adds unwanted text to the secret and causes silent authentication failures. Comparing string lengths helps diagnose it.
+- **Key permission scope:** ReqRes distinguishes a `public` key (read-only) from a `manage` key (read and write). Using the wrong one produces a `403` or `invalid_api_key`, which looks like an invalid key at first glance. This was documented as a scope-related authentication finding.
+- **Invisible characters in credentials:** `.strip()` was added when reading tokens from environment variables to protect the code against spaces or line breaks introduced during copy and paste.
+- **Non-deterministic external services in CI:** `test_get_users_sin_api_key` (finding AR-003) was also unstable in CI. After trying to stabilize it with `pytest-rerunfailures` and up to 15 retries, a real rate-limiting problem appeared as well. It was consciously skipped with `@pytest.mark.skip`, with the reason documented in the code: honesty was prioritized over achieving a green status at all costs.
+- **An infrastructure bug in the project:** an `AttributeError` was fixed in the `attach_screenshot` fixture. It failed silently when a test broke during `setup` rather than during test execution (`call`). This pre-existing bug only appeared when the first failure of that kind occurred.
+
+The result is a portfolio with four projects and verifiable status badges, running their suites automatically on every change without manual intervention. This closes the loop from “portfolio with tests” to “portfolio with a verifiable quality pipeline”.
 
 ---
 

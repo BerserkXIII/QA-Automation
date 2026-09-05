@@ -2,6 +2,7 @@
 
 ![Estado](https://img.shields.io/badge/estado-Aprendiendo-green) 
 ![Examen](https://img.shields.io/badge/certificado-ISTQB_CTFL-blue)
+[![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-blue)](https://github.com/BerserkXIII/QA-Automation/actions)
 
 **[📖 English Version →](./README_EN.md)**
 
@@ -86,6 +87,30 @@ pytest test/test_ejercicio3.py -v
 
 - Se añadió **[test_API.py](./tests/02-Automatizados/AutomationExercise/test/test_API.py)** para ampliar la cobertura de AutomationExercise con tests de API, dentro del mismo proyecto y entorno virtual que la suite de Playwright.
 - Posteriormente se creó **[test_hibrido.py](./tests/02-Automatizados/AutomationExercise/test/test_hibrido.py)**, combinando UI y API para comprobar ambos flujos sobre el mismo sistema.
+
+## Integración Continua (CI) con GitHub Actions
+
+La automatización ya no depende únicamente de una ejecución local. Se implementaron cuatro pipelines independientes, uno por proyecto, que se ejecutan automáticamente en cada `push` y `pull_request` hacia `main`. Cada pipeline instala las dependencias desde cero en una máquina Linux limpia y ejecuta la suite completa, sin depender de la configuración local de ningún desarrollador.
+
+| Proyecto | Cobertura | Estado |
+|----------|-----------|--------|
+| AutomationExercise | UI, API e híbridos | [![AutomationExercise](https://github.com/BerserkXIII/QA-Automation/actions/workflows/tests-automationexercise.yml/badge.svg)](https://github.com/BerserkXIII/QA-Automation/actions/workflows/tests-automationexercise.yml) |
+| SauceDemo | UI con Playwright | [![SauceDemo](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_saucedemo.yml/badge.svg)](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_saucedemo.yml) |
+| API-ReqRes | Tests de API | [![API-ReqRes](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_reqres.yml/badge.svg)](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_reqres.yml) |
+| API-GoRest | Tests de API | [![API-GoRest](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_gorest.yml/badge.svg)](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_gorest.yml) |
+
+### Problemas reales resueltos durante la implementación
+
+Estos pipelines aportaron aprendizaje técnico además de dejar las suites en verde:
+
+- **Diferencias entre Windows y Linux:** un `ModuleNotFoundError` causado por la sensibilidad a mayúsculas y minúsculas en los nombres de archivo no aparecía en Windows, pero sí en el runner Linux de GitHub. Se resolvió corrigiendo los imports y configurando `sys.path` de forma explícita, sin depender del sistema operativo.
+- **Gestión de secretos:** las API keys nunca se suben al repositorio (`.env` permanece en `.gitignore`). Se usan **GitHub Secrets**, inyectados como variables de entorno en el pipeline. También se documentó un error de copia habitual: pegar `CLAVE=valor` en lugar de solo el valor, lo que añade texto basura al secreto y provoca fallos de autenticación silenciosos. Comparar la longitud del string ayuda a diagnosticarlo.
+- **Alcance de permisos de las keys:** ReqRes distingue una key `public` (solo lectura) de una `manage` (lectura y escritura). Usar la incorrecta produce un `403` o `invalid_api_key`, indistinguible a simple vista de una key inválida. Quedó documentado como hallazgo de autenticación por scopes.
+- **Caracteres invisibles en credenciales:** se añadió `.strip()` al leer tokens desde las variables de entorno para proteger el código frente a espacios o saltos de línea introducidos al copiar y pegar.
+- **Servicios externos no deterministas en CI:** `test_get_users_sin_api_key` (hallazgo AR-003) también resultó inestable en CI. Tras intentar estabilizarlo con `pytest-rerunfailures` y hasta 15 reintentos, apareció además un rate limiting real. Se decidió omitirlo conscientemente con `@pytest.mark.skip`, dejando el motivo documentado en el código: se priorizó la honestidad sobre conseguir un estado verde a toda costa.
+- **Bug propio de infraestructura:** se corrigió un `AttributeError` en la fixture `attach_screenshot`, que fallaba silenciosamente cuando un test se rompía durante `setup` en vez de durante la ejecución (`call`). Era un bug preexistente que solo se manifestó al aparecer el primer fallo de ese tipo.
+
+El resultado es un portfolio con cuatro proyectos y badges de estado verificables, ejecutando sus suites automáticamente ante cualquier cambio y sin intervención manual. Se consigue así el ciclo de “portfolio con tests” a “portfolio con pipeline de calidad verificable”.
 
 ---
 
