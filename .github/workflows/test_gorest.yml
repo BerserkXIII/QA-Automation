@@ -22,4 +22,6 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
+      - name: Comprobar que el token llega
+        run: 'echo "Longitud del token: ${#GOREST_TOKEN}"'
       - run: pytest -v
