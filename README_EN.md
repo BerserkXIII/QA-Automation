@@ -51,7 +51,7 @@ I implemented the **Page Object Model** pattern to scale maintainable tests.
 |---------|-----|-----------|--------|
 | **TLDRDC Testing** | Own RPG game | End-to-end integration | 🔄 In progress |
 | **Pruebas-saucedemo** | SauceDemo | Learn POM from scratch | ✅ Completed |
-| **AutomationExercise** | Fictional e-commerce | Validate patterns | ✅ Active |
+| **AutomationExercise** | Fictional e-commerce | UI, API, and E2E integration testing | ✅ Completed |
 | **ReqRes API** | ReqRes.in | Learn API testing | ✅ Active |
 
 > ⚠️ **Note about AutomationExercise**: This website has very aggressive, randomly-appearing advertising (`google_vignette` popup in a dynamic Google Ads iframe). **It's not realistic for a clean production test suite**, but it was excellent for practicing popup handling, dynamic handlers, network interception, and debugging non-deterministic third-party issues. After trying several strategies (network blocking, `add_locator_handler`, `frame_locator`), the root cause was documented as not 100% mitigable due to depending on an external adversarial system, and the affected test was consciously marked as `flaky` using `pytest-rerunfailures`, instead of chasing an impossible fix.
@@ -82,10 +82,15 @@ pytest test/test_ejercicio3.py -v
 ✅ Pytest hooks (`pytest_runtest_makereport`) for correct Allure reporting  
 ✅ Judgment for marking a test as `flaky` with justification, instead of chasing 100% against non-deterministic systems  
 
-### Recent Evolution: API and Hybrid Integration
+### AutomationExercise: from isolated learning to E2E integration
 
-- **[test_API.py](./tests/02-Automatizados/AutomationExercise/test/test_API.py)** was added to expand AutomationExercise coverage with API tests, within the same project and virtual environment as the Playwright suite.
-- **[test_hibrido.py](./tests/02-Automatizados/AutomationExercise/test/test_hibrido.py)** was subsequently created, combining UI and API to check both flows against the same system.
+I decided to build this suite to test AutomationExercise end to end, first by testing its layers separately and then by combining them. That is why this playground contains three complementary test suites:
+
+- **[test_UI.py](./tests/02-Automatizados/AutomationExercise/test/test_UI.py)**: validates the frontend and visible flows with Playwright.
+- **[test_API.py](./tests/02-Automatizados/AutomationExercise/test/test_API.py)**: validates the backend through the application's APIs.
+- **[test_hibrido.py](./tests/02-Automatizados/AutomationExercise/test/test_hibrido.py)**: combines UI and API in the same scenario to check E2E behavior and consistency between both layers.
+
+The other three automated playgrounds mainly helped me learn how to test frontend and backend separately: SauceDemo for UI testing with Playwright, and ReqRes and GoRest for API testing. I then applied those foundations in AutomationExercise, which is the most consistent playground I have used so far for bringing all these practices together in one application.
 
 ## Continuous Integration (CI) with GitHub Actions
 

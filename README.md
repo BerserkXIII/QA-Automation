@@ -52,7 +52,7 @@ Implementé el patrón **Page Object Model** para escalar pruebas mantenibles.
 |----------|-----|----------|--------|
 | **TLDRDC Testing** | Juego de rol propio | Integración end-to-end | 🔄 En progreso (IA based) |
 | **Pruebas-saucedemo** | SauceDemo | Aprender POM desde cero | ✅ Completado |
-| **AutomationExercise** | E-commerce ficticio | Validar patrones | ✅ Activo |
+| **AutomationExercise** | E-commerce ficticio | Pruebas UI, API e integración E2E | ✅ Completado |
 | **ReqRes API** | ReqRes.in | Aprender testing de APIs | ✅ Activo |
 
 > ⚠️ **Nota sobre AutomationExercise**: Esta web tiene publicidad muy agresiva que aparece aleatoriamente (popup `google_vignette` en iframe dinámico de Google Ads). **No es realista para una suite de tests limpia en producción**, pero fue excelente para practicar manejo de popups, handlers dinámicos, network interception y debugging de problemas no deterministas de terceros. Tras varias estrategias (bloqueo de red, `add_locator_handler`, `frame_locator`), se documentó la causa raíz como no mitigable al 100% por depender de un sistema adversarial externo, y se marcó el test afectado como `flaky` de forma consciente con `pytest-rerunfailures`, en vez de perseguir un fix imposible.
@@ -83,10 +83,15 @@ pytest test/test_ejercicio3.py -v
 ✅ Hooks de pytest (`pytest_runtest_makereport`) para reporting correcto en Allure
 ✅ Criterio para marcar un test como `flaky` de forma justificada, en vez de perseguir el 100% contra sistemas no deterministas
 
-### Evolución reciente: API e integración híbrida
+### AutomationExercise: del aprendizaje aislado a la integración E2E
 
-- Se añadió **[test_API.py](./tests/02-Automatizados/AutomationExercise/test/test_API.py)** para ampliar la cobertura de AutomationExercise con tests de API, dentro del mismo proyecto y entorno virtual que la suite de Playwright.
-- Posteriormente se creó **[test_hibrido.py](./tests/02-Automatizados/AutomationExercise/test/test_hibrido.py)**, combinando UI y API para comprobar ambos flujos sobre el mismo sistema.
+Decidí construir esta suite para probar AutomationExercise de manera **end-to-end**, primero por partes y después de forma combinada. Por eso el playground reúne tres suites complementarias:
+
+- **[test_UI.py](./tests/02-Automatizados/AutomationExercise/test/test_UI.py)**: valida el frontend y los flujos visibles con Playwright.
+- **[test_API.py](./tests/02-Automatizados/AutomationExercise/test/test_API.py)**: valida el backend mediante las APIs de la aplicación.
+- **[test_hibrido.py](./tests/02-Automatizados/AutomationExercise/test/test_hibrido.py)**: combina UI y API en un mismo caso para comprobar el comportamiento E2E y la coherencia entre ambas capas.
+
+Los otros tres playgrounds automatizados sirvieron principalmente para aprender a probar frontend y backend por separado: SauceDemo para UI con Playwright, y ReqRes y GoRest para testing de APIs. Después pude aplicar esas bases en AutomationExercise, que es el playground más consistente de los que he utilizado hasta ahora para integrar todas esas prácticas en una misma aplicación.
 
 ## Integración Continua (CI) con GitHub Actions
 

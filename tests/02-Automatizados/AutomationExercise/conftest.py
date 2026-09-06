@@ -86,6 +86,12 @@ def logged_user(home_page):
     return home_page
 
 @pytest.fixture
+def delete_user(home_page):
+    home_page.verificar_usuario_logueado()
+    home_page.boton_delete_account()
+    return home_page
+
+@pytest.fixture
 def carrito_lleno(logged_user):
     logged_user.verificar_usuario_logueado()
     products_page = logged_user.boton_productos()

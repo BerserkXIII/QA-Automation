@@ -43,6 +43,11 @@ class HomePage:
     def boton_productos(self):
         self.page.get_by_role("link", name="Products").click()
         return ProductsPage(self.page)
+
+    def boton_delete_account(self):
+        self.page.get_by_role("link", name="Delete Account").click()
+        self.page.get_by_role("link", name="Continue").click()
+        return self
     
     def suscribirse(self):
         self.page.get_by_placeholder("Your email address").fill(constants.VALID_USER['email'])
