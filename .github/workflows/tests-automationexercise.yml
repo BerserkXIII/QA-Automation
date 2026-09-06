@@ -7,10 +7,12 @@ on:
     branches: [main]
     paths:
       - 'tests/02-Automatizados/AutomationExercise/**'
+      - '.github/workflows/tests-automationexercise.yml'
   pull_request:
     branches: [main]
     paths:
       - 'tests/02-Automatizados/AutomationExercise/**'
+      - '.github/workflows/tests-automationexercise.yml'
 
 jobs:
   test:

@@ -3,8 +3,6 @@
 import pytest
 import requests
 import constants
-import allure
-import time
 from conftest import capturar_pantalla
 from pages.login_page import LoginPage
 from playwright.sync_api import expect

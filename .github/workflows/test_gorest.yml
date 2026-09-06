@@ -7,10 +7,12 @@ on:
     branches: [main]
     paths:
       - 'tests/02-Automatizados/API-GoRest/**'
+      - '.github/workflows/test-gorest.yml'
   pull_request:
     branches: [main]
     paths:
       - 'tests/02-Automatizados/API-GoRest/**'
+      - '.github/workflows/test-gorest.yml'
 
 jobs:
   test:
