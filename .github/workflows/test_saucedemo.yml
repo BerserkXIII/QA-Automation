@@ -1,18 +1,18 @@
 
 
 name: Tests Saucedemo
-#comentario
+
 on:
   push:
     branches: [main]
     paths:
       - 'tests/02-Automatizados/Pruebas-saucedemo/**'
-      - '.github/workflows/test-saucedemo.yml'
+      - '.github/workflows/test_saucedemo.yml'
   pull_request:
     branches: [main]
     paths:
       - 'tests/02-Automatizados/Pruebas-saucedemo/**'
-      - '.github/workflows/test-saucedemo.yml'
+      - '.github/workflows/test_saucedemo.yml'
 
 jobs:
   test:

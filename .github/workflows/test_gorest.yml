@@ -1,18 +1,18 @@
 
 
 name: Tests GoRest
-
+#comentario
 on:
   push:
     branches: [main]
     paths:
       - 'tests/02-Automatizados/API-GoRest/**'
-      - '.github/workflows/test-gorest.yml'
+      - '.github/workflows/test_gorest.yml'
   pull_request:
     branches: [main]
     paths:
       - 'tests/02-Automatizados/API-GoRest/**'
-      - '.github/workflows/test-gorest.yml'
+      - '.github/workflows/test_gorest.yml'
 
 jobs:
   test:
