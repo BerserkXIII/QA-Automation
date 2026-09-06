@@ -3,6 +3,7 @@
 import constants
 import pytest
 import allure
+from pages.login_page import LoginPage
 from playwright.sync_api import expect
 
 
@@ -18,20 +19,27 @@ def test_registrar_usuario(home_page, new_user):
 
 @allure.feature("Registro y Login")
 @allure.story("Registro de usuario existente")
-def test_registrar_usuario_existente(home_page):
+def test_registrar_usuario_existente(home_page, new_user):
     login = home_page.boton_login()
-    login.registro_usuario_existente()
-    expect(login.page.locator("#form")).to_contain_text("Email Address already exist!")
+    register_page = login.registro(new_user)
+    register_page.completar_formulario_registro(new_user)
+    register_page.cerrar_pop_up1()
+    home_page.ir_a_home()
+    home_page.page.get_by_role("link", name="Logout").click()
+    login2 = home_page.boton_login()
+    login2.registro(new_user)
+    expect(login2.page.locator("#form")).to_contain_text("Email Address already exist!")
 
 
 @allure.feature("Registro y Login")
 @allure.story("Login correcto de usuario")
-def test_login_correcto(home_page):
+def test_login_correcto(home_page, new_user):
     login = home_page.boton_login()
-    login.login_correcto()
-    home_page.verificar_home()
-    home_page.verificar_usuario_logueado()
-    
+    register_page = login.registro(new_user)
+    register_page.completar_formulario_registro(new_user)
+    register_page.cerrar_pop_up1()
+    home_page.verificar_usuario_logueado(new_user["first_name"])
+
 @allure.feature("Registro y Login")
 @allure.story("Login incorrecto de usuario")
 def test_login_incorrecto(home_page):

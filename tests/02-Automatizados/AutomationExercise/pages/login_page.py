@@ -15,10 +15,6 @@ class LoginPage:
         self.page.locator("[data-qa='signup-button']").click()
         return RegisterPage(self.page)
     
-    def registro_usuario_existente(self):
-        self.page.locator("[data-qa='signup-name']").fill(constants.VALID_USER["first_name"])
-        self.page.locator("[data-qa='signup-email']").fill(constants.VALID_USER["email"])
-        self.page.locator("[data-qa='signup-button']").click()
 
     def verificar_login(self):
         expect(self.page).to_have_url(constants.LOGIN_URL)

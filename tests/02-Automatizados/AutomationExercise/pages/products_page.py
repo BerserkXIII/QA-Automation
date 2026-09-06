@@ -66,9 +66,11 @@ class ProductsPage:
         except:
             pass
         
-    def escribir_review(self):
-        self.page.get_by_role("textbox", name="Your Name").fill(constants.VALID_USER["first_name"])
-        self.page.get_by_role("textbox", name="Email Address", exact=True).fill(constants.VALID_USER["email"])
+    def escribir_review(self, first_name=None, email=None):
+        first_name = first_name or constants.VALID_USER["first_name"]
+        email = email or constants.VALID_USER["email"]
+        self.page.get_by_role("textbox", name="Your Name").fill(first_name)
+        self.page.get_by_role("textbox", name="Email Address", exact=True).fill(email)
         self.page.get_by_role("textbox", name="Add Review Here!").fill("Excelente producto, muy recomendable!")
         self.page.get_by_role("button", name="submit").click()
         expect(self.page.locator(".alert-success").first).to_be_visible()

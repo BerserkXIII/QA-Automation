@@ -15,39 +15,6 @@ from pages.cart_page import CartPage
 from pages.register_page import RegisterPage
 
 
-@pytest.hookimpl(tryfirst=True, hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-    outcome = yield
-    rep = outcome.get_result()
-    setattr(item, "rep_" + rep.when, rep)
-
-@pytest.fixture(scope="session")
-def browser_context_args(browser_context_args):
-    return {
-        **browser_context_args,
-        "locale": "es-ES"
-    }
-
-@pytest.fixture(autouse=True)
-def attach_screenshot(page, request):
-    yield
-    if request.node.rep_setup.failed or (hasattr(request.node, "rep_call") and request.node.rep_call.failed):
-        allure.attach(
-            page.screenshot(),
-            name="screenshot",
-            attachment_type=allure.attachment_type.PNG
-        )
-
-
-def capturar_pantalla(page, nombre):
-    print(f">>> Capturando pantalla: {nombre}")
-    allure.attach(
-        page.screenshot(),
-        name=nombre,
-        attachment_type=allure.attachment_type.PNG,
-    )
-    print(f">>> Pantalla capturada: {nombre}")
-
 @pytest.fixture
 def home_page(page):
     home = HomePage(page)
@@ -80,9 +47,11 @@ def register_page(page):
 
 @pytest.fixture
 def logged_user(home_page):
-    home_page.ir_a_login()
-    login = LoginPage(home_page.page)
-    login.login_correcto()
+    nuevo = constants.crear_usuario_nuevo()
+    login = home_page.boton_login()
+    register_page = login.registro(nuevo)
+    register_page.completar_formulario_registro(nuevo)
+    register_page.cerrar_pop_up1()
     return home_page
 
 @pytest.fixture
@@ -130,3 +99,37 @@ def usuario_temporal(api_headers):
     response = requests.post(f"{constants.API_BASE_URL}/createAccount", data=payload, timeout=10)
     yield payload
     requests.delete(f"{constants.API_BASE_URL}/deleteAccount", data={"email": payload["email"], "password": payload["password"]}, headers=api_headers, timeout=10)
+
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    rep = outcome.get_result()
+    setattr(item, "rep_" + rep.when, rep)
+
+@pytest.fixture(scope="session")
+def browser_context_args(browser_context_args):
+    return {
+        **browser_context_args,
+        "locale": "es-ES"
+    }
+
+@pytest.fixture(autouse=True)
+def attach_screenshot(page, request):
+    yield
+    if request.node.rep_setup.failed or (hasattr(request.node, "rep_call") and request.node.rep_call.failed):
+        allure.attach(
+            page.screenshot(),
+            name="screenshot",
+            attachment_type=allure.attachment_type.PNG
+        )
+
+
+def capturar_pantalla(page, nombre):
+    print(f">>> Capturando pantalla: {nombre}")
+    allure.attach(
+        page.screenshot(),
+        name=nombre,
+        attachment_type=allure.attachment_type.PNG,
+    )
+    print(f">>> Pantalla capturada: {nombre}")

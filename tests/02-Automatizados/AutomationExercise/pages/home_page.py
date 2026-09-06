@@ -49,8 +49,9 @@ class HomePage:
         self.page.get_by_role("link", name="Continue").click()
         return self
     
-    def suscribirse(self):
-        self.page.get_by_placeholder("Your email address").fill(constants.VALID_USER['email'])
+    def suscribirse(self, email=None):
+        email = email or constants.VALID_USER["email"]
+        self.page.get_by_placeholder("Your email address").fill(email)
         self.page.locator("#subscribe").click()
     
     def scroll_button(self):

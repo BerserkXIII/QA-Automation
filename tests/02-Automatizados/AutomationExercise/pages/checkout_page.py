@@ -15,8 +15,10 @@ class CheckoutPage:
         self.page.get_by_role("link", name="Place Order").click()
         expect(self.page).to_have_url("https://automationexercise.com/payment")
 
-    def completar_formulario_checkout(self):
-        self.page.locator("[data-qa='name-on-card']").fill(f"{constants.VALID_USER['first_name']} {constants.VALID_USER['last_name']}")
+    def completar_formulario_checkout(self, first_name=None, last_name=None):
+        first_name = first_name or constants.VALID_USER["first_name"]
+        last_name = last_name or constants.VALID_USER["last_name"]
+        self.page.locator("[data-qa='name-on-card']").fill(f"{first_name} {last_name}")
         self.page.locator("[data-qa='card-number']").fill(f"9012 3456")
         self.page.locator("[data-qa='cvc']").fill("123")
         self.page.locator("[data-qa='expiry-month']").fill("12")
