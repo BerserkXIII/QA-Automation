@@ -5,8 +5,12 @@ name: Tests Saucedemo
 on:
   push:
     branches: [main]
+    paths:
+      - 'tests/02-Automatizados/Pruebas-saucedemo/**'
   pull_request:
     branches: [main]
+    paths:
+      - 'tests/02-Automatizados/Pruebas-saucedemo/**'
 
 jobs:
   test:

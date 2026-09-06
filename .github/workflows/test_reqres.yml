@@ -5,8 +5,12 @@ name: Tests ReqRes
 on:
   push:
     branches: [main]
+    paths:
+      - 'tests/02-Automatizados/API-ReqRes/**'
   pull_request:
     branches: [main]
+    paths:
+      - 'tests/02-Automatizados/API-ReqRes/**'
 
 jobs:
   test:

@@ -178,12 +178,32 @@ for numero_prod in productos_agregados:
 - **Notas**: La diferencia se descubrió al comparar capturas de Allure de los dos tests híbridos. No se afirma la hipótesis sin inspeccionar el código de la aplicación, pero el comportamiento es reproducible y los tests se adaptan a él.
 - **Lección aprendida**: Los tests híbridos UI + API permiten detectar inconsistencias que permanecen ocultas al probar cada capa de forma aislada.
 
+### AE-009: Suite híbrida para validar el flujo E2E entre UI y API
+- **ID**: AE-009
+- **Descripción**: Diseñar una suite híbrida que compruebe AutomationExercise de extremo a extremo, empezando por la validación independiente del frontend y el backend, y terminando con la combinación de ambas capas en los mismos flujos de cuenta.
+- **Objetivo QA**: Verificar no solo que la interfaz y la API funcionan por separado, sino también que representan de forma coherente las mismas operaciones de negocio: autenticarse, crear una cuenta, consultar sus datos y eliminarla.
+- **Estrategia**:
+  1. Validar la capa frontend en `test_UI.py`, comprobando los flujos visibles con Playwright.
+  2. Validar la capa backend en `test_API.py`, comprobando endpoints, contratos y códigos de respuesta.
+  3. Integrar ambas capas en `test_hibrido.py`, usando la UI para iniciar una operación y la API para comprobar su resultado, o al contrario.
+- **Escenarios implementados en `test_hibrido.py`**:
+  - Login mediante UI y comprobación del usuario autenticado en la página.
+  - Registro mediante UI y consulta de la cuenta creada mediante API.
+  - Registro mediante API, eliminación de la cuenta desde la UI y verificación el borrado mediante API.
+  - Registro mediante UI, eliminación de la cuenta mediante API y comprobación posterior en la UI de que las credenciales ya no permiten iniciar sesión.
+- **Resultado esperado**: Las operaciones iniciadas en una capa quedan reflejadas correctamente en la otra, manteniendo la consistencia del estado de la cuenta durante todo el recorrido E2E.
+- **Resultado actual**: La suite permite validar ese contrato entre capas y, además, ha expuesto diferencias reales de comportamiento, como la inconsistencia del banner de sesión documentada en AE-008.
+- **Valor de aprendizaje**: Los playgrounds de SauceDemo, ReqRes y GoRest permitieron aprender a probar frontend y backend por separado. AutomationExercise se utilizó después como el playground más consistente para integrar esas prácticas en una misma aplicación y completar el recorrido desde tests aislados hasta pruebas E2E.
+- **Código de referencia**: [test_UI.py](../../tests/02-Automatizados/AutomationExercise/test/test_UI.py), [test_API.py](../../tests/02-Automatizados/AutomationExercise/test/test_API.py) y [test_hibrido.py](../../tests/02-Automatizados/AutomationExercise/test/test_hibrido.py).
+- **Lección aprendida**: Una suite E2E fiable se construye por capas: primero se entiende cada componente de forma aislada y después se comprueba el contrato entre ellos. Así, un fallo de integración puede distinguirse de un fallo propio de UI o de API.
+
 ## Observaciones generales
 - **Popups dinámicos**: El caso más complejo de AutomationExercise no es un bug de la app, sino la interferencia de un elemento externo que requiere un guard fallback en el suite.
 - **Flexibilidad del carrito**: El diseño de los page objects con listas de IDs y verificaciones por producto mejora la mantenibilidad.
 - **Caso de mayor riesgo**: AE-003 es el motivo principal del flaky test 13 y debe considerarse un caso de prueba de estabilidad del entorno más que una falla funcional de aplicación.
 - **Contrato de API**: AE-004, AE-005 y AE-006 muestran que una API debe validarse por su contrato real de respuesta, no solo por el status HTTP ni por la igualdad literal de nombres.
 - **Integración entre capas**: AE-007 y AE-008 evidencian que UI y API pueden representar la misma acción de negocio de forma diferente y que los tests híbridos ayudan a encontrar inconsistencias entre ambas.
+- **Propósito de la suite híbrida**: AE-009 documenta la progresión desde pruebas de frontend y backend aisladas hasta recorridos E2E que comprueban la consistencia del estado entre ambas capas.
 
 ## Conclusiones de la sesión
 - La comparación automatizada de estructuras entre dos respuestas de API requiere mapeos explícitos de nombres de campo.

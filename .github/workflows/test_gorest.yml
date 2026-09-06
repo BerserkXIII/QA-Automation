@@ -5,8 +5,12 @@ name: Tests GoRest
 on:
   push:
     branches: [main]
+    paths:
+      - 'tests/02-Automatizados/API-GoRest/**'
   pull_request:
     branches: [main]
+    paths:
+      - 'tests/02-Automatizados/API-GoRest/**'
 
 jobs:
   test:

@@ -5,8 +5,12 @@ name: Tests AutomationExercise
 on:
   push:
     branches: [main]
+    paths:
+      - 'tests/02-Automatizados/AutomationExercise/**'
   pull_request:
     branches: [main]
+    paths:
+      - 'tests/02-Automatizados/AutomationExercise/**'
 
 jobs:
   test:
