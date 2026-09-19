@@ -14,6 +14,7 @@ No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evide
 ## 📚 Qué encontrarás aquí
 - **[Lecciones Aprendidas](./documentos/LECCIONES_APRENDIDAS.md)**: Teoría, apuntes ISTQB y conceptos. Los apuntes están integrados aquí junto con el diario de aprendizaje.
 - **[Análisis QA — TLDRDC](./tests/01-Manual/Analisis_QA_TLDRDC.md)**: Ejercicios prácticos de validación y verificación sobre TLDRDC (11 CTs documentados).
+- **[Análisis QA — CI/CD](./tests/01-Manual/Analisis_QA_CI_CD.md)**: Implementación, desacoplamiento y gestión de credenciales de los cuatro pipelines de GitHub Actions.
 - **[Test TLDRDC automatizados](./tests/02-Automatizados/TLDRDC)**: Suitecase implementada con IA para TLDRDC.
 - **[Arquitectura POM + Playwright](./documentos/ARQUITECTURA_POM_PLAYWRIGHT.md)**: Patrón Page Object Model implementado en Python.
 - **[Reporte de Allure](https://berserkxiii.github.io/QA-Automation/)**: Reporte de pruebas automatizadas con Allure.
@@ -94,6 +95,8 @@ Decidí construir esta suite para probar AutomationExercise de manera **end-to-e
 Los otros tres playgrounds automatizados sirvieron principalmente para aprender a probar frontend y backend por separado: SauceDemo para UI con Playwright, y ReqRes y GoRest para testing de APIs. Después pude aplicar esas bases en AutomationExercise, que es el playground más consistente de los que he utilizado hasta ahora para integrar todas esas prácticas en una misma aplicación.
 
 ## Integración Continua (CI) con GitHub Actions
+
+El proceso completo de implementación, incluyendo los filtros `paths`, la gestión de secretos y los hallazgos de configuración, está documentado en [Análisis QA — CI/CD](./tests/01-Manual/Analisis_QA_CI_CD.md).
 
 La automatización ya no depende únicamente de una ejecución local. Se implementaron cuatro pipelines independientes, uno por proyecto, que se ejecutan automáticamente en cada `push` y `pull_request` hacia `main`. Cada pipeline instala las dependencias desde cero en una máquina Linux limpia y ejecuta la suite completa, sin depender de la configuración local de ningún desarrollador.
 

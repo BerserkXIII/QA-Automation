@@ -14,6 +14,7 @@ I'm not Senior, not even Junior, but I'm learning. This code is evidence of stud
 ## 📚 What you'll find here
 - **[Lessons Learned](./docs/LECCIONES_APRENDIDAS.md)**: Theory, ISTQB notes and concepts. Notes are integrated here alongside the learning diary.
 - **[QA Analysis — TLDRDC](./tests/01-Manual/Analisis_QA_TLDRDC.md)**: Practical exercises in validation and verification of TLDRDC (11 CTs documented).
+- **[QA Analysis — CI/CD](./tests/01-Manual/Analisis_QA_CI_CD.md)**: Implementation, decoupling, and credential management for the four GitHub Actions pipelines.
 - **[Automated TLDRDC Tests](./tests/02-Automatizados/TLDRDC)**: Suitecase implemented with AI for TLDRDC.
 - **[POM + Playwright Architecture](./docs/ARQUITECTURA_POM_PLAYWRIGHT.md)**: Page Object Model pattern implemented in Python.
 - **[Allure Report](https://berserkxiii.github.io/QA-Automation/)**: Automated test report with Allure.
@@ -93,6 +94,8 @@ I decided to build this suite to test AutomationExercise end to end, first by te
 The other three automated playgrounds mainly helped me learn how to test frontend and backend separately: SauceDemo for UI testing with Playwright, and ReqRes and GoRest for API testing. I then applied those foundations in AutomationExercise, which is the most consistent playground I have used so far for bringing all these practices together in one application.
 
 ## Continuous Integration (CI) with GitHub Actions
+
+The complete implementation process, including `paths` filters, secret management, and configuration findings, is documented in [QA Analysis — CI/CD](./tests/01-Manual/Analisis_QA_CI_CD.md).
 
 Automation no longer depends only on local execution. Four independent pipelines were implemented, one per project, and they run automatically on every `push` and `pull_request` to `main`. Each pipeline installs dependencies from scratch on a clean Linux machine and runs the complete suite, without relying on any developer's local configuration.
 
