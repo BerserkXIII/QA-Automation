@@ -1,0 +1,41 @@
+
+
+name: Tests ParaBank
+#comentario
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/02-Automatizados/ParaBank/**'
+      - '.github/workflows/tests_parabank.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tests/02-Automatizados/ParaBank/**'
+      - '.github/workflows/tests_parabank.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: tests/02-Automatizados/ParaBank
+
+    steps:
+      - name: Descargar el código del repo
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Instalar navegadores de Playwright
+        run: playwright install --with-deps chromium
+
+      - name: Ejecutar tests
+        run: pytest -v
