@@ -44,19 +44,5 @@ def crear_usuario_nuevo(page, datos_usuario_nuevo):
     register = RegisterPage(page)
     register.rellenar_formulario_registro(datos_usuario_nuevo)
 
-@pytest.fixture
-def GET_user_data(crear_usuario_nuevo, datos_usuario_nuevo):
-    response = requests.get(f"{constants.API_BASE_URL}/login/{datos_usuario_nuevo['username']}/{datos_usuario_nuevo['password']}", 
-                            headers={"Accept": "application/json"})
-    assert response.status_code == 200, f"Login falló: {response.status_code} — {response.text}"
-    user_data = response.json()
-    return user_data
 
-@pytest.fixture
-def GET_accountID(GET_user_data):
-    response = requests.get(f"{constants.API_BASE_URL}/customers/{GET_user_data['id']}/accounts", 
-                            headers={"Accept": "application/json"})
-    assert response.status_code == 200, f"Login falló: {response.status_code} — {response.text}"
-    account_data = response.json()
-    return account_data
 

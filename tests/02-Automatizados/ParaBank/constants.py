@@ -4,7 +4,9 @@
 
 HOME_URL = "https://parabank.parasoft.com/parabank"
 REGISTER_URL = "https://parabank.parasoft.com/parabank/register.htm"
-
+OPEN_ACCOUNT_URL = "https://parabank.parasoft.com/parabank/openaccount.htm"
+ACCOUNT_OVERVIEW_URL = "https://parabank.parasoft.com/parabank/overview.htm"
+TRANSFER_FUNDS_URL = "https://parabank.parasoft.com/parabank/transfer.htm"
 API_BASE_URL = "https://parabank.parasoft.com/parabank/services/bank"
 
 
