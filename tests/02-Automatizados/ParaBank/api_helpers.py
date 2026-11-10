@@ -15,3 +15,6 @@ def get_accounts(customer_id):
                             headers={"Accept": "application/json"})
     assert response.status_code == 200, f"Consulta de cuentas falló: {response.status_code} — {response.text}"
     return response.json()
+
+def saldos_por_id(cuentas):
+    return {c["id"]: c["balance"] for c in cuentas}

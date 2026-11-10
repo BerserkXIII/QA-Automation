@@ -59,7 +59,8 @@ def test_transfer_funds(crear_usuario_nuevo, page):
     Transfer.ir_a_transfer_funds()
     amount_transfer = "150"
     origen, destino = Transfer.transferir_fondos(amount = amount_transfer, from_account_id = bank_id_origen, to_account_id = bank_id_nuevo)
-    assert origen == bank_id_origen, destino == bank_id_nuevo
+    assert origen == bank_id_origen
+    assert destino == bank_id_nuevo
     expect(page.get_by_role("heading", name="Transfer Complete!")).to_be_visible()
     AccountO.ir_a_account_overview()
     saldos_post_transfer = AccountO.obtener_saldos()
@@ -79,7 +80,8 @@ def test_transfer_funds_sin_limite_saldo_negativo_confirmado(crear_usuario_nuevo
     Transfer.ir_a_transfer_funds()
     amount_transfer = str(int(saldo_origen) + 1000)
     origen, destino = Transfer.transferir_fondos(amount = amount_transfer, from_account_id = bank_id_origen, to_account_id = bank_id_nuevo)
-    assert origen == bank_id_origen, destino == bank_id_nuevo
+    assert origen == bank_id_origen
+    assert destino == bank_id_nuevo
     expect(page.get_by_role("heading", name="Transfer Complete!")).to_be_visible()
     AccountO.ir_a_account_overview()
     saldos_post_transfer = AccountO.obtener_saldos()
