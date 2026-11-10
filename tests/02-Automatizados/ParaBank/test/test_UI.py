@@ -68,6 +68,27 @@ def test_transfer_funds(crear_usuario_nuevo, page):
     assert saldos_post_transfer[origen_int] == pytest.approx(saldos_pre_transfer[origen_int] - float(amount_transfer))
     assert saldos_post_transfer[destino_int] == pytest.approx(saldos_pre_transfer[destino_int] + float(amount_transfer))
 
+def test_transfer_funds_sin_limite_saldo_negativo_confirmado(crear_usuario_nuevo, page):
+    Open = OpenAccountPage(page)
+    bank_id_origen, bank_id_nuevo = Open.crear_cuenta_bancaria_nueva(page, crear_usuario_nuevo, indice_cuenta=0)
+    AccountO = AccountOverviewPage(page)
+    AccountO.ir_a_account_overview()
+    saldos_pre_transfer = AccountO.obtener_saldos()
+    saldo_origen = saldos_pre_transfer[int(bank_id_origen)]
+    Transfer = TransferFundsPage(page)
+    Transfer.ir_a_transfer_funds()
+    amount_transfer = str(int(saldo_origen) + 1000)
+    origen, destino = Transfer.transferir_fondos(amount = amount_transfer, from_account_id = bank_id_origen, to_account_id = bank_id_nuevo)
+    assert origen == bank_id_origen, destino == bank_id_nuevo
+    expect(page.get_by_role("heading", name="Transfer Complete!")).to_be_visible()
+    AccountO.ir_a_account_overview()
+    saldos_post_transfer = AccountO.obtener_saldos()
+    origen_int = int(origen)
+    destino_int = int(destino)
+    assert saldos_post_transfer[origen_int] == pytest.approx(saldos_pre_transfer[origen_int] - float(amount_transfer))
+    assert saldos_post_transfer[destino_int] == pytest.approx(saldos_pre_transfer[destino_int] + float(amount_transfer))
+    assert saldos_post_transfer[origen_int] < 0
+
 @pytest.mark.xfail(reason="BUG conocido: ParaBank permite abrir cuentas con saldo insuficiente en la cuenta de origen.", raises=AssertionError)
 def test_create_bank_account_insufficient_funds(page, crear_usuario_nuevo):
     Open = OpenAccountPage(page)
