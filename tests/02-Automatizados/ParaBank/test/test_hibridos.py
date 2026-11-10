@@ -11,7 +11,7 @@ from api_helpers import *
 
 
 
-def test_cuentas_creadas_UI_existen_en_API(crear_usuario_nuevo, datos_usuario_nuevo, page):
+def test_accounts_UI_checking_API(crear_usuario_nuevo, datos_usuario_nuevo, page):
     user = get_user_data(datos_usuario_nuevo["username"], datos_usuario_nuevo["password"])
     Open = OpenAccountPage(page)
     bankID = []
