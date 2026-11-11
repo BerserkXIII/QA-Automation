@@ -15,19 +15,20 @@ def test_accounts_UI_checking_API(crear_usuario_nuevo, datos_usuario_nuevo, page
     user = get_user_data(datos_usuario_nuevo["username"], datos_usuario_nuevo["password"])
     Open = OpenAccountPage(page)
     bankID = []
-    bankID.append(Open.crear_cuenta_bancaria_nueva(page, crear_usuario_nuevo, indice_cuenta=0))
-    bankID.append(Open.crear_cuenta_bancaria_nueva(page, crear_usuario_nuevo, indice_cuenta=0))
-    bankID.append(Open.crear_cuenta_bancaria_nueva(page, crear_usuario_nuevo, indice_cuenta=0))
+    for _ in range(3):
+        _, nuevo = Open.crear_cuenta_bancaria_nueva()
+        bankID.append(nuevo)
     cuentas = get_accounts(user["id"])
     ids_api = [cuenta["id"] for cuenta in cuentas]
+    assert len(cuentas) == 4, f"Se esperaban 4 cuentas (1 inicial + 3 creadas): {ids_api}"
     for cuenta in cuentas:
         assert cuenta["customerId"] == user["id"]
     for id_creado in bankID:
-        assert id_creado in ids_api, f"{id_creado} no está en la API: {ids_api}"
+        assert int(id_creado) in ids_api, f"{id_creado} no está en la API: {ids_api}"
 
 def test_transfer_funds_UI_checking_API(crear_usuario_nuevo, datos_usuario_nuevo, page):
     Open = OpenAccountPage(page)
-    bank_id_origen, bank_id_nuevo = Open.crear_cuenta_bancaria_nueva(page, crear_usuario_nuevo, indice_cuenta=0)
+    bank_id_origen, bank_id_nuevo = Open.crear_cuenta_bancaria_nueva()
     user = get_user_data(datos_usuario_nuevo["username"], datos_usuario_nuevo["password"])
     userID = user["id"]
     user_accounts = get_accounts(userID)

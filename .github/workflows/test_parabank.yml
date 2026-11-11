@@ -1,22 +1,21 @@
 
 
 name: Tests ParaBank
-#comentario
+
+# ParaBank es un servidor de demos ajeno, detrás de Cloudflare con límite de peticiones (error 1015).
+# Por eso este workflow NO se dispara en cada push: se lanza a mano desde la pestaña Actions.
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'tests/02-Automatizados/ParaBank/**'
-      - '.github/workflows/tests_parabank.yml'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'tests/02-Automatizados/ParaBank/**'
-      - '.github/workflows/tests_parabank.yml'
+  workflow_dispatch:
+
+# Evita dos ejecuciones a la vez contra ParaBank (duplicaría el tráfico).
+concurrency:
+  group: parabank
+  cancel-in-progress: true
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     defaults:
       run:

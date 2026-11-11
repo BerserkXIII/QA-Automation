@@ -9,8 +9,6 @@ ACCOUNT_OVERVIEW_URL = "https://parabank.parasoft.com/parabank/overview.htm"
 TRANSFER_FUNDS_URL = "https://parabank.parasoft.com/parabank/transfer.htm"
 API_BASE_URL = "https://parabank.parasoft.com/parabank/services/bank"
 
-
-
 CAMPOS_OBLIGATORIOS = {
     "first_name": {
         "id_error": "customer.firstName.errors",
@@ -45,3 +43,4 @@ CAMPOS_OBLIGATORIOS = {
     }
 }
 
+PAUSA_ENTRE_TESTS = 5

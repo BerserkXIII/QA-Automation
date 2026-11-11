@@ -3,6 +3,7 @@ import uuid
 import pytest
 import requests
 import constants
+import time
 from pages.home_page import *
 from pages.register_page import *
 
@@ -45,4 +46,18 @@ def crear_usuario_nuevo(page, datos_usuario_nuevo):
     register.rellenar_formulario_registro(datos_usuario_nuevo)
 
 
+#Este fixture bloquea la carga de imágenes y fuentes para mejorar el rendimiento de las pruebas
+# y asi evitar exceder el limite peticiones a ParaBank.
+@pytest.fixture(autouse=True)
+def bloquear_recursos(page):
+    def manejar(route):
+        if route.request.resource_type in ("image", "font"):
+            route.abort()
+        else:
+            route.continue_()
+    page.route("**/*", manejar)
 
+@pytest.fixture(autouse=True)
+def pausa_entre_tests():
+    yield
+    time.sleep(constants.PAUSA_ENTRE_TESTS)

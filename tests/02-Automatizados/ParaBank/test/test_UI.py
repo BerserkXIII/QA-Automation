@@ -41,17 +41,18 @@ def test_create_user_account_required_fields(page, datos_usuario_nuevo):
 
 def test_create_new_bank_account(page, crear_usuario_nuevo):
     Open = OpenAccountPage(page)
-    cuenta_nueva = Open.crear_cuenta_bancaria_nueva(page, crear_usuario_nuevo)
+    bank_id_origen, bank_id_nuevo = Open.crear_cuenta_bancaria_nueva()
     expect(page.get_by_role("heading", name="Account Opened!")).to_be_visible()
     Home = HomePage(page)
     Home.ir_a_account_overview()
     expect(page.get_by_role("heading", name="Accounts Overview")).to_be_visible()
     OverView = AccountOverviewPage(page)
-    expect(OverView.localizar_cuenta(cuenta_nueva)).to_be_visible()
+    expect(OverView.localizar_cuenta(bank_id_origen)).to_be_visible()
+    expect(OverView.localizar_cuenta(bank_id_nuevo)).to_be_visible()
 
 def test_transfer_funds(crear_usuario_nuevo, page):
     Open = OpenAccountPage(page)
-    bank_id_origen, bank_id_nuevo = Open.crear_cuenta_bancaria_nueva(page, crear_usuario_nuevo, indice_cuenta=0)
+    bank_id_origen, bank_id_nuevo = Open.crear_cuenta_bancaria_nueva()
     AccountO = AccountOverviewPage(page)
     AccountO.ir_a_account_overview()
     saldos_pre_transfer = AccountO.obtener_saldos()
@@ -71,7 +72,7 @@ def test_transfer_funds(crear_usuario_nuevo, page):
 
 def test_transfer_funds_sin_limite_saldo_negativo_confirmado(crear_usuario_nuevo, page):
     Open = OpenAccountPage(page)
-    bank_id_origen, bank_id_nuevo = Open.crear_cuenta_bancaria_nueva(page, crear_usuario_nuevo, indice_cuenta=0)
+    bank_id_origen, bank_id_nuevo = Open.crear_cuenta_bancaria_nueva()
     AccountO = AccountOverviewPage(page)
     AccountO.ir_a_account_overview()
     saldos_pre_transfer = AccountO.obtener_saldos()
@@ -94,7 +95,7 @@ def test_transfer_funds_sin_limite_saldo_negativo_confirmado(crear_usuario_nuevo
 @pytest.mark.xfail(reason="BUG conocido: ParaBank permite abrir cuentas con saldo insuficiente en la cuenta de origen.", raises=AssertionError)
 def test_create_bank_account_insufficient_funds(page, crear_usuario_nuevo):
     Open = OpenAccountPage(page)
-    Open.crear_cuenta_bancaria_nueva(page, crear_usuario_nuevo, indice_cuenta=0)
-    Open.crear_cuenta_bancaria_nueva(page, crear_usuario_nuevo, indice_cuenta=1)
-    Open.crear_cuenta_bancaria_nueva(page, crear_usuario_nuevo, indice_cuenta=1)
+    Open.crear_cuenta_bancaria_nueva()
+    Open.crear_cuenta_bancaria_nueva(indice_cuenta=1)
+    Open.crear_cuenta_bancaria_nueva(indice_cuenta=1)
     expect(page.get_by_text("You do not have sufficient funds in your account to complete this transaction.")).to_be_visible()
