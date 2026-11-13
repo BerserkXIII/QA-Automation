@@ -1,5 +1,6 @@
 
 
+
 name: Tests ParaBank
 
 # ParaBank es un servidor de demos ajeno, detrás de Cloudflare con límite de peticiones (error 1015).
@@ -37,4 +38,15 @@ jobs:
         run: playwright install --with-deps chromium
 
       - name: Ejecutar tests
-        run: pytest -v
+        run: pytest -v --screenshot=only-on-failure --tracing=retain-on-failure --output=test-results
+
+      # if: always() sube los archivos aunque los tests fallen.
+      # 'path' no hereda working-directory, por eso lleva la ruta completa.
+      - name: Subir capturas y trazas
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-playwright
+          path: tests/02-Automatizados/ParaBank/test-results
+          if-no-files-found: ignore
+          retention-days: 3

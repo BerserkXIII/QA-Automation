@@ -14,7 +14,8 @@ No soy Senior, ni siquiera Junior, pero estoy aprendiendo. Este código es evide
 ## 📚 Qué encontrarás aquí
 - **[Lecciones Aprendidas](./documentos/LECCIONES_APRENDIDAS.md)**: Teoría, apuntes ISTQB y conceptos. Los apuntes están integrados aquí junto con el diario de aprendizaje.
 - **[Análisis QA — TLDRDC](./tests/01-Manual/Analisis_QA_TLDRDC.md)**: Ejercicios prácticos de validación y verificación sobre TLDRDC (11 CTs documentados).
-- **[Análisis QA — CI/CD](./tests/01-Manual/Analisis_QA_CI_CD.md)**: Implementación, desacoplamiento y gestión de credenciales de los cuatro pipelines de GitHub Actions.
+- **[Análisis QA — CI/CD](./tests/01-Manual/Analisis_QA_CI_CD.md)**: Implementación, desacoplamiento y gestión de credenciales de los cuatro pipelines automáticos y el workflow manual de ParaBank.
+- **[Análisis QA — ParaBank](./tests/01-Manual/Analisis_QA_ParaBank.md)**: Cobertura automatizada de UI, API e integración híbrida en una aplicación bancaria de demostración.
 - **[Test TLDRDC automatizados](./tests/02-Automatizados/TLDRDC)**: Suitecase implementada con IA para TLDRDC.
 - **[Arquitectura POM + Playwright](./documentos/ARQUITECTURA_POM_PLAYWRIGHT.md)**: Patrón Page Object Model implementado en Python.
 - **[Reporte de Allure](https://berserkxiii.github.io/QA-Automation/)**: Reporte de pruebas automatizadas con Allure.
@@ -54,6 +55,7 @@ Implementé el patrón **Page Object Model** para escalar pruebas mantenibles.
 | **TLDRDC Testing** | Juego de rol propio | Integración end-to-end | 🔄 En progreso (IA based) |
 | **Pruebas-saucedemo** | SauceDemo | Aprender POM desde cero | ✅ Completado |
 | **AutomationExercise** | E-commerce ficticio | Pruebas UI, API e integración E2E | ✅ Completado |
+| **ParaBank** | Banca de demostración | Pruebas UI, API e integración híbrida | 🧪 En desarrollo |
 | **ReqRes API** | ReqRes.in | Aprender testing de APIs | ✅ Activo |
 
 > ⚠️ **Nota sobre AutomationExercise**: Esta web tiene publicidad muy agresiva que aparece aleatoriamente (popup `google_vignette` en iframe dinámico de Google Ads). **No es realista para una suite de tests limpia en producción**, pero fue excelente para practicar manejo de popups, handlers dinámicos, network interception y debugging de problemas no deterministas de terceros. Tras varias estrategias (bloqueo de red, `add_locator_handler`, `frame_locator`), se documentó la causa raíz como no mitigable al 100% por depender de un sistema adversarial externo, y se marcó el test afectado como `flaky` de forma consciente con `pytest-rerunfailures`, en vez de perseguir un fix imposible.
@@ -92,17 +94,25 @@ Decidí construir esta suite para probar AutomationExercise de manera **end-to-e
 - **[test_API.py](./tests/02-Automatizados/AutomationExercise/test/test_API.py)**: valida el backend mediante las APIs de la aplicación.
 - **[test_hibrido.py](./tests/02-Automatizados/AutomationExercise/test/test_hibrido.py)**: combina UI y API en un mismo caso para comprobar el comportamiento E2E y la coherencia entre ambas capas.
 
-Los otros tres playgrounds automatizados sirvieron principalmente para aprender a probar frontend y backend por separado: SauceDemo para UI con Playwright, y ReqRes y GoRest para testing de APIs. Después pude aplicar esas bases en AutomationExercise, que es el playground más consistente de los que he utilizado hasta ahora para integrar todas esas prácticas en una misma aplicación.
+SauceDemo me permitió aprender pruebas de UI con Playwright, mientras que ReqRes y GoRest sirvieron para practicar testing de APIs. Después pude aplicar esas bases en AutomationExercise, que es el playground más consistente de los que he utilizado hasta ahora para integrar esas prácticas en una misma aplicación.
+
+### ParaBank: pruebas bancarias UI, API e híbridas
+
+La suite de [ParaBank](./tests/01-Manual/Analisis_QA_ParaBank.md) combina Playwright y API para comprobar el registro, la apertura de cuentas y las transferencias, verificando los saldos antes y después de cada operación. Los tests híbridos contrastan las cuentas y saldos visibles en la UI con los datos del backend.
+
+- **Hallazgos funcionales:** ParaBank permite transferir más fondos de los disponibles y abrir cuentas con saldo insuficiente. El segundo comportamiento se registra como `xfail`; la suite documenta el comportamiento actual y el esperado.
+- **Ejecución documentada (noviembre de 2026):** 11 tests pasan y 1 queda como `xfail`. Al ser un servidor de demostración compartido, la suite requiere pausas entre tests y puede verse afectada por errores del servidor o rate limiting de Cloudflare.
 
 ## Integración Continua (CI) con GitHub Actions
 
 El proceso completo de implementación, incluyendo los filtros `paths`, la gestión de secretos y los hallazgos de configuración, está documentado en [Análisis QA — CI/CD](./tests/01-Manual/Analisis_QA_CI_CD.md).
 
-La automatización ya no depende únicamente de una ejecución local. Se implementaron cuatro pipelines independientes, uno por proyecto, que se ejecutan automáticamente en cada `push` y `pull_request` hacia `main`. Cada pipeline instala las dependencias desde cero en una máquina Linux limpia y ejecuta la suite completa, sin depender de la configuración local de ningún desarrollador.
+La automatización ya no depende únicamente de una ejecución local. Hay cuatro pipelines que se ejecutan automáticamente en cada `push` y `pull_request` hacia `main`, y un workflow manual para ParaBank. Este último se ejecuta bajo demanda para limitar las peticiones a su servidor compartido y evitar el rate limiting de Cloudflare. Cada workflow instala las dependencias desde cero en una máquina Linux limpia y ejecuta la suite correspondiente, sin depender de la configuración local de ningún desarrollador.
 
 | Proyecto | Cobertura | Estado |
 |----------|-----------|--------|
 | AutomationExercise | UI, API e híbridos | [![AutomationExercise](https://github.com/BerserkXIII/QA-Automation/actions/workflows/tests-automationexercise.yml/badge.svg)](https://github.com/BerserkXIII/QA-Automation/actions/workflows/tests-automationexercise.yml) |
+| ParaBank | UI, API e híbridos (manual) | [![ParaBank](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_parabank.yml/badge.svg)](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_parabank.yml) |
 | SauceDemo | UI con Playwright | [![SauceDemo](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_saucedemo.yml/badge.svg)](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_saucedemo.yml) |
 | API-ReqRes | Tests de API | [![API-ReqRes](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_reqres.yml/badge.svg)](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_reqres.yml) |
 | API-GoRest | Tests de API | [![API-GoRest](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_gorest.yml/badge.svg)](https://github.com/BerserkXIII/QA-Automation/actions/workflows/test_gorest.yml) |
@@ -118,7 +128,7 @@ Estos pipelines aportaron aprendizaje técnico además de dejar las suites en ve
 - **Servicios externos no deterministas en CI:** `test_get_users_sin_api_key` (hallazgo AR-003) también resultó inestable en CI. Tras intentar estabilizarlo con `pytest-rerunfailures` y hasta 15 reintentos, apareció además un rate limiting real. Se decidió omitirlo conscientemente con `@pytest.mark.skip`, dejando el motivo documentado en el código: se priorizó la honestidad sobre conseguir un estado verde a toda costa.
 - **Bug propio de infraestructura:** se corrigió un `AttributeError` en la fixture `attach_screenshot`, que fallaba silenciosamente cuando un test se rompía durante `setup` en vez de durante la ejecución (`call`). Era un bug preexistente que solo se manifestó al aparecer el primer fallo de ese tipo.
 
-El resultado es un portfolio con cuatro proyectos y badges de estado verificables, ejecutando sus suites automáticamente ante cualquier cambio y sin intervención manual. Se consigue así el ciclo de “portfolio con tests” a “portfolio con pipeline de calidad verificable”.
+El resultado es un portfolio con cinco suites de CI y badges de estado verificables. Cuatro se ejecutan automáticamente ante cambios; ParaBank se lanza manualmente para respetar los límites del servicio externo. Se consigue así el ciclo de “portfolio con tests” a “portfolio con pipeline de calidad verificable”.
 
 ---
 
